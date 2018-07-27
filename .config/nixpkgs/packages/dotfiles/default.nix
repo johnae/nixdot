@@ -47,7 +47,7 @@ let
     fi
     shopt -s dotglob
     mkdir -p $root
-    chmod ug+rwx $root
+    chmod u+rwx $root
     if [ -e $root/.dotfiles_manifest ]; then
       for file in $(cat $root/.dotfiles_manifest); do
         if [ ! -e ${home}/.nix-profile/dotfiles/$file ]; then
