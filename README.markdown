@@ -72,7 +72,7 @@ The dotfiles keep a config for the fish shell as I've recently made the switch f
 Git clone something like this:
 
 ```sh
-$ git clone --bare https://github.com/johnae/dot.git ~/.cfg
+$ git clone --bare https://github.com/johnae/nixdot.git ~/.cfg
 $ cd ~
 $ GIT_WORK_TREE=$HOME GIT_DIR=$HOME/.cfg git checkout
 $ GIT_WORK_TREE=$HOME GIT_DIR=$HOME/.cfg git config --local status.showUntrackedFiles no
