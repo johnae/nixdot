@@ -26,6 +26,7 @@ let
     (pkgs.callPackage ./gsimplecal { })
     (pkgs.callPackage ./mimeapps { })
     (pkgs.callPackage ./yubico { })
+    (pkgs.callPackage ./direnv { })
   ];
 
   home = builtins.getEnv "HOME";
