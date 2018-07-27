@@ -24,9 +24,20 @@ let
 
      fish_vi_key_bindings
 
+     function homegit --on-variable PWD
+       if [ "$PWD" = "$HOME" ];
+          set -gx GIT_DIR $HOME/.cfg
+          set -gx GIT_WORK_TREE $HOME
+       else
+          set -e GIT_DIR
+          set -e GIT_WORK_TREE
+       end
+     end
+     homegit
+
      function fish_prompt
-       set fish_color_host --bold white
        set -l last_status $status
+       set fish_color_host --bold white
        if not set -q __fish_git_prompt_show_informative_status
          set -g __fish_git_prompt_show_informative_status 1
        end
@@ -49,7 +60,12 @@ let
          set -g __fish_git_prompt_color_cleanstate brgreen
        end
 
-       printf '%s%s %s%s%s%s ' (set_color $fish_color_host) (prompt_hostname) (set_color $fish_color_cwd) (prompt_pwd) (set_color normal) (__fish_git_prompt)
+       set -g prompt_status ""
+       if [ $last_status -ne 0 ]
+          set -g prompt_status "<$last_status> "
+       end
+
+       printf '%s%s%s %s%s%s%s ' (set_color $fish_color_error)$prompt_status(set_color $fish_color_host) (prompt_hostname) (set_color $fish_color_cwd) (prompt_pwd) (set_color normal) (__fish_git_prompt)
        if not test $last_status -eq 0
          set_color $fish_color_error
        end

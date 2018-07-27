@@ -11,12 +11,12 @@ let
 
   dotfiles = [
     (pkgs.callPackage ./i3 { launch = scriptsPkg.paths.launch;
-                                        terminal = scriptsPkg.paths.terminal;
-                                        fzf-window = scriptsPkg.paths.fzf-window;
-                                        fzf-run = scriptsPkg.paths.fzf-run;
-                                        fzf-passmenu = scriptsPkg.paths.fzf-passmenu;
-                                        rename-workspace = scriptsPkg.paths.rename-workspace;
-                                        my-emacs = pkgs.my-emacs; })
+                             terminal = scriptsPkg.paths.terminal;
+                             fzf-window = scriptsPkg.paths.fzf-window;
+                             fzf-run = scriptsPkg.paths.fzf-run;
+                             fzf-passmenu = scriptsPkg.paths.fzf-passmenu;
+                             rename-workspace = scriptsPkg.paths.rename-workspace;
+                             my-emacs = pkgs.my-emacs; })
     (pkgs.callPackage ./gnupg { })
     (pkgs.callPackage ./fish { })
     (pkgs.callPackage ./alacritty { })
