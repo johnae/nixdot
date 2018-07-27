@@ -1,0 +1,853 @@
+#+TITLE: Emacs configuration
+#+AUTHOR: John Axel Eriksson
+
+This is my emacs configuration in the form of an org file. It is meant to be used with org babel tangle
+to extract the actual configuration (to default.el). Since I also use [[https://nixos.org][NixOS]] (and/or
+the nix package manager) it is together with nix expressions this is meant to happen. Basically - this
+should (and does) work nicely as a nix overlay.
+
+
+** Early init
+
+First off, some tricks to speed up emacs initialization. Upping the gc threshold means we should
+be able to avoid garbage collection (several times) during initialization.
+
+Setting file-name-handler-alist to nil means we avoid the cost of regex matching on file names
+during initialization.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; Keep a ref to the actual file-name-handler
+(defvar file-name-handler-alist-actual file-name-handler-alist)
+
+;; Set the file-name-handler to nil (because regexing is cpu intensive)
+(setq file-name-handler-alist nil)
+
+;; Basically disable gc during initialization
+(setq gc-cons-threshold 100000000)
+
+;; Reset gc threshold and file-name-handler-alist after initialization
+(add-hook 'after-init-hook
+  (lambda ()
+    (garbage-collect)
+    (setq gc-cons-threshold (car (get 'gc-cons-threshold 'standard-value)))
+    (setq file-name-handler-alist file-name-handler-alist-actual)) t)
+#+END_SRC
+
+
+** Initialization of packages
+
+Now we disable all package archives so that we can completely rely on the nix expressions
+for package installation.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; Make unpure packages archives unavailable
+(setq package-archives nil)
+(setq package-enable-at-startup nil)
+#+END_SRC
+
+
+Initialize [[https://github.com/jwiegley/use-package][use-package]].
+
+#+BEGIN_SRC elisp :tangle default.el
+(eval-and-compile
+  (require 'package)
+  (package-initialize)
+  (require 'use-package)
+  (setq use-package-always-ensure t))
+#+END_SRC
+
+
+** Packages
+
+The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package org
+  :bind (:map org-mode-map
+              ("C-c e" . org-edit-src-code))
+  :init
+  (setq org-log-done 'time
+        org-log-reschedule 'time
+        org-src-fontify-natively t
+        org-ellipsis " ↘"
+        org-agenda-files '("~/Dropbox/org/")
+        org-directory '("~/Dropbox/org/")
+        org-enforce-todo-dependencies t
+        org-startup-with-beamer-mode t
+        org-export-coding-system 'utf-8
+        org-todo-keywords
+        '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELED")))
+  (setq org-capture-templates
+        '(("a" "My TODO task format." entry
+           (file "~/Dropbox/org/todos.org")
+           "* TODO %?
+        SCHEDULED: %t")))
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((R . t)
+     (emacs-lisp . t)
+     (ruby . t)
+     (python . t)
+     (js . t)
+     (java . t)
+     (latex . t)
+     (haskell . t)
+     (clojure . t)
+     (go . t)
+     (shell . t)
+     (sql . t)
+     (sqlite . t)
+     (groovy . t)
+;;(kotlin . t)
+;;(typescript . t)
+     (C . t)))
+  (add-hook 'org-mode-hook 'auto-revert-mode))
+#+END_SRC
+
+
+Showing org bullets as utf8 characters seemed like a cool thing.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; show org-mode bullets as utf8 characters
+(use-package org-bullets
+  :init
+  (setq org-bullets-bullet-list '("◉"))
+  (add-hook 'org-mode-hook 'org-bullets-mode))
+#+END_SRC
+
+
+In a terminal, TAB corresponds to C-i so that's an issue. For the GUI emacs, which I
+normally use, this isn't a problem.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; so TAB works in a terminal too
+(setq evil-want-C-i-jump nil)
+#+END_SRC
+
+
+So [[https://github.com/emacs-evil/evil][evil]] is vim for emacs. A better vim basically ;-).
+
+#+BEGIN_SRC elisp :tangle default.el
+;; vim for emacs
+(use-package evil
+  :config
+  (evil-mode 1)
+  (define-key evil-normal-state-map (kbd ", <right>") 'split-window-horizontally)
+  (define-key evil-normal-state-map (kbd ", <SPC>") 'ivy-switch-buffer)
+  (define-key evil-normal-state-map (kbd ", p") 'counsel-projectile-find-file)
+  (define-key evil-normal-state-map (kbd ", f") 'counsel-find-file)
+  (define-key evil-normal-state-map (kbd ", s") 'swiper)
+  (define-key evil-normal-state-map (kbd ", a") 'counsel-projectile-rg)
+  (define-key evil-normal-state-map (kbd ", <up>") 'projectile-switch-project)
+  (define-key evil-normal-state-map (kbd "P") 'counsel-yank-pop)
+  (define-key evil-normal-state-map (kbd ", <down>") 'split-window-vertically)
+  (define-key evil-normal-state-map (kbd ", g") 'magit-status)
+  (define-key evil-normal-state-map (kbd ", w") 'whitespace-cleanup)
+  (define-key evil-normal-state-map (kbd ", <RET>") 'projectile-ag))
+#+END_SRC
+
+[[https://github.com/redguardtoo/evil-nerd-commenter][Evil nerd commenter]] let's me comment out one of more lines. In Evil mode this is done using
+C-c i (multiple lines by selecting a region). A reimplementation of the vim version.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package evil-nerd-commenter
+  :ensure t
+  :config
+  (evilnc-default-hotkeys))
+#+END_SRC
+
+
+Evil keybindings for [[https://orgmode.org/][org-mode]]. See [[https://github.com/Somelauw/evil-org-mode][https://github.com/Somelauw/evil-org-mode]]. Yay.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package evil-org
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+            (lambda ()
+              (evil-org-set-key-theme))))
+#+END_SRC
+
+
+Evil keybindings for magit. Woohoo.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package evil-magit)
+#+END_SRC
+
+
+Avy is kind of like vim motion. It lets you jump to certain text using a
+character based decision tree.
+See: [[https://github.com/abo-abo/avy][https://github.com/abo-abo/avy]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package avy
+  :config
+  (global-set-key (kbd "C-¨") 'avy-goto-char)
+)
+#+END_SRC
+
+
+Which key will show (in a popup) any possible continuations of a currently entered incomplete command.
+See: [[https://github.com/justbur/emacs-which-key][https://github.com/justbur/emacs-which-key]]
+
+#+BEGIN_SRC elisp :tangle default.el
+;; show unfinished key sequence options automatically
+(use-package which-key
+  :diminish (which-key-mode . "")
+  :init
+  (which-key-mode)
+  :config
+  (which-key-setup-side-window-bottom)
+  (setq which-key-sort-order 'which-key-key-order-alpha
+        which-key-side-window-max-width 0.33
+        which-key-idle-delay 0.05)
+  )
+#+END_SRC
+
+
+Completion tools.
+
+See: [[https://github.com/abo-abo/swiper][https://github.com/abo-abo/swiper]]
+
+#+BEGIN_SRC elisp :tangle default.el
+;; completions
+(use-package ivy
+  :config
+  (setq ivy-use-virtual-buffers t
+        ivy-count-format "%d/%d "))
+#+END_SRC
+
+
+Counsel integration for projectile.
+
+See: [[https://github.com/ericdanan/counsel-projectile][https://github.com/ericdanan/counsel-projectile]]
+
+#+BEGIN_SRC elisp :tangle default.el
+;; for projects yeah :-)
+(use-package counsel-projectile
+  :diminish (projectile-mode . "")
+  :config
+  (projectile-mode)
+  (counsel-projectile-mode))
+#+END_SRC
+
+
+This will name buffers with the project relative path to the file name rather than
+just the file name. Useful in larger projects.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defun my-project-relative-buffer-name ()
+  (ignore-errors
+    (rename-buffer
+     (file-relative-name buffer-file-name (projectile-project-root)))))
+
+(add-hook 'find-file-hook #'my-project-relative-buffer-name)
+#+END_SRC
+
+
+Sorting and filtering for company and ivy.
+See: [[https://github.com/raxod502/prescient.el][https://github.com/raxod502/prescient.el]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package prescient
+   :config
+   (prescient-persist-mode))
+(use-package ivy-prescient
+   :config
+   (ivy-prescient-mode))
+(use-package company-prescient
+   :config
+   (company-prescient-mode))
+#+END_SRC
+
+See: [[https://www.emacswiki.org/emacs/PosTip][https://www.emacswiki.org/emacs/PosTip]]
+
+#+BEGIN_SRC elisp :tangle default.el
+;; get tooltips at point
+(use-package pos-tip)
+(setq help-at-pt-display-when-idle t)
+(setq help-at-pt-timer-delay 0.1)
+(help-at-pt-set-timer)
+#+END_SRC
+
+
+For editing html, css etc.
+See: [[https://github.com/fxbois/web-mode][https://github.com/fxbois/web-mode]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package web-mode
+  :mode "\\.html?$")
+#+END_SRC
+
+
+You know, for docker.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package dockerfile-mode
+  :mode "Dockerfile.*")
+#+END_SRC
+
+
+For editing nix expressions.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package nix-mode)
+#+END_SRC
+
+
+Allows integrating nix with emacs - project specific. See: [[https://github.com/shlevy/nix-buffer][https://github.com/shlevy/nix-buffer]].
+Disabled as I believe direnv will do everything I need.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; supports using a dir-locals.nix (kind of like a default.nix)
+;; (use-package nix-buffer
+;;   :commands nix-buffer
+;;   :preface
+;;   (defun turn-on-nix-buffer ()
+;;     (when (and (not noninteractive)
+;;           (not (eq (aref (buffer-name) 0) ?\s))
+;;           (not (file-remote-p default-directory)))
+;;       (nix-buffer)))
+;;   :hook (after-change-major-mode . turn-on-nix-buffer)
+;;   )
+#+END_SRC
+
+
+[[https://magit.vc/][Magit]] is possibly the most awesome git integration of any editor out there. It's awesome anyway.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; the awesome git emacs interface
+(use-package magit
+  :config
+  (setq magit-repository-directories
+        '( "~/Development" ))
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  )
+#+END_SRC
+
+
+Because in evil mode I often want to go to a line x lines below and therefore I want to see those
+numbers in the fringe. I'm still interested in the current line number though so I want that to show
+for the line that I'm on.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; relative line numbers
+(use-package linum-relative
+  :config
+  (setq linum-relative-format "%s")
+  (setq linum-relative-current-symbol "")
+  (global-linum-mode t)
+  (linum-relative-mode t))
+#+END_SRC
+
+
+Helps with the fringe? :-)
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package fringe-helper
+  :init
+  (setq-default left-fringe-width  16)
+  (setq-default right-fringe-width 16)
+  :config
+  )
+#+END_SRC
+
+
+Direnv integration for emacs.
+See: [[https://github.com/wbolster/emacs-direnv][https://github.com/wbolster/emacs-direnv]]
+and ofc
+[[https://direnv.net/][https://direnv.net/]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package direnv
+  :config
+  (direnv-mode))
+#+END_SRC
+
+
+Highlights uncommitted changes.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package diff-hl
+  :config
+  (global-diff-hl-mode t)
+  (diff-hl-flydiff-mode)
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
+#+END_SRC
+
+
+Some simple modes for a few languages.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package moonscript
+  :mode ("\\Spookfile.*\\'" . moonscript-mode))
+
+(use-package lua-mode)
+
+(use-package json-mode)
+
+(use-package yaml-mode
+  :mode "\\.cf$")
+
+(use-package scala-mode
+  :interpreter
+  ("scala" . scala-mode))
+
+(use-package js2-mode
+  :ensure t
+  :config
+  (setq js2-strict-missing-semi-warning nil)
+  (setq js2-missing-semi-one-line-override t)
+  (setq js-indent-level 2)
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+#+END_SRC
+
+
+Intero is an awesome haskell environment for emacs. It's disabled now because it is.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; (use-package intero
+;;   :ensure t
+;;   :config
+;;   (add-hook 'haskell-mode-hook 'intero-mode))
+#+END_SRC
+
+
+Mode for elm. Disabled atm.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; (use-package elm-mode)
+#+END_SRC
+
+
+Mode for groovy. Disabled atm.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; (use-package groovy-mode
+;;   :config
+;;   (setq groovy-indent-offset 2))
+#+END_SRC
+
+
+[[http://company-mode.github.io/][Company]] is a text completion framework for Emacs. The name stands for "complete anything". It uses pluggable back-ends
+and front-ends to retrieve and display completion candidates.
+
+It comes with several back-ends such as Elisp, Clang, Semantic, Eclim, Ropemacs, Ispell, CMake, BBDB, Yasnippet, dabbrev,
+etags, gtags, files, keywords and a few others.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package company
+  :diminish (company-mode . "")
+  :init
+  (setq company-idle-delay 0
+        company-minimum-prefix-length 2
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil)
+  :config
+  (add-to-list 'company-backends 'company-nixos-options)
+  (global-company-mode))
+#+END_SRC
+
+
+Show documentation popups when idling on a completion candidate.
+See: [[https://github.com/expez/company-quickhelp][https://github.com/expez/company-quickhelp]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package company-quickhelp
+  :config
+  (company-quickhelp-mode 1)
+  (setq company-quickhelp-delay 0))
+#+END_SRC
+
+
+Show documentation popups for nixos configuration options.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package company-nixos-options)
+#+END_SRC
+
+
+This allows me to toggle between snake case, camel case etc.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; Cycle between snake case, camel case, etc.
+(use-package string-inflection
+  :ensure t
+  :config
+  (global-set-key (kbd "C-c i") 'string-inflection-cycle)
+  (global-set-key (kbd "C-c C") 'string-inflection-camelcase)        ;; Force to CamelCase
+  (global-set-key (kbd "C-c L") 'string-inflection-lower-camelcase)  ;; Force to lowerCamelCase
+  (global-set-key (kbd "C-c J") 'string-inflection-java-style-cycle) ;; Cycle through Java styles
+  )
+#+END_SRC
+
+
+[[http://www.flycheck.org/en/latest/][Flycheck]] is "Syntax checking for emacs".
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package flycheck
+  :config
+  (global-flycheck-mode)
+  (setq flycheck-idle-change-delay 2.0)
+  ;; (setq flycheck-check-syntax-automatically '(mode-enabled save))
+  (add-hook 'flycheck-before-syntax-check-hook 'direnv-update-environment)
+)
+#+END_SRC
+
+
+Go mode and other go stuff.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package go-mode)
+
+(use-package go-guru
+  :config
+  (go-guru-hl-identifier-mode))
+
+(use-package company-go
+  :config
+  (setq gofmt-command "goimports")
+  (add-to-list 'company-backends 'company-go)
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  )
+
+(use-package flycheck-gometalinter
+  :after flycheck
+  :config
+  (setq flycheck-gometalinter-fast t
+        flycheck-gometalinter-test t
+        flycheck-gometalinter-deadlines "10s")
+  (progn
+    (flycheck-gometalinter-setup)))
+
+(use-package go-eldoc
+  :config
+  (go-eldoc-setup))
+#+END_SRC
+
+
+This enables syntax checking / linting for moonscript. Defined right here. Disabled for now.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; (flycheck-define-checker moonscript-moonpick
+;;   "A MoonScript syntax checker using moonpick.
+
+;; See URL `https://github.com/nilnor/moonpick'."
+;;   :command ("moonpick" "--filename" source-original "-")
+;;   :standard-input t
+;;   :error-patterns
+;;   (
+;;    (warning line-start "line " line ": " (message) line-end)
+;;    (error line-start " [" line "] >> " (message) line-end))
+
+;;   :modes (moonscript-mode))
+
+;; (add-to-list 'flycheck-checkers 'moonscript-moonpick)
+#+END_SRC
+
+
+For showing errors in terminal (pos-tip doesn't do that - see below).
+See: [[https://github.com/flycheck/flycheck-popup-tip][https://github.com/flycheck/flycheck-popup-tip]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package flycheck-popup-tip)
+#+END_SRC
+
+
+For showing errors under point. Refers to above for similar terminal functionality.
+See: [[https://github.com/flycheck/flycheck-pos-tip][https://github.com/flycheck/flycheck-pos-tip]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package flycheck-pos-tip
+  :config
+  (setq flycheck-pos-tip-display-errors-tty-function #'flycheck-popup-tip-show-popup)
+  (setq flycheck-pos-tip-timeout 0)
+  (flycheck-pos-tip-mode))
+#+END_SRC
+
+
+Check those bashisms. Posix ftw!
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package flycheck-checkbashisms
+  :config
+  (flycheck-checkbashisms-setup))
+#+END_SRC
+
+
+When programming I like to see clearly which line I'm editing atm.
+
+#+BEGIN_SRC elisp :tangle default.el
+(add-hook 'prog-mode-hook 'hl-line-mode)
+#+END_SRC
+
+
+This will highlight matching parentheses. Some additional configuration for that.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defun my-show-paren-mode ()
+   "Enables show-paren-mode."
+   (setq show-paren-delay 0)
+   (set-face-background 'show-paren-match (face-background 'default))
+   (set-face-foreground 'show-paren-match "#def")
+   (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+   (show-paren-mode 1))
+
+(add-hook 'prog-mode-hook 'my-show-paren-mode)
+#+END_SRC
+
+
+Electric pair-mode will help with matching parentheses, quotes etc. Only used for prog mode.
+
+#+BEGIN_SRC elisp :tangle default.el
+(add-hook 'prog-mode-hook 'electric-pair-mode)
+#+END_SRC
+
+
+Sometimes I edit markdown.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package markdown-mode)
+#+END_SRC
+
+
+Highlights numbers in source code.
+See: [[https://github.com/Fanael/highlight-numbers][https://github.com/Fanael/highlight-numbers]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package highlight-numbers
+  :config
+  (add-hook 'prog-mode-hook 'highlight-numbers-mode))
+#+END_SRC
+
+
+UndoTree let's me visualize the past state of a buffer.
+See: [[https://www.emacswiki.org/emacs/UndoTree][https://www.emacswiki.org/emacs/UndoTree]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package undo-tree
+  :diminish undo-tree-mode
+  :config
+  (define-key evil-normal-state-map (kbd "U") 'undo-tree-visualize)
+  (global-undo-tree-mode)
+  (setq undo-tree-visualizer-diff t))
+#+END_SRC
+
+
+Frames only mode makes emacs play nicely with tiling window managers (such as i3). It uses
+new operating system windows instead of emacs internal ones.
+See: [[https://github.com/davidshepherd7/frames-only-mode][https://github.com/davidshepherd7/frames-only-mode]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package frames-only-mode
+  :config
+  (frames-only-mode))
+#+END_SRC
+
+
+Using control-x control-z to zoom in / out a window (eg. "fullscreen" it).
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package zoom-window
+  :bind* ("C-x C-z" . zoom-window-zoom))
+#+END_SRC
+
+
+** Other configuration
+
+Define a function to set the powerline theme. This is so that when using emacsclient we
+can just call this rather than duplicate code. So we need to be able to set the theme more
+than once depending on whether we use the emacsclient or not.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defun my-powerline-theme ()
+  "Enables the current powerline theme."
+  (spaceline-emacs-theme)
+  (setq powerline-default-separator-dir '(right . left)
+        powerline-default-separator 'curve
+        powerline-height 20))
+
+(use-package powerline
+  :config
+  (my-powerline-theme))
+#+END_SRC
+
+
+Define the overall theme somewhere for reuse.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defvar my:theme 'zerodark)
+(load-theme my:theme t)
+#+END_SRC
+
+
+This is where we recognize whether emacsclient is being used or not and if it is we'll set the theme as necessary.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defvar my:theme-window-loaded nil)
+(defvar my:theme-terminal-loaded nil)
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions(lambda (frame)
+                       (select-frame frame)
+                       (if (window-system frame)
+                           (unless my:theme-window-loaded
+                             (if my:theme-terminal-loaded
+                                 (enable-theme my:theme)
+                               (load-theme my:theme t)
+                               (my-powerline-theme))
+                             (setq my:theme-window-loaded t))
+                         (unless my:theme-terminal-loaded
+                           (if my:theme-window-loaded
+                               (enable-theme my:theme)
+                             (load-theme my:theme t)
+                             (my-powerline-theme))
+                           (setq my:theme-terminal-loaded t)))))
+
+  (progn
+    (load-theme my:theme t)
+    (if (display-graphic-p)
+        (setq my:theme-window-loaded t)
+      (setq my:theme-terminal-loaded t))))
+#+END_SRC
+
+
+Capture those tasks.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defun insane-org-task-capture ()
+  "Capture a task with the default template."
+  (interactive)
+  (org-capture nil "a"))
+
+(define-key global-map (kbd "C-c t") 'insane-org-task-capture)
+
+(defun insane-things-todo ()
+  "Return the default todos filepath."
+  (interactive)
+  (find-file (expand-file-name "~/Dropbox/org/todos.org")))
+
+(define-key global-map (kbd "C-c C-t") 'insane-things-todo)
+#+END_SRC
+
+
+Define some keybindings I like for moving between splits/windows.
+
+#+BEGIN_SRC elisp :tangle default.el
+(global-set-key (kbd "C-<up>") 'windmove-up)
+(global-set-key (kbd "C-k") 'windmove-up)
+(global-set-key (kbd "C-<down>") 'windmove-down)
+(global-set-key (kbd "C-j") 'windmove-down)
+(global-set-key (kbd "C-<left>") 'windmove-left)
+(global-set-key (kbd "C-h") 'windmove-left)
+(global-set-key (kbd "C-<right>") 'windmove-right)
+(global-set-key (kbd "C-l") 'windmove-right)
+#+END_SRC
+
+
+We don't want any scratch message at all. Unfortunately, because the emacs devs don't want a sysadmin
+to disable the startup screen for users (or something like that), we can't disable that from here. Must
+be added to a user's .emacs or init.el.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; inhibit-startup-screen has to be in .emacs - see emacs source
+;; for why
+(setq initial-scratch-message "")
+#+END_SRC
+
+
+Disable some things I'm not interested in, like tool bars and menu bars.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; No menus or anything like that thanks
+(tool-bar-mode -1)
+;; (scroll-bar-mode -1) ;; scrollbars are still nice though
+(blink-cursor-mode -1)
+(menu-bar-mode -1)
+#+END_SRC
+
+
+This is a nice font :-).
+
+#+BEGIN_SRC elisp :tangle default.el
+(add-to-list 'default-frame-alist '(font . "Source Code Pro-14"))
+(set-face-attribute 'default t :font "Source Code Pro-14")
+#+END_SRC
+
+
+Did I mention I like utf8? I like utf8.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; like, utf-8 everywhere
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(when (display-graphic-p)
+  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
+#+END_SRC
+
+
+Fix the scrolling which isn't very nice by default in my opinion.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; Sane scrolling - 1 step at a time etc
+(setq redisplay-dont-pause t
+      scroll-margin 1
+      scroll-conservatively 10000
+      scroll-step 1
+      scroll-preserve-screen-position t
+      auto-window-vscroll nil)
+#+END_SRC
+
+
+I use a shell script called browse which launches the browser I use - so emacs also calls that script.
+
+#+BEGIN_SRC elisp :tangle default.el
+;; use "browse" as the command to open a web browser
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "browse")
+#+END_SRC
+
+
+Some other general settings.
+
+#+BEGIN_SRC elisp :tangle default.el
+(setq mode-require-final-newline nil)
+(setq tab-stop-list (number-sequence 2 120 2))
+(setq-default tab-width 2)
+(setq-default indent-tabs-mode nil)
+(setq tabify nil)
+
+;; Highlight trailing whitespace.
+(setq-default show-trailing-whitespace t)
+(set-face-background 'trailing-whitespace "yellow")
+
+(setq temporary-file-directory "~/.emacs.d/tmp/")
+(unless (file-exists-p "~/.emacs.d/tmp")
+  (make-directory "~/.emacs.d/tmp"))
+
+(setq backup-inhibited t)
+(setq make-backup-files nil) ; don't create backup~ files
+(setq auto-save-default nil) ; don't create #autosave# files
+#+END_SRC
+
+
+Finally, since I'm in Europe, I'd like dates and such to be displayed in the expected European formats.
+
+#+BEGIN_SRC elisp :tangle default.el
+(setq european-date-style 'european)
+(setq calendar-set-date-style 'european)
+(setq calendar-week-start-day 1)
+(setq calendar-date-display-form
+      '((if dayname
+            (concat dayname ", "))
+        day " " monthname " " year))
+
+(setq calendar-time-display-form
+      '(24-hours ":" minutes))
+#+END_SRC
