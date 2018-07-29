@@ -1,3 +1,3 @@
 self: super: {
-  my-emacs = super.callPackage ../packages/my-emacs/default.nix { };
+  my-emacs = super.callPackage ../packages/my-emacs { };
 }
