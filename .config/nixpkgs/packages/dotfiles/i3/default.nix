@@ -1,8 +1,7 @@
 {
   stdenv,
   writeText,
-  i3,
-  udev,
+  i3, udev,
   lightlocker, rofi, xorg,
   pulseaudioFull, coreutils,
   spook, my-emacs, nix,
@@ -134,9 +133,9 @@ let
     bindsym XF86MonBrightnessUp exec ${xbacklightPath} -inc 5
     bindsym XF86MonBrightnessDown exec ${xbacklightPath} -dec 5
 
-    bindsym XF86AudioRaiseVolume exec --no-startup-id ${pactlPath} set-sink-volume @DEFAULT_SINK@ +5% && ${killPath} -HUP $(${catPath} $XDG_RUNTIME_DIR/moonbar/pid)
-    bindsym XF86AudioLowerVolume exec --no-startup-id ${pactlPath} set-sink-volume @DEFAULT_SINK@ -5% && ${killPath} -HUP $(${catPath} $XDG_RUNTIME_DIR/moonbar/pid)
-    bindsym XF86AudioMute exec --no-startup-id ${pactlPath} set-sink-mute @DEFAULT_SINK@ toggle && ${killPath} -HUP $(${catPath} $XDG_RUNTIME_DIR/moonbar/pid)
+    bindsym XF86AudioRaiseVolume exec --no-startup-id ${killPath} -USR1 $(${catPath} $XDG_RUNTIME_DIR/moonbar.pid)
+    bindsym XF86AudioLowerVolume exec --no-startup-id ${killPath} -USR2 $(${catPath} $XDG_RUNTIME_DIR/moonbar.pid)
+    bindsym XF86AudioMute exec --no-startup-id ${killPath} -HUP $(${catPath} $XDG_RUNTIME_DIR/moonbar.pid)
 
     # change focus
     bindsym ${mod}+Left focus left
@@ -274,7 +273,7 @@ let
       }
 
       tray_output primary
-      status_command ${nixShellPath} --command "${spookPath} -r 0 -w ~/Development/moonbar" ~/Development/moonbar/shell.nix
+      status_command ${nixShellPath} --command "${spookPath} -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" ~/Development/moonbar/shell.nix
     }
 
   '';
