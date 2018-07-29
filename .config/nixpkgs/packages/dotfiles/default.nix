@@ -9,26 +9,33 @@ let
     scriptsPkg
   ];
 
-  dotfiles = [
-    (pkgs.callPackage ./i3 { launch = scriptsPkg.paths.launch;
-                             terminal = scriptsPkg.paths.terminal;
-                             fzf-window = scriptsPkg.paths.fzf-window;
-                             fzf-run = scriptsPkg.paths.fzf-run;
-                             fzf-passmenu = scriptsPkg.paths.fzf-passmenu;
-                             rename-workspace = scriptsPkg.paths.rename-workspace;
-                             screenshot = scriptsPkg.paths.screenshot;
-                             my-emacs = pkgs.my-emacs; })
-    (pkgs.callPackage ./gnupg { })
-    (pkgs.callPackage ./fish { })
-    (pkgs.callPackage ./alacritty { })
-    (pkgs.callPackage ./ssh { settings = settings; })
-    (pkgs.callPackage ./git { settings = settings; my-emacs = pkgs.my-emacs; })
-    (pkgs.callPackage ./pulse { })
-    (pkgs.callPackage ./gsimplecal { })
-    (pkgs.callPackage ./mimeapps { })
-    (pkgs.callPackage ./yubico { })
-    (pkgs.callPackage ./direnv { })
-  ];
+
+  i3dot = pkgs.callPackage ./i3 { launch = scriptsPkg.paths.launch;
+                                  terminal = scriptsPkg.paths.terminal;
+                                  fzf-window = scriptsPkg.paths.fzf-window;
+                                  fzf-run = scriptsPkg.paths.fzf-run;
+                                  fzf-passmenu = scriptsPkg.paths.fzf-passmenu;
+                                  rename-workspace = scriptsPkg.paths.rename-workspace;
+                                  screenshot = scriptsPkg.paths.screenshot;
+                                  my-emacs = pkgs.my-emacs; };
+
+   gnupgDot = pkgs.callPackage ./gnupg { };
+   fishDot = pkgs.callPackage ./fish { };
+   alacrittyDot = pkgs.callPackage ./alacritty { };
+   sshDot = pkgs.callPackage ./ssh { settings = settings; };
+   gitDot = pkgs.callPackage ./git { settings = settings; my-emacs = pkgs.my-emacs; };
+   pulseDot = pkgs.callPackage ./pulse { };
+   gsimplecalDot = pkgs.callPackage ./gsimplecal { };
+   mimeappsDot = pkgs.callPackage ./mimeapps { };
+   yubicoDot = pkgs.callPackage ./yubico { };
+   direnvDot = pkgs.callPackage ./direnv { };
+
+  dotfiles = [ i3dot gnupgDot
+               fishDot alacrittyDot
+               sshDot gitDot
+               pulseDot gsimplecalDot
+               mimeappsDot yubicoDot direnvDot
+             ];
 
   home = builtins.getEnv "HOME";
 
