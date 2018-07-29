@@ -16,6 +16,7 @@ let
                              fzf-run = scriptsPkg.paths.fzf-run;
                              fzf-passmenu = scriptsPkg.paths.fzf-passmenu;
                              rename-workspace = scriptsPkg.paths.rename-workspace;
+                             screenshot = scriptsPkg.paths.screenshot;
                              my-emacs = pkgs.my-emacs; })
     (pkgs.callPackage ./gnupg { })
     (pkgs.callPackage ./fish { })
@@ -66,6 +67,8 @@ let
     echo $latestVersion > $root/.dotfiles_version
   '';
 
+  install = xs: fun: lib.concatStringsSep "\n" (lib.concatMap (x: (lib.mapAttrsToList fun x.paths)) xs);
+
 in
 
 stdenv.mkDerivation rec {
@@ -78,27 +81,18 @@ stdenv.mkDerivation rec {
     install -dm 755 $dotfiles
     install -dm 755 $bin
     pushd $dotfiles
-    ${lib.concatStringsSep "\n" (
-         lib.concatMap (
-            x: (
-               lib.mapAttrsToList (name: value: ''
-                                                 echo "installing ${name} in $(pwd)/${name}"
-                                                 install -dm 755 $(dirname ${name})
-                                                 cat ${value} > ${name}
-                                                '') x.paths
-                      )
-         ) dotfiles
-     )}
+    ${install dotfiles (name: value: ''
+                                       echo "installing ${name} in $(pwd)/${name}"
+                                       install -dm 755 $(dirname ${name})
+                                       cat ${value} > ${name}
+                                       '')}
 
     popd
-    ${lib.concatStringsSep "\n" (
-          lib.concatMap (
-             x: (
-               lib.mapAttrsToList (name: value: ''
-                                                 echo "installing script ${name} to $bin"
-                                                 cp -r ${value}/bin/${name} $bin/
-                                                 '') x.paths)) scripts
-                                                 )}
+    ${install scripts (name: value: ''
+                                       echo "installing script ${name} to $bin"
+                                       cp -r ${value}/bin/${name} $bin/
+                                       ''
+    )}
     cp ${home-update}/bin/home-update $bin/home-update
   '';
 }
