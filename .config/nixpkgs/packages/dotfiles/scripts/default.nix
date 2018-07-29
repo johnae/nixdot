@@ -7,6 +7,7 @@
  gnupg, gawk, gnused,
  gnugrep, findutils, coreutils,
  alacritty, libnotify, xdotool,
+ maim, slop,
  browser,
  ...}:
 
@@ -57,6 +58,17 @@ let
       ${gnused}/bin/sed "s|$HOME/||g" | \
       ${fzf-fzf}/bin/fzf-fzf | \
       ${findutils}/bin/xargs -I{} ${coreutils}/bin/echo "$HOME/{}"
+  '';
+
+  screenshot = writeScriptBin "screenshot" ''
+    #!${stdenv.shell}
+    name=$(${coreutils}/bin/date +%Y-%m-%d_%H:%M:%S_screen)
+    output_dir=$HOME/Pictures/screenshots
+    fmt=png
+    mkdir -p $output_dir
+    #killall compton
+    ${maim}/bin/maim -s --format=$fmt $output_dir/$name.$fmt
+    #~/.i3/compton
   '';
 
   browse = writeScriptBin "browse" ''
@@ -185,5 +197,6 @@ in
       fzf-window = fzf-window;
       browse = browse;
       rename-workspace = rename-workspace;
+      screenshot = screenshot;
     };
   }

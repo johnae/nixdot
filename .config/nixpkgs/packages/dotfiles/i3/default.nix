@@ -8,6 +8,7 @@
   spook, my-emacs, nix,
   terminal, fzf-window, fzf-run,
   fzf-passmenu, launch, rename-workspace,
+  screenshot,
   ...
 }:
 
@@ -82,6 +83,9 @@ let
 
     # lock the screen
     bindsym Control+${mod}+l exec ${loginctlPath} lock-session
+
+    # take a screenshot (stored in ~/Pictures/screenshots as a png)
+    bindsym ${mod}+x exec ${screenshot}/bin/screenshot
 
     # start a terminal
     bindsym ${mod}+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal
