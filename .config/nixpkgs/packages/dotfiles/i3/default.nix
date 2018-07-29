@@ -72,6 +72,7 @@ let
     new_window pixel 0
     new_float pixel 0
     hide_edge_borders smart
+    focus_follows_mouse no
 
     # class                   border             background text         indicator
     client.focused            ${inactiveBgColor} ${bgColor} ${textColor} ${indicatorColor}
