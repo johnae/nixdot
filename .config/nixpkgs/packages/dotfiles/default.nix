@@ -29,12 +29,14 @@ let
    mimeappsDot = pkgs.callPackage ./mimeapps { };
    yubicoDot = pkgs.callPackage ./yubico { };
    direnvDot = pkgs.callPackage ./direnv { };
+   xresourcesDot = pkgs.callPackage ./xresources { };
 
   dotfiles = [ i3dot gnupgDot
                fishDot alacrittyDot
                sshDot gitDot
                pulseDot gsimplecalDot
-               mimeappsDot yubicoDot direnvDot
+               mimeappsDot yubicoDot
+               direnvDot xresourcesDot
              ];
 
   home = builtins.getEnv "HOME";
