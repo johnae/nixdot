@@ -1,3 +1,3 @@
 self: super: {
-  ginkgo = self.callPackage ../packages/ginkgo/default.nix { };
+  ginkgo = super.callPackage ../packages/ginkgo/default.nix { };
 }

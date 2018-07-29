@@ -1,3 +1,3 @@
 self: super: {
-  dotfiles = self.callPackage ../packages/dotfiles { };
+  dotfiles = super.callPackage ../packages/dotfiles { };
 }

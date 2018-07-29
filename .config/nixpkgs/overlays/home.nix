@@ -1,5 +1,5 @@
 self: super: {
-  home = self.buildEnv {
+  home = super.buildEnv {
     name = "home";
     paths = with self; [
           dotfiles

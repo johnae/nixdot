@@ -1,3 +1,3 @@
 self: super: {
-  gotools = self.callPackage ../packages/gotools/default.nix { };
+  gotools = super.callPackage ../packages/gotools/default.nix { };
 }
