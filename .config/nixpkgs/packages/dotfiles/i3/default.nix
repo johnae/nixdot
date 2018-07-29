@@ -65,6 +65,7 @@ let
 
     for_window [class="fzf-window"] fullscreen enable
     for_window [class="input-window"] floating enable
+    for_window [title="^pinentry$"] floating enable
     no_focus [window_role="browser"]
 
     workspace_auto_back_and_forth yes
@@ -213,7 +214,7 @@ let
     bindsym ${mod}+Shift+c reload
 
     # restart
-    bindsym ${mod}+Shift+r exec restart
+    bindsym ${mod}+Shift+r restart
 
     ######## Modes
 
