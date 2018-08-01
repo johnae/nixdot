@@ -1,4 +1,4 @@
-{ pkgs, fetchFromGitHub, writeText, ... }:
+{ pkgs, fetchFromGitHub, git, writeText, ... }:
 
 let
 
@@ -18,19 +18,26 @@ let
         use-package;
     });
 
+  ## searches for git at build time and atm this isn't reflected in nixpkgs
+  evil-magit = pkgs.emacsPackagesNg.evil-magit.overrideAttrs (
+    attrs: {
+    nativeBuildInputs = (attrs.nativeBuildInputs or []) ++ [ git ];
+    }
+  );
+
   ## use up-to-date nix-mode
   nix-mode = emacsPackages.melpaBuild {
     pname = "nix-mode";
-    version = "20180630";
+    version = "20180801";
 
     src = fetchFromGitHub {
       owner = "NixOS";
       repo = "nix-mode";
-      rev = "57ac40d53b4f4fe0d61fcabb41f8f3992384048e";
-      sha256 = "0l5m5p3rsrjf7ghik3z1bglf255cwliglgr3hiv6qpp121k4p0ga";
+      rev = "fbcbc446f84bbfdafac0d6f37df5918cab2e4610";
+      sha256 = "1yhga5rgbc9aqnbqq7rbdv8ycbw8jk40l2m04p5d1065q8icpaka";
     };
 
-    recipeFile = writeText "nix-mode-recipe" ''
+    recipe = writeText "nix-mode-recipe" ''
       (nix-mode :repo "NixOS/nix-mode" :fetcher github
                 :files (:defaults (:exclude "nix-mode-mmm.el")))
     '';
@@ -48,8 +55,9 @@ let
     version = "1.0";
     src     = prescientSource;
 
-    recipeFile = writeText "prescient-recipe" ''
-      (prescient :files ("prescient.el"))
+    recipe = writeText "prescient-recipe" ''
+      (prescient :repo "raxod502/prescient.el" :fetcher github
+                 :files ("prescient.el"))
     '';
   };
 
@@ -59,8 +67,9 @@ let
     src     = prescientSource;
     packageRequires = [ prescient ];
 
-    recipeFile = writeText "ivy-prescient-recipe" ''
-      (ivy-prescient :files ("ivy-prescient.el"))
+    recipe = writeText "ivy-prescient-recipe" ''
+      (ivy-prescient :repo "raxod502/prescient.el" :fetcher github
+                     :files ("ivy-prescient.el"))
     '';
   };
 
@@ -70,8 +79,9 @@ let
     src     = prescientSource;
     packageRequires = [ prescient ];
 
-    recipeFile = writeText "company-prescient-recipe" ''
-      (company-prescient :files ("company-prescient.el"))
+    recipe = writeText "company-prescient-recipe" ''
+      (company-prescient  :repo "raxod502/prescient.el" :fetcher github
+                         :files ("company-prescient.el"))
     '';
   };
 
