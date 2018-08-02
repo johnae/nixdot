@@ -68,12 +68,13 @@ let
       rm $root/.dotfiles_manifest
     fi
     for file in ${home}/.nix-profile/dotfiles/*; do
-      cmd="cp --no-preserve=ownership,mode -R $file $root/"
+      cmd="cp --no-preserve=ownership -R $file $root/"
       echo $cmd
       $cmd
     done
     find ${home}/.nix-profile/dotfiles/ -type f | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     echo $latestVersion > $root/.dotfiles_version
+    ${pkgs.i3}/bin/i3-msg restart
   '';
 
   install = xs: fun: lib.concatStringsSep "\n" (lib.concatMap (x: (lib.mapAttrsToList fun x.paths)) xs);
@@ -94,13 +95,14 @@ stdenv.mkDerivation rec {
                                        echo "installing ${name} in $(pwd)/${name}"
                                        install -dm 755 $(dirname ${name})
                                        cat ${value} > ${name}
-                                       '')}
+                                     ''
+    )}
 
     popd
     ${install scripts (name: value: ''
                                        echo "installing script ${name} to $bin"
                                        cp -r ${value}/bin/${name} $bin/
-                                       ''
+                                    ''
     )}
     cp ${home-update}/bin/home-update $bin/home-update
   '';
