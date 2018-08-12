@@ -294,7 +294,8 @@ You know, for docker.
 For editing nix expressions.
 
 #+BEGIN_SRC elisp :tangle default.el
-(use-package nix-mode)
+(use-package nix-mode
+  :mode "\\.nix$")
 #+END_SRC
 
 
