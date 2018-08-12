@@ -38,7 +38,6 @@ let
       ControlMaster auto
       ControlPath ~/.ssh/cm_sockets/%r@%h:%p
 
-    Include config.private.d/*
   '';
 
 in
