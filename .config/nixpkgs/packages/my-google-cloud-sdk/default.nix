@@ -6,24 +6,26 @@ let
   pythonInputs = [ pp.cffi pp.cryptography pp.pyopenssl pp.crcmod ];
   pythonPath = lib.makeSearchPath python.sitePackages pythonInputs;
 
+  componentBaseUrl = "https://storage.googleapis.com/cloud-sdk-release/for_packagers/linux";
+  appengine-go-sdk-component = {
+    url = "${componentBaseUrl}/google-cloud-sdk-app-engine-go_211.0.0.orig_amd64.tar.gz";
+    sha256 = "0w8861f1qb40w5nnhdyqfhsqrsxk9pirs6q4x67nzz75lwhcgcf2";
+  };
+
   baseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads";
   sources = name: system: {
-    x86_64-darwin = {
-      url = "${baseUrl}/${name}-darwin-x86_64.tar.gz";
-      sha256 = "073e603d8ea4026dddb515cbbe5e7e481bc492da6e404ee473d69104023d2422";
-    };
-
     x86_64-linux = {
       url = "${baseUrl}/${name}-linux-x86_64.tar.gz";
-      sha256 = "8f218e6b2fedfe2d0df5dee752b5fb674fb1e4c47f1f3033f4d0955e8d425619";
+      sha256 = "0h927f9hdyfjbpcf2j8qc9rg3jwplg4id891i691zg0jlpqcpgjk";
     };
   }.${system};
 
 in stdenv.mkDerivation rec {
   name = "google-cloud-sdk-${version}";
-  version = "207.0.0";
+  version = "211.0.0";
 
   src = fetchurl (sources name stdenv.system);
+  appengine-go-sdk = fetchurl appengine-go-sdk-component;
 
   buildInputs = [ python makeWrapper ];
 
@@ -40,7 +42,7 @@ in stdenv.mkDerivation rec {
     cp ${./beta__init__.py} $out/google-cloud-sdk/lib/surface/beta/__init__.py
 
     # create wrappers with correct env
-    for program in gcloud bq gsutil git-credential-gcloud.sh; do
+    for program in gcloud bq gsutil git-credential-gcloud.sh docker-credential-gcloud; do
         programPath="$out/google-cloud-sdk/bin/$program"
         binaryPath="$out/bin/$program"
         wrapProgram "$programPath" \
@@ -51,13 +53,8 @@ in stdenv.mkDerivation rec {
         ln -s $programPath $binaryPath
     done
 
-    # install wanted extensions - gcloud wants to write logs somewhere unfortunately
-    rm -rf /tmp/gcloud-temp-home
-    mkdir -p /tmp/gcloud-temp-home
-    for extension in app-engine-go docker-credential-gcr; do
-      HOME=/tmp/gcloud-temp-home $out/bin/gcloud components install $extension
-    done
-    rm -rf /tmp/gcloud-temp-home
+    echo "Installing app engine go sdk..."
+    tar -zxf "${appengine-go-sdk}" -C "$out"
 
     # disable component updater and update check
     substituteInPlace $out/google-cloud-sdk/lib/googlecloudsdk/core/config.json \
