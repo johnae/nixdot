@@ -7,7 +7,7 @@
  gnupg, gawk, gnused,
  gnugrep, findutils, coreutils,
  alacritty, libnotify, xdotool,
- maim, slop,
+ maim, slop, feh, killall,
  browser,
  ...}:
 
@@ -178,6 +178,16 @@ let
       fi
     fi
 
+  '';
+
+  autorandr-postswitch = writeScriptBin "autorandr-postswitch" ''
+    #!${stdenv.shell}
+    BG=$(${coreutils}/bin/cat /etc/nixos/meta.nix | ${gnugrep}/bin/grep dmBackground | ${gawk}/bin/awk '{print $3}' | ${gnused}/bin/sed 's|[";]||g')
+    ${killall}/bin/killall compton
+    ${coreutils}/bin/echo "Setting background: '$BG'"
+    if [ -e "$BG" ]; then
+       ${feh}/bin/feh --bg-fill $BG
+    fi
 
   '';
 
@@ -198,5 +208,6 @@ in
       browse = browse;
       rename-workspace = rename-workspace;
       screenshot = screenshot;
+      autorandr-postswitch = autorandr-postswitch;
     };
   }
