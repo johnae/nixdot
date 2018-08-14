@@ -24,17 +24,6 @@ let
 
      fish_vi_key_bindings
 
-     function homegit --on-variable PWD
-       if [ "$PWD" = "$HOME" ];
-          set -gx GIT_DIR $HOME/.cfg
-          set -gx GIT_WORK_TREE $HOME
-       else
-          set -e GIT_DIR
-          set -e GIT_WORK_TREE
-       end
-     end
-     homegit
-
      function l --on-variable PWD
        ls
      end
@@ -42,6 +31,12 @@ let
      function fish_prompt
        set -l last_status $status
        set fish_color_host --bold white
+
+       if [ "$PWD" = "$HOME" ];
+          set -gx GIT_DIR $HOME/.cfg
+          set -gx GIT_WORK_TREE $HOME
+       end
+
        if not set -q __fish_git_prompt_show_informative_status
          set -g __fish_git_prompt_show_informative_status 1
        end
@@ -75,6 +70,11 @@ let
        end
        echo -n '$ '
        set_color normal
+
+       if [ "$PWD" = "$HOME" ];
+          set -e GIT_DIR
+          set -e GIT_WORK_TREE
+       end
      end
 
      function fish_mode_prompt --description 'Displays the current mode'
