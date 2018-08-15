@@ -1,5 +1,7 @@
 {stdenv, lib, pkgs, ...}:
 
+with pkgs.callPackage ./libdot.nix { };
+
 let
   settings = import (builtins.getEnv "HOME");
 
@@ -76,8 +78,6 @@ let
     echo $latestVersion > $root/.dotfiles_version
     ${pkgs.i3}/bin/i3-msg restart
   '';
-
-  install = xs: fun: lib.concatStringsSep "\n" (lib.concatMap (x: (lib.mapAttrsToList fun x.paths)) xs);
 
 in
 
