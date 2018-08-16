@@ -1,4 +1,4 @@
-{stdenv, writeText, fzf, ...}:
+{stdenv, libdot, writeText, fzf, fetchFromGitHub, ...}:
 
 let
 
@@ -138,10 +138,32 @@ let
      end
    '';
 
+   gcloudSrc = fetchFromGitHub {
+     owner = "Doctusoft";
+     repo = "google-cloud-sdk-fish-completion";
+     rev = "bc24b0bf7da2addca377d89feece4487ca0b1e9c";
+     sha256 = "03zzggi64fhk0yx705h8nbg3a02zch9y49cdvzgnmpi321vz71h4";
+   };
+
+   kubectlCompletions = fetchFromGitHub {
+     owner = "evanlucas";
+     repo = "fish-kubectl-completions";
+     rev = "c870a143c5af2ac5a8174173a96e110a7677637f";
+     sha256 = "0cn8k6axfrglvy7x3sw63g08cgxfq3z4jqxfxm05558qfc8hfhc2";
+   };
+
 in
 
-  { paths = {
-        ".config/fish/config.fish" = config;
-        ".config/fish/functions/fish_user_key_bindings.fish" = fzfConfig;
-        };
+
+  {
+    __toString = self: ''
+      ${libdot.mkdir { path = ".config/fish/functions"; }}
+      ${libdot.mkdir { path = ".config/fish/completions"; }}
+      ${libdot.copy { path = config; to = ".config/fish/config.fish";  }}
+      ${libdot.copy { path = fzfConfig; to = ".config/fish/functions/fish_user_key_bindings.fish";  }}
+      ${libdot.copy { path = "${gcloudSrc}/functions/gcloud_sdk_argcomplete.fish"; to = ".config/fish/functions/gcloud_sdk_argcomplete.fish";  }}
+      ${libdot.copy { path = "${kubectlCompletions}/kubectl.fish"; to = ".config/fish/completions/kubectl.fish"; }}
+      ${libdot.copy { path = "${gcloudSrc}/completions/gcloud.fish"; to = ".config/fish/completions/gcloud.fish"; }}
+      ${libdot.copy { path = "${gcloudSrc}/completions/gsutil.fish"; to = ".config/fish/completions/gsutil.fish"; }}
+    '';
   }

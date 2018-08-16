@@ -1,8 +1,10 @@
 {
   stdenv,
   lib,
+  libdot,
   writeText,
   pinentry_gnome,
+  coreutils,
   keyservers ? [ "hkp://jirk5u4osbsr34t5.onion" "hkp://keys.gnupg.net" ],
   ...
 }:
@@ -111,9 +113,14 @@ let
 
 in
 
-  { paths = {
-          ".gnupg/gpg.conf" = gpgConfig;
-          ".gnupg/gpg-agent.conf" = gpgAgentConfig;
-          ".gnupg/dirmngr.conf" = dirMngrConfig;
-        };
+  {
+    dirmode = "0700";
+    filemode = "0600";
+    __toString = self: ''
+      echo "Ensuring .gnupg directory..."
+      ${libdot.mkdir { path = ".gnupg"; mode = self.dirmode; }}
+      ${libdot.copy { path = gpgConfig; to = ".gnupg/gpg.conf"; mode = self.filemode; }}
+      ${libdot.copy { path = gpgAgentConfig; to = ".gnupg/gpg-agent.conf"; mode = self.filemode; }}
+      ${libdot.copy { path = dirMngrConfig; to = ".gnupg/dirmngr.conf"; mode = self.filemode; }}
+    '';
   }

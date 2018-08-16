@@ -1,4 +1,4 @@
-{stdenv, writeText, ...}:
+{stdenv, libdot, writeText, ...}:
 
 let
   config = writeText "user-pulse-config" ''
@@ -9,5 +9,8 @@ let
 in
 
   {
-    paths = { ".config/pulse/default.pa" = config; };
+    __toString = self: ''
+      ${libdot.mkdir { path = ".config/pulse"; }}
+      ${libdot.copy { path = config; to = ".config/pulse/default.pa"; }}
+    '';
   }

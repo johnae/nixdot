@@ -1,4 +1,4 @@
-{stdenv, writeText, ...}:
+{stdenv, libdot, writeText, ...}:
 
 let
 
@@ -31,7 +31,8 @@ let
 
 in
 
-  { paths = {
-        ".Xresources" = config;
-        };
+  {
+    __toString = self: ''
+      ${libdot.copy { path = config; to = ".Xresources"; }}
+    '';
   }

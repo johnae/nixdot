@@ -1,4 +1,4 @@
-{stdenv, writeText, ...}:
+{stdenv, libdot, writeText, ...}:
 
 let
   config = writeText "gsimplecal-config" ''
@@ -30,6 +30,10 @@ let
     clock_tz = :America/Los_Angeles
   '';
 in
+
   {
-    paths = { ".config/gsimplecal/config" = config; };
+    __toString = self: ''
+      ${libdot.mkdir { path = ".config/gsimplecal"; }}
+      ${libdot.copy { path = config; to = ".config/gsimplecal/config"; }}
+    '';
   }

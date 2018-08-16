@@ -1,6 +1,7 @@
 {
   stdenv,
   writeText,
+  libdot,
   i3, udev,
   lightlocker, rofi, xorg,
   pulseaudioFull, coreutils,
@@ -283,7 +284,10 @@ let
 
 in
 
-  { paths = {
-        ".i3/config" = config;
-        };
+
+  {
+    __toString = self: ''
+      ${libdot.mkdir { path = ".i3"; }}
+      ${libdot.copy { path = config; to = ".i3/config";  }}
+    '';
   }

@@ -1,8 +1,8 @@
 {stdenv, lib, pkgs, ...}:
 
-with pkgs.callPackage ./libdot.nix { };
 
 let
+  libdot = pkgs.callPackage ./libdot.nix { };
   settings = import (builtins.getEnv "HOME");
 
   scriptsPkg = pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-beta-bin}/bin/firefox"; };
@@ -11,71 +11,89 @@ let
     scriptsPkg
   ];
 
+   i3dot = with scriptsPkg.paths; pkgs.callPackage ./i3 {
+         inherit libdot launch terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot;
+   };
 
-  i3dot = pkgs.callPackage ./i3 { launch = scriptsPkg.paths.launch;
-                                  terminal = scriptsPkg.paths.terminal;
-                                  fzf-window = scriptsPkg.paths.fzf-window;
-                                  fzf-run = scriptsPkg.paths.fzf-run;
-                                  fzf-passmenu = scriptsPkg.paths.fzf-passmenu;
-                                  rename-workspace = scriptsPkg.paths.rename-workspace;
-                                  screenshot = scriptsPkg.paths.screenshot;
-                                  my-emacs = pkgs.my-emacs; };
+   gnupgDot = pkgs.callPackage ./gnupg { inherit libdot; };
+   fishDot = pkgs.callPackage ./fish { inherit libdot; };
+   alacrittyDot = pkgs.callPackage ./alacritty { inherit libdot; };
+   sshDot = pkgs.callPackage ./ssh { inherit settings libdot; };
+   gitDot = pkgs.callPackage ./git { inherit settings libdot; };
+   pulseDot = pkgs.callPackage ./pulse { inherit libdot; };
+   gsimplecalDot = pkgs.callPackage ./gsimplecal { inherit libdot; };
+   mimeappsDot = pkgs.callPackage ./mimeapps { inherit libdot; };
+   yubicoDot = pkgs.callPackage ./yubico { inherit libdot; };
+   direnvDot = pkgs.callPackage ./direnv { inherit libdot; };
+   xresourcesDot = pkgs.callPackage ./xresources { inherit libdot; };
 
-   gnupgDot = pkgs.callPackage ./gnupg { };
-   fishDot = pkgs.callPackage ./fish { };
-   alacrittyDot = pkgs.callPackage ./alacritty { };
-   sshDot = pkgs.callPackage ./ssh { settings = settings; };
-   gitDot = pkgs.callPackage ./git { settings = settings; my-emacs = pkgs.my-emacs; };
-   pulseDot = pkgs.callPackage ./pulse { };
-   gsimplecalDot = pkgs.callPackage ./gsimplecal { };
-   mimeappsDot = pkgs.callPackage ./mimeapps { };
-   yubicoDot = pkgs.callPackage ./yubico { };
-   direnvDot = pkgs.callPackage ./direnv { };
-   xresourcesDot = pkgs.callPackage ./xresources { };
-
-  dotfiles = [ i3dot gnupgDot
-               fishDot alacrittyDot
-               sshDot gitDot
-               pulseDot gsimplecalDot
-               mimeappsDot yubicoDot
-               direnvDot xresourcesDot
-             ];
+   dotfiles = [ i3dot gnupgDot fishDot
+                alacrittyDot sshDot gitDot
+                pulseDot gsimplecalDot
+                mimeappsDot yubicoDot
+                direnvDot xresourcesDot
+              ];
 
   home = builtins.getEnv "HOME";
 
   home-update = pkgs.writeScriptBin "home-update" ''
     #!${stdenv.shell}
     root=''${1:-${home}}
-    latestVersion=$(nix-store --query --hash $(readlink ${home}/.nix-profile/dotfiles))
+    latestVersion=$(${pkgs.nix}/bin/nix-store --query --hash $(${pkgs.coreutils}/bin/readlink ${home}/.nix-profile/dotfiles))
     currentVersion=""
     if [ -e $root/.dotfiles_version ]; then
-      currentVersion=$(cat $root/.dotfiles_version)
+      currentVersion=$(${pkgs.coreutils}/bin/cat $root/.dotfiles_version)
     fi
     if [ "$currentVersion" = "$latestVersion" ]; then
-      echo "Up-to-date already"
+      ${pkgs.coreutils}/bin/echo "Up-to-date already"
       exit 0
     else
-      echo "Updating to latest version '$latestVersion' from '$currentVersion'"
+      ${pkgs.coreutils}/bin/echo "Updating to latest version '$latestVersion' from '$currentVersion'"
     fi
     shopt -s dotglob
-    mkdir -p $root
-    chmod u+rwx $root
+    ${pkgs.coreutils}/bin/mkdir -p $root
+    ${pkgs.coreutils}/bin/chmod u+rwx $root
     if [ -e $root/.dotfiles_manifest ]; then
-      for file in $(cat $root/.dotfiles_manifest); do
+      for file in $(${pkgs.coreutils}/bin/cat $root/.dotfiles_manifest); do
         if [ ! -e ${home}/.nix-profile/dotfiles/$file ]; then
-          echo "removing deleted dotfile '$file'"
-          rm $root/$file
+          ${pkgs.coreutils}/bin/echo "removing deleted dotfile '$file'"
+          ${pkgs.coreutils}/bin/rm $root/$file
         fi
       done
-      rm $root/.dotfiles_manifest
+      ${pkgs.coreutils}/bin/rm $root/.dotfiles_manifest
     fi
     for file in ${home}/.nix-profile/dotfiles/*; do
-      cmd="cp --no-preserve=ownership -R $file $root/"
-      echo $cmd
+      cmd="${pkgs.coreutils}/bin/cp --no-preserve=ownership,mode -rf $file $root/"
+      ${pkgs.coreutils}/bin/echo $cmd
       $cmd
     done
-    find ${home}/.nix-profile/dotfiles/ -type f | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
-    echo $latestVersion > $root/.dotfiles_version
+    for file in $(${pkgs.fd}/bin/fd . ${home}/.nix-profile/dotfiles -H -c never | ${pkgs.gnused}/bin/sed 's|${home}/.nix-profile/dotfiles/||g'); do
+      if [ -d $file ]; then
+        if [ -e $file/.mode ]; then
+          mode=$(${pkgs.coreutils}/bin/cat $file/.mode)
+          cmd="${pkgs.coreutils}/bin/chmod $mode $file"
+          ${pkgs.coreutils}/bin/echo $cmd
+          $cmd
+          ${pkgs.coreutils}/bin/rm -f $file/.mode
+        else
+          echo "WARNING: no mode found for directory $file"
+        fi
+      else
+        dir=$(${pkgs.coreutils}/bin/dirname $file)
+        name=$(${pkgs.coreutils}/bin/basename $file)
+        if [ -e $dir/.$name.mode ]; then
+          mode=$(${pkgs.coreutils}/bin/cat $dir/.$name.mode)
+          cmd="${pkgs.coreutils}/bin/chmod $mode $file"
+          ${pkgs.coreutils}/bin/echo $cmd
+          $cmd
+          ${pkgs.coreutils}/bin/rm -f $dir/.$name.mode
+        else
+          echo "WARNING: no mode found for file $file"
+        fi
+      fi
+    done
+    ${pkgs.findutils}/bin/find ${home}/.nix-profile/dotfiles/ -type f | ${pkgs.gnused}/bin/sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
+    ${pkgs.coreutils}/bin/echo $latestVersion > $root/.dotfiles_version
     ${pkgs.i3}/bin/i3-msg restart
   '';
 
@@ -91,15 +109,9 @@ stdenv.mkDerivation rec {
     install -dm 755 $dotfiles
     install -dm 755 $bin
     pushd $dotfiles
-    ${install dotfiles (name: value: ''
-                                       echo "installing ${name} in $(pwd)/${name}"
-                                       install -dm 755 $(dirname ${name})
-                                       cat ${value} > ${name}
-                                     ''
-    )}
-
+    ${lib.concatStringsSep "\n" dotfiles}
     popd
-    ${install scripts (name: value: ''
+    ${libdot.install scripts (name: value: ''
                                        echo "installing script ${name} to $bin"
                                        cp -r ${value}/bin/${name} $bin/
                                     ''

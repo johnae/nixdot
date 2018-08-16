@@ -1,4 +1,4 @@
-{stdenv, writeText, ...}:
+{stdenv, libdot, writeText, ...}:
 
 let
   font = "Source Code Pro";
@@ -521,8 +521,11 @@ let
 
 in
 
-  { paths = {
-        ".config/alacritty/alacritty.yml" = defaultConfig;
-        ".config/alacritty/alacritty-large-font.yml" = largeFontConfig;
-        };
+
+  {
+    __toString = self: ''
+      ${libdot.mkdir { path = ".config/alacritty"; }}
+      ${libdot.copy { path = defaultConfig; to = ".config/alacritty/alacritty.yml";  }}
+      ${libdot.copy { path = largeFontConfig; to = ".config/alacritty/alacritty-large-font.yml";  }}
+    '';
   }

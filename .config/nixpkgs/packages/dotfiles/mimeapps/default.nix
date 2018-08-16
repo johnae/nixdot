@@ -1,4 +1,4 @@
-{stdenv, writeText, ...}:
+{stdenv, libdot, writeText, ...}:
 
 let
   config = writeText "mimeapps-config" ''
@@ -36,5 +36,8 @@ let
 in
 
   {
-    paths = { ".config/mimeapps.list" = config; };
+    __toString = self: ''
+      ${libdot.mkdir { path = ".config"; }}
+      ${libdot.copy { path = config; to = ".config/mimeapps.list"; }}
+    '';
   }

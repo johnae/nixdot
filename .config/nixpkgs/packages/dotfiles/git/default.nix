@@ -1,4 +1,4 @@
-{stdenv, writeText, settings, my-emacs, ...}:
+{stdenv, libdot, writeText, settings, my-emacs, ...}:
 
 let
   config = writeText "gitconfig" ''
@@ -50,7 +50,8 @@ let
 
 in
 
-  { paths = {
-        ".gitconfig" = config;
-        };
+  {
+    __toString = self: ''
+      ${libdot.copy { path = config; to = ".gitconfig"; }}
+    '';
   }

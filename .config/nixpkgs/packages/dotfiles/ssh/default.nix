@@ -1,4 +1,4 @@
-{stdenv, writeText, settings, ...}:
+{stdenv, libdot, writeText, settings, ...}:
 
 let
 
@@ -42,7 +42,10 @@ let
 
 in
 
-  { paths = {
-        ".ssh/config" = config;
-        };
+
+  {
+    __toString = self: ''
+      ${libdot.mkdir { path = ".ssh"; mode = "0700"; }}
+      ${libdot.copy { path = config; to = ".ssh/config"; mode = "0600"; }}
+    '';
   }

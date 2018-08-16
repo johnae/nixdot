@@ -1,4 +1,4 @@
-{stdenv, writeText, ...}:
+{stdenv, libdot, writeText, ...}:
 
 let
 
@@ -84,4 +84,8 @@ let
 
 in
 
-{ paths = { ".direnvrc" = direnvrc; }; }
+  {
+    __toString = self: ''
+      ${libdot.copy { path = direnvrc; to = ".direnvrc"; }}
+    '';
+  }
