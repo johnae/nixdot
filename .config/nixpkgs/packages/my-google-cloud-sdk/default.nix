@@ -2,6 +2,7 @@
 
 let
   python = pkgs.python;
+  coreutils = pkgs.coreutils;
   pp = pkgs.python2Packages;
   pythonInputs = [ pp.cffi pp.cryptography pp.pyopenssl pp.crcmod ];
   pythonPath = lib.makeSearchPath python.sitePackages pythonInputs;
@@ -47,7 +48,8 @@ in stdenv.mkDerivation rec {
         binaryPath="$out/bin/$program"
         wrapProgram "$programPath" \
             --set CLOUDSDK_PYTHON "${python}/bin/python" \
-            --prefix PYTHONPATH : "${pythonPath}"
+            --prefix PYTHONPATH : "${pythonPath}" \
+            --prefix PATH : "${coreutils}/bin"
 
         mkdir -p $out/bin
         ln -s $programPath $binaryPath
