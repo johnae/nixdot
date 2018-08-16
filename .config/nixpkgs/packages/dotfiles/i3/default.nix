@@ -65,7 +65,7 @@ let
 
     for_window [class="fzf-window"] fullscreen enable
     for_window [class="input-window"] floating enable
-    for_window [title="^pinentry$"] floating enable
+    for_window [class="gcr-prompter"] floating enable
     no_focus [window_role="browser"]
 
     workspace_auto_back_and_forth yes
@@ -73,6 +73,7 @@ let
     new_float pixel 0
     hide_edge_borders smart
     focus_follows_mouse yes
+    focus_on_window_activation smart
 
     # class                   border             background text         indicator
     client.focused            ${inactiveBgColor} ${bgColor} ${textColor} ${indicatorColor}
