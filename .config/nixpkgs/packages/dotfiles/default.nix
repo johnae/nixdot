@@ -75,6 +75,7 @@ let
     ${pkgs.findutils}/bin/find ${home}/.nix-profile/dotfiles/ -type f | ${pkgs.gnused}/bin/sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     ${pkgs.coreutils}/bin/echo $latestVersion > $root/.dotfiles_version
     ${pkgs.i3}/bin/i3-msg restart
+    ${pkgs.coreutils}/bin/true
   '';
 
 in
