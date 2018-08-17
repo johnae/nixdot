@@ -68,30 +68,19 @@ let
       $cmd
     done
     for file in $(${pkgs.fd}/bin/fd . ${home}/.nix-profile/dotfiles -H -c never | ${pkgs.gnused}/bin/sed 's|${home}/.nix-profile/dotfiles/||g'); do
-      if [ -d $file ]; then
-        if [ -e $file/.mode ]; then
-          mode=$(${pkgs.coreutils}/bin/cat $file/.mode)
-          cmd="${pkgs.coreutils}/bin/chmod $mode $file"
-          ${pkgs.coreutils}/bin/echo $cmd
-          $cmd
-          ${pkgs.coreutils}/bin/rm -f $file/.mode
-        else
-          echo "WARNING: no mode found for directory $file"
-        fi
-      else
-        dir=$(${pkgs.coreutils}/bin/dirname $file)
-        name=$(${pkgs.coreutils}/bin/basename $file)
-        if [ -e $dir/.$name.mode ]; then
-          mode=$(${pkgs.coreutils}/bin/cat $dir/.$name.mode)
-          cmd="${pkgs.coreutils}/bin/chmod $mode $file"
-          ${pkgs.coreutils}/bin/echo $cmd
-          $cmd
-          ${pkgs.coreutils}/bin/rm -f $dir/.$name.mode
-        else
-          echo "WARNING: no mode found for file $file"
-        fi
+      if [ "$file" = ".permissions" ]; then
+         continue
       fi
+      mode=$(${pkgs.coreutils}/bin/cat $root/.permissions | ${pkgs.gnugrep}/bin/grep -E "^$file:[0-9]+\$" | ${pkgs.gawk}/bin/awk -F ':' '{print $NF}')
+      if [ "$mode" = "" ]; then
+         ${pkgs.coreutils}/bin/echo "WARNING: mode not found for file: $file"
+         continue
+      fi
+      cmd="${pkgs.coreutils}/bin/chmod $mode $file"
+      ${pkgs.coreutils}/bin/echo $cmd
+      $cmd
     done
+    rm -f $root/.permissions
     ${pkgs.findutils}/bin/find ${home}/.nix-profile/dotfiles/ -type f | ${pkgs.gnused}/bin/sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     ${pkgs.coreutils}/bin/echo $latestVersion > $root/.dotfiles_version
     ${pkgs.i3}/bin/i3-msg restart
