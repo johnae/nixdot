@@ -7,7 +7,7 @@ let
   mkdir = {path, mode ? "0755"}: ''
         ${coreutils}/bin/echo "mkdir $PWD/${path} with mode ${mode}"
         ${coreutils}/bin/mkdir -p ${path}
-        ${coreutils}/bin/echo ${path}:${mode} >> .permissions
+        ${coreutils}/bin/echo ${coreutils}/bin/chmod ${mode} ${path} >> set-permissions.sh
   '';
 
   copy = {path, to, mode ? "0644"}: ''
@@ -15,7 +15,7 @@ let
         ${coreutils}/bin/cat ${path} > ${to}
         dir=$(${coreutils}/bin/dirname ${to})
         name=$(${coreutils}/bin/basename ${to})
-        ${coreutils}/bin/echo ${to}:${mode} >> .permissions
+        ${coreutils}/bin/echo ${coreutils}/bin/chmod ${mode} ${to} >> set-permissions.sh
   '';
 
 in

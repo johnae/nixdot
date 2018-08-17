@@ -63,24 +63,15 @@ let
       ${pkgs.coreutils}/bin/rm $root/.dotfiles_manifest
     fi
     for file in ${home}/.nix-profile/dotfiles/*; do
+      if [ "$(${pkgs.coreutils}/bin/basename $file)" = "set-permissions.sh" ]; then
+         continue
+      fi
       cmd="${pkgs.coreutils}/bin/cp --no-preserve=ownership,mode -rf $file $root/"
       ${pkgs.coreutils}/bin/echo $cmd
       $cmd
     done
-    for file in $(${pkgs.fd}/bin/fd . ${home}/.nix-profile/dotfiles -H -c never | ${pkgs.gnused}/bin/sed 's|${home}/.nix-profile/dotfiles/||g'); do
-      if [ "$file" = ".permissions" ]; then
-         continue
-      fi
-      mode=$(${pkgs.coreutils}/bin/cat $root/.permissions | ${pkgs.gnugrep}/bin/grep -E "^$file:[0-9]+\$" | ${pkgs.gawk}/bin/awk -F ':' '{print $NF}')
-      if [ "$mode" = "" ]; then
-         ${pkgs.coreutils}/bin/echo "WARNING: mode not found for file: $file"
-         continue
-      fi
-      cmd="${pkgs.coreutils}/bin/chmod $mode $file"
-      ${pkgs.coreutils}/bin/echo $cmd
-      $cmd
-    done
-    rm -f $root/.permissions
+    ${pkgs.coreutils}/bin/echo Ensuring permissions on dotfiles...
+    ${stdenv.shell} -x ${home}/.nix-profile/dotfiles/set-permissions.sh
     ${pkgs.findutils}/bin/find ${home}/.nix-profile/dotfiles/ -type f | ${pkgs.gnused}/bin/sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     ${pkgs.coreutils}/bin/echo $latestVersion > $root/.dotfiles_version
     ${pkgs.i3}/bin/i3-msg restart
