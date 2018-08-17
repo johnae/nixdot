@@ -70,8 +70,8 @@ The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
         org-log-reschedule 'time
         org-src-fontify-natively t
         org-ellipsis " ↘"
-        org-agenda-files '("~/Dropbox/org/")
-        org-directory '("~/Dropbox/org/")
+        org-agenda-files '("~/Sync/org/")
+        org-directory '("~/Sync/org/")
         org-enforce-todo-dependencies t
         org-startup-with-beamer-mode t
         org-export-coding-system 'utf-8
@@ -79,7 +79,7 @@ The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
         '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELED")))
   (setq org-capture-templates
         '(("a" "My TODO task format." entry
-           (file "~/Dropbox/org/todos.org")
+           (file "~/Sync/org/todos.org")
            "* TODO %?
         SCHEDULED: %t")))
   :config
@@ -729,7 +729,7 @@ Capture those tasks.
 (defun insane-things-todo ()
   "Return the default todos filepath."
   (interactive)
-  (find-file (expand-file-name "~/Dropbox/org/todos.org")))
+  (find-file (expand-file-name "~/Sync/org/todos.org")))
 
 (define-key global-map (kbd "C-c C-t") 'insane-things-todo)
 #+END_SRC
