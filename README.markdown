@@ -13,20 +13,7 @@ or in fish that would be:
 $ nix-env -iA nixos.home; and home-update
 ```
 
-Please note that a `default.nix` is expected to be present in your home directory with some configuration:
-
-```nix
-{
-  codecommitUser = "AABBCCDDEEFFGG";
-  homeDomain = "the-domain-I-use-for-my-servers-at-home";
-  hyperionIP = "some-ip-address";
-  signingKey = "0x00FF00FF00FF00";
-  fullName = "My Full Name";
-  email = "email@example.com";
-}⏎
-```
-
-Without the above nix will fail the install.
+Please note that a `default.nix` is present in your home directory with some configuration. That file in turn tries to load additional files, a default one and host specific one as well as a secrets file which should not be committed.
 
 
 ## Emacs
