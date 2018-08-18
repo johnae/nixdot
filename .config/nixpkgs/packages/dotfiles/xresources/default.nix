@@ -1,4 +1,6 @@
-{stdenv, libdot, writeText, ...}:
+{stdenv, libdot, writeText, settings, ...}:
+
+with settings.xresources;
 
 let
 
@@ -10,13 +12,13 @@ let
     Xft.hinting:   1
     Xft.rgba:      rgb
     Xft.hintstyle: hintslight
-    Xft.dpi: 96
+    Xft.dpi: ${dpi}
     ! }}}
 
     ## rofi config
     rofi.color-enabled: true
-    rofi.color-normal: #004b46,#fdf6e3,#004b46,#004b46,#9999FF
-    rofi.color-window: #004b46
+    rofi.color-normal: ${rofiColorNormal}
+    rofi.color-window: ${rofiColorWindow}
     rofi.separator-style: none
     rofi.lines: 3
     rofi.bw: 0
@@ -26,7 +28,7 @@ let
     rofi.fullscreen: true
     rofi.opacity: 85
     rofi.matching: fuzzy
-    rofi.font: Roboto 18
+    rofi.font: ${rofiFont}
   '';
 
 in

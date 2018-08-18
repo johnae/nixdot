@@ -1,11 +1,13 @@
 {stdenv, libdot, writeText, settings, my-emacs, ...}:
 
+with settings.git;
+
 let
   config = writeText "gitconfig" ''
     [user]
-      name = ${settings.fullName}
-      email = ${settings.email}
-      signingkey = ${settings.signingKey}
+      name = ${fullName}
+      email = ${email}
+      signingkey = ${signingKey}
     [core]
       editor = ${my-emacs}/bin/emacsclient -c
     [push]

@@ -8,44 +8,13 @@
   spook, my-emacs, nix,
   terminal, fzf-window, fzf-run,
   fzf-passmenu, launch, rename-workspace,
-  screenshot,
+  screenshot, settings,
   ...
 }:
 
+with settings.i3;
+
 let
-  mod = "Mod4";
-  bgColor = "#4A90E2";
-  borderColor = bgColor;
-  inactiveBgColor = "#000000";
-  textColor = "#fdf6e3";
-  inactiveTextColor = "#839496";
-  urgentBgColor = "#d24939";
-  selectedColor = "#9999FF";
-  indicatorColor = "#00ff00";
-
-  barStatuslineColor = "#ffffff";
-  barSeparatorColor = "#666666";
-
-  barFocusedWorkspaceColorBorder = bgColor;
-  barFocusedWorkspaceColorBackground = bgColor;
-  barFocusedWorkspaceColorText = textColor;
-
-  barActiveWorkspaceColorBorder = "#333333";
-  barActiveWorkspaceColorBackground = "#5f676a";
-  barActiveWorkspaceColorText = textColor;
-
-  barInactiveWorkspaceColorBorder = inactiveBgColor;
-  barInactiveWorkspaceColorBackground = inactiveBgColor;
-  barInactiveWorkspaceColorText = inactiveTextColor;
-
-  barUrgentWorkspaceColorBorder = urgentBgColor;
-  barUrgentWorkspaceColorBackground = urgentBgColor;
-  barUrgentWorkspaceColorText = textColor;
-
-
-  fontSize = "10";
-  font = "pango:Roboto, FontAwesome, Bold ${fontSize}";
-
   loginctlPath = "${udev}/bin/loginctl";
   systemctlPath = "${udev}/bin/systemctl";
   lightlockerPath = "${lightlocker}/bin/light-locker";
