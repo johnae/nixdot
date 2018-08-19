@@ -1,13 +1,15 @@
 {stdenv, lib, libdot, writeText, settings, ...}:
 
 with settings.ssh;
+with lib;
+with libdot;
 
 let
 
-  toHost = h: lib.concatStringsSep "\n" (lib.mapAttrsToList
+  toHost = h: concatStringsSep "\n" (mapAttrsToList
          (name: value: ''${"  "}${name} ${value}'') h);
 
-  toHosts = hs: lib.concatStringsSep "\n" (lib.mapAttrsToList
+  toHosts = hs: concatStringsSep "\n" (mapAttrsToList
           (name: value: ''
           Host ${name}
           ${toHost value}
@@ -19,7 +21,7 @@ in
 
   {
     __toString = self: ''
-      ${libdot.mkdir { path = ".ssh"; mode = "0700"; }}
-      ${libdot.copy { path = config; to = ".ssh/config"; mode = "0600"; }}
+      ${mkdir { path = ".ssh"; mode = "0700"; }}
+      ${copy { path = config; to = ".ssh/config"; mode = "0600"; }}
     '';
   }

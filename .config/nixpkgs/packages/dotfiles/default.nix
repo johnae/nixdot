@@ -1,5 +1,6 @@
 {stdenv, lib, pkgs, ...}:
 
+with lib;
 
 let
   libdot = pkgs.callPackage ./libdot.nix { };
@@ -36,10 +37,10 @@ let
 
   home = builtins.getEnv "HOME";
 
-  home-update = pkgs.writeScriptBin "home-update" ''
+  home-update = with libdot; with pkgs; pkgs.writeScriptBin "home-update" ''
     #!${stdenv.shell}
     set -e
-    export PATH=${lib.makeSearchPath "bin" [ pkgs.coreutils pkgs.findutils pkgs.nix pkgs.i3 pkgs.gnused ]}:$PATH
+    export PATH=${makeSearchPath "bin" [ coreutils findutils nix i3 gnused ]}:$PATH
     root=''${1:-${home}}
     latestVersion=$(nix-store --query --hash $(readlink ${home}/.nix-profile/dotfiles))
     currentVersion=""
@@ -76,7 +77,7 @@ let
     pushd $root
     ${stdenv.shell} -x ${home}/.nix-profile/dotfiles/set-permissions.sh
     popd
-    find ${home}/.nix-profile/dotfiles/ -type f | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
+    find ${home}/.nix-profile/dotfiles/ -type f | grep -v "set-permissions.sh" | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     echo $latestVersion > $root/.dotfiles_version
     i3-msg restart || true
   '';
@@ -87,16 +88,16 @@ stdenv.mkDerivation rec {
   name = "dotfiles";
   phases = [ "installPhase" ];
   src = ./.;
-  installPhase = ''
-    export PATH=${lib.makeSearchPath "bin" [ pkgs.coreutils pkgs.findutils pkgs.nix pkgs.i3 pkgs.gnused ]}:$PATH
+  installPhase = with pkgs; with libdot; ''
+    export PATH=${makeSearchPath "bin" [ coreutils findutils nix i3 gnused ]}:$PATH
     dotfiles=$out/dotfiles
     bin=$out/bin
     install -dm 755 $dotfiles
     install -dm 755 $bin
     pushd $dotfiles
-    ${lib.concatStringsSep "\n" dotfiles}
+    ${concatStringsSep "\n" dotfiles}
     popd
-    ${libdot.install scripts (name: value: ''
+    ${install scripts (name: value: ''
                                        echo "installing script ${name} to $bin"
                                        cp -r ${value}/bin/${name} $bin/
                                     ''

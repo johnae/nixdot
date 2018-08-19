@@ -1,8 +1,10 @@
 {stdenv, lib, coreutils, attr, ...}:
 
+with lib;
+
 let
 
-  install = xs: fun: lib.concatStringsSep "\n" (lib.concatMap (x: (lib.mapAttrsToList fun x.paths)) xs);
+  install = xs: fun: concatStringsSep "\n" (concatMap (x: (mapAttrsToList fun x.paths)) xs);
 
   mkdir = {path, mode ? "0755"}: ''
         ${coreutils}/bin/echo "mkdir $PWD/${path} with mode ${mode}"

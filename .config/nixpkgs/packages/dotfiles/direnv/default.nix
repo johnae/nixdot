@@ -1,8 +1,11 @@
-{stdenv, libdot, writeText, ...}:
+{stdenv,lib, libdot, writeText, pkgs, ...}:
+
+with libdot;
+with lib;
 
 let
 
-  direnvrc = writeText "direnvrc" ''
+  direnvrc = with pkgs; writeText "direnvrc" ''
       # Usage: use_nix [...]
       #
       # Load environment variables from `nix-shell`.
@@ -31,6 +34,9 @@ let
       # To remove only old environments:
       # `find .direnv -name 'env-*' -and -not -name `readlink .direnv/default` -exec rm -rf {} +`
       #
+
+      export PATH=${makeSearchPath "bin" [ coreutils nix findutils direnv ]}:$PATH
+
       use_nix() {
           set -e
 
@@ -86,6 +92,6 @@ in
 
   {
     __toString = self: ''
-      ${libdot.copy { path = direnvrc; to = ".direnvrc"; }}
+      ${copy { path = direnvrc; to = ".direnvrc"; }}
     '';
   }
