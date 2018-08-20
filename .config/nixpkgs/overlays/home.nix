@@ -11,6 +11,7 @@ self: super: {
           my-google-cloud-sdk
           slack
           direnv
+          playerctl
     ];
   };
 }

@@ -4,7 +4,7 @@
   libdot,
   i3, udev,
   lightlocker, rofi, xorg,
-  pulseaudioFull, coreutils,
+  pulseaudioFull, coreutils, playerctl,
   spook, my-emacs, nix,
   terminal, fzf-window, fzf-run,
   fzf-passmenu, launch, rename-workspace,
@@ -28,6 +28,7 @@ let
   nixShellPath = "${nix}/bin/nix-shell";
   i3MsgPath = "${i3}/bin/i3-msg";
   emacsclientPath = "${my-emacs}/bin/emacsclient";
+  playerctlPath = "${playerctl}/bin/playerctl";
 
   config = writeText "i3-config" ''
     ######## Settings etc
@@ -109,6 +110,10 @@ let
     bindsym XF86AudioRaiseVolume exec --no-startup-id ${killPath} -USR1 $(${catPath} $XDG_RUNTIME_DIR/moonbar.pid)
     bindsym XF86AudioLowerVolume exec --no-startup-id ${killPath} -USR2 $(${catPath} $XDG_RUNTIME_DIR/moonbar.pid)
     bindsym XF86AudioMute exec --no-startup-id ${killPath} -HUP $(${catPath} $XDG_RUNTIME_DIR/moonbar.pid)
+
+    bindsym XF86AudioPlay exec --no-startup-id ${playerctlPath} play-pause
+    bindsym XF86AudioNext exec --no-startup-id ${playerctlPath} next
+    bindsym XF86AudioPrev exec --no-startup-id ${playerctlPath} previous
 
     # change focus
     bindsym ${mod}+Left focus left
