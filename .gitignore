@@ -1,2 +1,4 @@
 .*.swp
 .#.*
+Mount/*
+.password-store/*
