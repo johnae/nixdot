@@ -295,7 +295,7 @@ For editing nix expressions.
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package nix-mode
-  :mode "\\.nix$")
+  :mode "\\.nix\\'")
 #+END_SRC
 
 
@@ -388,7 +388,16 @@ Some simple modes for a few languages.
 
 (use-package lua-mode)
 
-(use-package json-mode)
+(use-package json-mode
+  :mode (("\\.bowerrc$" . json-mode)
+     ("\\.jshintrc$" . json-mode)
+     ("\\.json_schema$" . json-mode)
+     ("\\.json\\'" . json-mode))
+  :bind (:package json-mode-map
+     :map json-mode-map
+         ("C-c <tab>" . json-mode-beautify))
+  :config
+  (make-local-variable 'js-indent-level))
 
 (use-package yaml-mode
   :mode "\\.cf$")
