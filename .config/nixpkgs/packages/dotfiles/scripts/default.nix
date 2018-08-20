@@ -8,7 +8,8 @@
  gnugrep, findutils, coreutils,
  alacritty, libnotify, xdotool,
  maim, slop, feh, killall,
- browser,
+ openssh, kubectl,
+ browser, settings,
  ...}:
 
 let
@@ -191,6 +192,27 @@ let
 
   '';
 
+  ## so clearly expects such a named entry in ~.ssh/config
+  kctl = writeScriptBin "kctl" ''
+     #!${stdenv.shell}
+
+     TUNNEL=kubetunnel
+
+     if [ "$1" = "stop-tunnel" ]; then
+       if ${openssh}/bin/ssh -O check $TUNNEL 2>&1 > /dev/null; then
+         ${openssh}/bin/ssh -O exit $TUNNEL
+       fi
+       exit
+     fi
+
+     if ! ${openssh}/bin/ssh -qf -N $TUNNEL 2>&1 > /dev/null; then
+       echo "ERROR: couldn't start $TUNNEL" >&2
+       exit 1
+     fi
+
+     ${kubectl}/bin/kubectl --server=https://127.0.0.1:6443 --insecure-skip-tls-verify=true $@
+  '';
+
 in
 
   {
@@ -209,5 +231,6 @@ in
       rename-workspace = rename-workspace;
       screenshot = screenshot;
       autorandr-postswitch = autorandr-postswitch;
+      kctl = kctl;
     };
   }

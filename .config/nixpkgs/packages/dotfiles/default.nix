@@ -6,7 +6,7 @@ let
   libdot = pkgs.callPackage ./libdot.nix { };
   settings = import (builtins.getEnv "HOME") { inherit lib; };
 
-  scriptsPkg = pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-beta-bin}/bin/firefox"; };
+  scriptsPkg = pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-beta-bin}/bin/firefox"; inherit settings; };
 
   scripts = [
     scriptsPkg

@@ -1,4 +1,4 @@
-{stdenv, lib, libdot, writeText, settings, ...}:
+{stdenv, lib, libdot, writeText, writeScriptBin, pkgs, settings, ...}:
 
 with settings.ssh;
 with lib;
