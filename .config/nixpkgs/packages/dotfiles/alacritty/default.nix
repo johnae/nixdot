@@ -90,7 +90,7 @@ let
     # and cursor.background colors, otherwise invert the colors of the cursor.
     custom_cursor_colors: false
 
-    # background_opacity: 0.95
+    background_opacity: ${backgroundOpacity}
 
     ${colors}
 

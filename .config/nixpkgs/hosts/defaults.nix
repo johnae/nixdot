@@ -27,6 +27,7 @@
     font = "Source Code Pro";
     fontSize = "14.0";
     largeFontSize = "28.0";
+    backgroundOpacity = "0.95";
     colors = ''
       # Base16 Solarized Dark 256 - alacritty color config
       # Ethan Schoonover (http://ethanschoonover.com/solarized)
