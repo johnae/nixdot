@@ -46,11 +46,11 @@ let
     focus_follows_mouse yes
     focus_on_window_activation smart
 
-    # class                   border             background text         indicator
-    client.focused            ${inactiveBgColor} ${bgColor} ${textColor} ${indicatorColor}
-    client.focused_inactive   ${inactiveBgColor} ${inactiveBgColor} ${inactiveTextColor} ${indicatorColor}
-    client.unfocused          ${inactiveBgColor} ${inactiveBgColor} ${inactiveTextColor} ${indicatorColor}
-    client.urgent             ${urgentBgColor} ${urgentBgColor} ${textColor} ${indicatorColor}
+    # class                   border             background text         indicator          child_border
+    client.focused            ${inactiveBgColor} ${bgColor} ${textColor} ${indicatorColor}  ${indicatorColor}
+    client.focused_inactive   ${inactiveBgColor} ${inactiveBgColor} ${inactiveTextColor} ${indicatorColor} ${indicatorColor}
+    client.unfocused          ${inactiveBgColor} ${inactiveBgColor} ${inactiveTextColor} ${indicatorColor} ${indicatorColor}
+    client.urgent             ${urgentBgColor} ${urgentBgColor} ${textColor} ${indicatorColor} ${indicatorColor}
 
     ######## Key bindings
 
