@@ -11,4 +11,4 @@ let
   secrets = if builtins.pathExists secretsConfPath then import secretsConfPath else {};
 
 in
-  recursiveUpdate (recursiveUpdate defaults settings) secrets
+  recursiveUpdate (recursiveUpdate (recursiveUpdate defaults settings) secrets) meta

@@ -8,7 +8,7 @@
  gnugrep, findutils, coreutils,
  alacritty, libnotify, xdotool,
  maim, slop, feh, killall,
- openssh, kubectl,
+ openssh, kubectl, xorg,
  browser, settings,
  ...}:
 
@@ -137,6 +137,8 @@ let
   fzf-passmenu = writeScriptBin "fzf-passmenu" ''
     #!${stdenv.shell}
     export FZF_PROMPT="search for password >"
+    ## because of some stupid bug: https://github.com/jordansissel/xdotool/issues/49
+    ${xorg.setxkbmap}/bin/setxkbmap ${settings.xserverLayout} ${settings.xserverXkbVariant}
 
     passfile=$1
     prefix=$(readlink -f $HOME/.password-store)
