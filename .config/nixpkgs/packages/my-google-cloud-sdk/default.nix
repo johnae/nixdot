@@ -6,27 +6,34 @@ let
   pp = pkgs.python2Packages;
   pythonInputs = [ pp.cffi pp.cryptography pp.pyopenssl pp.crcmod ];
   pythonPath = lib.makeSearchPath python.sitePackages pythonInputs;
+  gcloudVersion = "212.0.0";
 
   componentBaseUrl = "https://storage.googleapis.com/cloud-sdk-release/for_packagers/linux";
   appengine-go-sdk-component = {
-    url = "${componentBaseUrl}/google-cloud-sdk-app-engine-go_211.0.0.orig_amd64.tar.gz";
-    sha256 = "0w8861f1qb40w5nnhdyqfhsqrsxk9pirs6q4x67nzz75lwhcgcf2";
+    url = "${componentBaseUrl}/google-cloud-sdk-app-engine-go_${gcloudVersion}.orig_amd64.tar.gz";
+    sha256 = "1vz5qxgmmpcz8r8jr76gkqx5jdcrj9zl6fw79hy2l1h1qcifa9z0";
+  };
+
+  pub-sub-emulator-component = {
+    url = "${componentBaseUrl}/google-cloud-sdk-pubsub-emulator_${gcloudVersion}.orig.tar.gz";
+    sha256 = "0kgdcq9fjns08m6sz8yg2da9gjrjxkll171hpsdz74r2yvr8lwvc";
   };
 
   baseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads";
   sources = name: system: {
     x86_64-linux = {
       url = "${baseUrl}/${name}-linux-x86_64.tar.gz";
-      sha256 = "0h927f9hdyfjbpcf2j8qc9rg3jwplg4id891i691zg0jlpqcpgjk";
+      sha256 = "10f6v7r72l6cxvhj1rq8g0q0yzcq3lav6f62n1il603j2q9r2lcg";
     };
   }.${system};
 
 in stdenv.mkDerivation rec {
   name = "google-cloud-sdk-${version}";
-  version = "211.0.0";
+  version = gcloudVersion;
 
   src = fetchurl (sources name stdenv.system);
   appengine-go-sdk = fetchurl appengine-go-sdk-component;
+  pub-sub-emulator = fetchurl pub-sub-emulator-component;
 
   buildInputs = [ python makeWrapper ];
 
@@ -57,6 +64,9 @@ in stdenv.mkDerivation rec {
 
     echo "Installing app engine go sdk..."
     tar -zxf "${appengine-go-sdk}" -C "$out"
+
+    echo "Installing pub sub emulator..."
+    tar -zxf "${pub-sub-emulator}" -C "$out"
 
     # disable component updater and update check
     substituteInPlace $out/google-cloud-sdk/lib/googlecloudsdk/core/config.json \
