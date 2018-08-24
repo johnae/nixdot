@@ -37,7 +37,7 @@ let
 
   home = builtins.getEnv "HOME";
 
-  home-update = with libdot; with pkgs; pkgs.writeScriptBin "home-update" ''
+  home-update = with libdot; with pkgs; pkgs.writeShellScriptBin "home-update" ''
     #!${stdenv.shell}
     set -e
     export PATH=${makeSearchPath "bin" [ coreutils findutils nix i3 gnused ]}:$PATH
