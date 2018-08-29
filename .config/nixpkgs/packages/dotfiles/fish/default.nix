@@ -25,10 +25,6 @@ let
 
      fish_vi_key_bindings
 
-     function l --on-variable PWD
-       ls
-     end
-
      function fish_prompt
        set -l last_status $status
        set fish_color_host --bold white
