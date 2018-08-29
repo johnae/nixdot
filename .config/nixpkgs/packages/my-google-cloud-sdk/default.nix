@@ -6,24 +6,34 @@ let
   pp = pkgs.python2Packages;
   pythonInputs = [ pp.cffi pp.cryptography pp.pyopenssl pp.crcmod ];
   pythonPath = lib.makeSearchPath python.sitePackages pythonInputs;
-  gcloudVersion = "212.0.0";
+  gcloudVersion = "214.0.0";
 
   componentBaseUrl = "https://storage.googleapis.com/cloud-sdk-release/for_packagers/linux";
   appengine-go-sdk-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-app-engine-go_${gcloudVersion}.orig_amd64.tar.gz";
-    sha256 = "1vz5qxgmmpcz8r8jr76gkqx5jdcrj9zl6fw79hy2l1h1qcifa9z0";
+    sha256 = "07jml099w0li6ahsglpg2g1q1wwmgw8agmwbxr0h5hlp34wwwksa";
+  };
+
+  appengine-python-sdk-component = {
+    url = "${componentBaseUrl}/google-cloud-sdk-app-engine-python_${gcloudVersion}.orig.tar.gz";
+    sha256 = "1nw1yrfwkihan1cx9c5sji57s9ka4hxixx4xwrd5w8sd4cw9wdxn";
+  };
+
+  datastore-emulator-component = {
+    url = "${componentBaseUrl}/google-cloud-sdk-datastore-emulator_${gcloudVersion}.orig.tar.gz";
+    sha256 = "0bk94zqwq5vjfwkhdda03sfivwlah0mp962hc9n0b5zpdkhcjiad";
   };
 
   pub-sub-emulator-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-pubsub-emulator_${gcloudVersion}.orig.tar.gz";
-    sha256 = "0kgdcq9fjns08m6sz8yg2da9gjrjxkll171hpsdz74r2yvr8lwvc";
+    sha256 = "1ky6cpkav1x6ag85sbvaym5zqss1p795m4h6aamhjhccjv1i3qzz";
   };
 
   baseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads";
   sources = name: system: {
     x86_64-linux = {
       url = "${baseUrl}/${name}-linux-x86_64.tar.gz";
-      sha256 = "10f6v7r72l6cxvhj1rq8g0q0yzcq3lav6f62n1il603j2q9r2lcg";
+      sha256 = "1sssz1pffaay6cqfx35lyzp4fyx9lr41cgfvsgs6fhmvbw4hdi3z";
     };
   }.${system};
 
@@ -33,7 +43,9 @@ in stdenv.mkDerivation rec {
 
   src = fetchurl (sources name stdenv.system);
   appengine-go-sdk = fetchurl appengine-go-sdk-component;
+  appengine-python-sdk = fetchurl appengine-python-sdk-component;
   pub-sub-emulator = fetchurl pub-sub-emulator-component;
+  datastore-emulator = fetchurl datastore-emulator-component;
 
   buildInputs = [ python makeWrapper ];
 
@@ -65,8 +77,14 @@ in stdenv.mkDerivation rec {
     echo "Installing app engine go sdk..."
     tar -zxf "${appengine-go-sdk}" -C "$out"
 
+    echo "Installing app engine python sdk..."
+    tar -zxf "${appengine-python-sdk}" -C "$out"
+
     echo "Installing pub sub emulator..."
     tar -zxf "${pub-sub-emulator}" -C "$out"
+
+    echo "Installing datastore emulator..."
+    tar -zxf "${datastore-emulator}" -C "$out"
 
     # disable component updater and update check
     substituteInPlace $out/google-cloud-sdk/lib/googlecloudsdk/core/config.json \
