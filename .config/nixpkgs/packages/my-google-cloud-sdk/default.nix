@@ -8,6 +8,7 @@ let
   pythonPath = lib.makeSearchPath python.sitePackages pythonInputs;
   gcloudVersion = "214.0.0";
 
+  # see: https://console.cloud.google.com/storage/browser/cloud-sdk-release?authuser=0
   componentBaseUrl = "https://storage.googleapis.com/cloud-sdk-release/for_packagers/linux";
   appengine-go-sdk-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-app-engine-go_${gcloudVersion}.orig_amd64.tar.gz";
