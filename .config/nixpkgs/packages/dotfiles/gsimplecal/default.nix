@@ -16,8 +16,8 @@ let
     mainwindow_skip_taskbar = 1
     mainwindow_resizable = 0
     mainwindow_position = mouse
-    mainwindow_xoffset = -100
-    mainwindow_yoffset = -329
+    mainwindow_xoffset = -40
+    mainwindow_yoffset = -152
     clock_label = Local
     clock_tz = :Europe/Stockholm
     clock_label = UTC
