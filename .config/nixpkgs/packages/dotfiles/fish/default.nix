@@ -25,6 +25,14 @@ let
 
      fish_vi_key_bindings
 
+     function clear_direnv_cache
+       fd --type d -H '\.direnv$' Development/ | xargs rm -rf
+     end
+
+     function reload_fish_config --on-signal HUP
+       eval exec $SHELL
+     end
+
      function fish_prompt
        set -l last_status $status
        set fish_color_host --bold white

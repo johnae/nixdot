@@ -79,7 +79,12 @@ let
     popd
     find ${home}/.nix-profile/dotfiles/ -type f | grep -v "set-permissions.sh" | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     echo $latestVersion > $root/.dotfiles_version
-    i3-msg restart || true
+    if [ -z "$SWAYSOCK" ]; then
+       i3-msg restart || true
+    else
+       swaymsg reload || true
+    fi
+    ${pkgs.killall}/bin/killall -HUP $(${pkgs.coreutils}/bin/basename $SHELL)
   '';
 
 in
