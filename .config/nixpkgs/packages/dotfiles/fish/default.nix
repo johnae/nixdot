@@ -26,7 +26,7 @@ let
      fish_vi_key_bindings
 
      function clear_direnv_cache
-       fd --type d -H '\.direnv$' Development/ | xargs rm -rf
+       fd --type d -I -H '\.direnv$' ~/Development/ | xargs rm -rf
      end
 
      function reload_fish_config --on-signal HUP

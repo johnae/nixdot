@@ -84,7 +84,7 @@ let
     else
        swaymsg reload || true
     fi
-    ${pkgs.killall}/bin/killall -HUP $(${pkgs.coreutils}/bin/basename $SHELL)
+    ${pkgs.killall}/bin/killall -s HUP $(${pkgs.coreutils}/bin/basename $SHELL)
   '';
 
 in
