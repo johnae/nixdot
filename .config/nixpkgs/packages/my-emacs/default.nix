@@ -147,6 +147,7 @@ in
     json-mode
     yaml-mode
     markdown-mode
+    groovy-mode
 
     company-quickhelp
 

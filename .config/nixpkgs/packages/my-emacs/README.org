@@ -433,12 +433,14 @@ Mode for elm. Disabled atm.
 #+END_SRC
 
 
-Mode for groovy. Disabled atm.
+Mode for groovy.
 
 #+BEGIN_SRC elisp :tangle default.el
-;; (use-package groovy-mode
-;;   :config
-;;   (setq groovy-indent-offset 2))
+(use-package groovy-mode
+  :init
+  (setq groovy-indent-offset 2)
+  :mode "\\.groovy\\'\\|\\.gradle\\'|\\Jenkinsfile'"
+)
 #+END_SRC
 
 
