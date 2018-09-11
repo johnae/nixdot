@@ -183,6 +183,7 @@ in
 
     # Org
     org org-ref evil-org org-bullets
+    org-tree-slide # presentations
 
     # Rust
     rust-mode cargo flycheck-rust

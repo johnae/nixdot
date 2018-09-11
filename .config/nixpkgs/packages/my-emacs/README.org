@@ -117,6 +117,18 @@ Showing org bullets as utf8 characters seemed like a cool thing.
 #+END_SRC
 
 
+Presentation minor mode for org-mode see [[https://github.com/takaxp/org-tree-slide][org-tree-slide]]
+
+#+BEGIN_SRC elisp :tangle default.el
+;; show org-mode bullets as utf8 characters
+(use-package org-tree-slide
+  :config
+  (define-key org-tree-slide-mode-map (kbd "<f9>") 'org-tree-slide-move-previous-tree)
+  (define-key org-tree-slide-mode-map (kbd "<f10>") 'org-tree-slide-move-next-tree)
+  )
+#+END_SRC
+
+
 In a terminal, TAB corresponds to C-i so that's an issue. For the GUI emacs, which I
 normally use, this isn't a problem.
 
