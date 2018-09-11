@@ -3,6 +3,10 @@
 let
 
   config = writeText "config.fish" ''
+     if test "$TERM" = "dumb"
+       function fish_title; end
+     end
+
      set -x TERM xterm-256color
      set fish_color_error ff8a00
 
