@@ -30,7 +30,13 @@ let
      fish_vi_key_bindings
 
      function clear_direnv_cache
+       echo "Clearing direnv cache"
        fd --type d -I -H '\.direnv$' ~/Development/ | xargs rm -rf
+       date +%s > ~/.direnv_cache_cleared
+     end
+
+     if not test -e ~/.direnv_cache_cleared; or test (math (date +%s) " - " (cat ~/.direnv_cache_cleared)) -ge 72000 ## auto clear after 20 hours
+       clear_direnv_cache
      end
 
      function reload_fish_config --on-signal HUP
