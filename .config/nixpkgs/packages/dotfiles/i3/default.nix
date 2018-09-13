@@ -5,10 +5,10 @@
   i3, udev,
   lightlocker, rofi, xorg,
   pulseaudioFull, coreutils, playerctl,
-  spook, my-emacs, nix,
+  spook, nix, edit,
   terminal, fzf-window, fzf-run,
   fzf-passmenu, launch, rename-workspace,
-  screenshot, settings,
+  screenshot, settings, browse,
   ...
 }:
 
@@ -27,7 +27,6 @@ let
   spookPath = "${spook}/bin/spook";
   nixShellPath = "${nix}/bin/nix-shell";
   i3MsgPath = "${i3}/bin/i3-msg";
-  emacsclientPath = "${my-emacs}/bin/emacsclient";
   playerctlPath = "${playerctl}/bin/playerctl";
 
   config = writeText "i3-config" ''
@@ -35,6 +34,7 @@ let
     font ${font}
 
     for_window [class="fzf-window"] fullscreen enable
+    for_window [title="fzf-window"] fullscreen enable
     for_window [class="input-window"] floating enable
     for_window [class="gcr-prompter"] floating enable
     no_focus [window_role="browser"]
@@ -87,8 +87,11 @@ let
     # create new password input
     # bindsym ${mod}+Shift+m exec ${inputWindowPath} "read-input login | xargs -I{} new-password {}"
 
-    # new emacs window
-    bindsym ${mod}+Shift+e exec ${emacsclientPath} -c -n -e '(switch-to-buffer nil)'
+    # (new empty emacs window really - starts server if not running)
+    bindsym ${mod}+Shift+e exec ${edit}/bin/edit -e '(insane-new-empty-buffer)'
+
+    # new browser
+    bindsym ${mod}+Shift+b exec ${browse}/bin/browse
 
     # rename workspace
     bindsym ${mod}+n exec --no-startup-id ${rofiPath} -no-fullscreen -width 50 -lines 1 -padding 10 -show "Rename workspace" -modi "Rename workspace":${rename-workspace}/bin/rename-workspace

@@ -17,18 +17,21 @@ let
 
   edit = writeScriptBin "edit" ''
     #!${stdenv.shell}
-    exec ${emacsclient} -n -a "" -c $@ 2>&1 >/dev/null
+    ${coreutils}/bin/mkdir -p /run/user/1337/emacs1337
+    exec ${emacsclient} -n -a "" -c -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
   '';
 
   edi = writeScriptBin "edi" ''
     #!${stdenv.shell}
     export TERM=xterm-24bits
-    exec ${emacsclient} -a "" -t $@
+    ${coreutils}/bin/mkdir -p /run/user/1337/emacs1337
+    exec ${emacsclient} -a "" -t -s /run/user/1337/emacs1337/server $@
   '';
 
   ed = writeScriptBin "ed" ''
     #!${stdenv.shell}
-    exec ${emacsclient} -a "" -c $@ 2>&1 >/dev/null
+    ${coreutils}/bin/mkdir -p /run/user/1337/emacs1337
+    exec ${emacsclient} -a "" -c -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
   '';
 
   fzf-fzf = writeScriptBin "fzf-fzf" ''
@@ -66,7 +69,7 @@ let
     name=$(${coreutils}/bin/date +%Y-%m-%d_%H:%M:%S_screen)
     output_dir=$HOME/Pictures/screenshots
     fmt=png
-    mkdir -p $output_dir
+    ${coreutils}/bin/mkdir -p $output_dir
     #killall compton
     ${maim}/bin/maim -s --format=$fmt $output_dir/$name.$fmt
     #~/.i3/compton

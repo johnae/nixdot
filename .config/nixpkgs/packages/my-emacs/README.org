@@ -156,6 +156,8 @@ So [[https://github.com/emacs-evil/evil][evil]] is vim for emacs. A better vim b
   (define-key evil-normal-state-map (kbd ", <down>") 'split-window-vertically)
   (define-key evil-normal-state-map (kbd ", g") 'magit-status)
   (define-key evil-normal-state-map (kbd ", w") 'whitespace-cleanup)
+  (define-key evil-normal-state-map (kbd ", b") 'evil-jump-backward)
+  (define-key evil-normal-state-map (kbd ", f") 'evil-jump-forward)
   (define-key evil-normal-state-map (kbd ", <RET>") 'projectile-ag))
 #+END_SRC
 
@@ -858,6 +860,27 @@ Some other general settings.
 (setq backup-inhibited t)
 (setq make-backup-files nil) ; don't create backup~ files
 (setq auto-save-default nil) ; don't create #autosave# files
+#+END_SRC
+
+
+Helper for opening a new empty buffer.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defun insane-new-empty-buffer ()
+  "Create a new empty buffer.
+New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc.
+
+It returns the buffer (for elisp programing).
+
+URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+Version 2017-11-01"
+  (interactive)
+  (let (($buf (generate-new-buffer "untitled")))
+    (switch-to-buffer $buf)
+    (funcall initial-major-mode)
+    (setq buffer-offer-save t)
+    $buf
+    ))
 #+END_SRC
 
 

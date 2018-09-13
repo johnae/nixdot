@@ -13,7 +13,7 @@ let
   ];
 
    i3dot = with scriptsPkg.paths; pkgs.callPackage ./i3 {
-         inherit libdot launch terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
+         inherit libdot browse launch edit terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
    };
 
    gnupgDot = pkgs.callPackage ./gnupg { inherit libdot settings; };
