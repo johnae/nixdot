@@ -27,7 +27,7 @@ let
      alias home="env GIT_DIR=$HOME/.cfg GIT_WORK_TREE=$HOME git"
      alias untracked="git ls-files --others --exclude-standard"
 
-     fish_vi_key_bindings
+     fish_vi_key_bindings ^ /dev/null
 
      function clear_direnv_cache
        echo "Clearing direnv cache"
