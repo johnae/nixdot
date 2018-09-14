@@ -551,7 +551,7 @@ Go mode and other go stuff.
 
 (use-package go-eldoc
   :config
-  (go-eldoc-setup))
+  (add-hook 'go-mode-hook 'go-eldoc-setup))
 #+END_SRC
 
 
