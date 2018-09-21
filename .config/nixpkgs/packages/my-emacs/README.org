@@ -156,8 +156,8 @@ So [[https://github.com/emacs-evil/evil][evil]] is vim for emacs. A better vim b
   (define-key evil-normal-state-map (kbd ", <down>") 'split-window-vertically)
   (define-key evil-normal-state-map (kbd ", g") 'magit-status)
   (define-key evil-normal-state-map (kbd ", w") 'whitespace-cleanup)
-  (define-key evil-normal-state-map (kbd ", b") 'evil-jump-backward)
-  (define-key evil-normal-state-map (kbd ", f") 'evil-jump-forward)
+  (define-key evil-normal-state-map (kbd ", b") 'backward-page)
+  (define-key evil-normal-state-map (kbd ", f") 'forward-page)
   (define-key evil-normal-state-map (kbd ", <RET>") 'projectile-ag))
 #+END_SRC
 
@@ -302,6 +302,13 @@ You know, for docker.
 #+BEGIN_SRC elisp :tangle default.el
 (use-package dockerfile-mode
   :mode "Dockerfile.*")
+#+END_SRC
+
+
+Elixir mode.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package alchemist)
 #+END_SRC
 
 
@@ -684,28 +691,29 @@ Using control-x control-z to zoom in / out a window (eg. "fullscreen" it).
 
 ** Other configuration
 
-Define a function to set the powerline theme. This is so that when using emacsclient we
+Define a function to set the telephone line theme. This is so that when using emacsclient we
 can just call this rather than duplicate code. So we need to be able to set the theme more
 than once depending on whether we use the emacsclient or not.
 
 #+BEGIN_SRC elisp :tangle default.el
-(defun my-powerline-theme ()
-  "Enables the current powerline theme."
-  (spaceline-emacs-theme)
-  (setq powerline-default-separator-dir '(right . left)
-        powerline-default-separator 'curve
-        powerline-height 20))
+(defun my-telephone-line-theme ()
+  "Enables the current telephone line theme."
+  (setq telephone-line-primary-right-separator 'telephone-line-abs-left
+      telephone-line-secondary-right-separator 'telephone-line-abs-hollow-left)
+  (setq telephone-line-height 24
+      telephone-line-evil-use-short-tag t)
+  (telephone-line-mode 1))
 
-(use-package powerline
+(use-package telephone-line
   :config
-  (my-powerline-theme))
+  (my-telephone-line-theme))
 #+END_SRC
 
 
 Define the overall theme somewhere for reuse.
 
 #+BEGIN_SRC elisp :tangle default.el
-(defvar my:theme 'zerodark)
+(defvar my:theme 'nord)
 (load-theme my:theme t)
 #+END_SRC
 
@@ -724,13 +732,13 @@ This is where we recognize whether emacsclient is being used or not and if it is
                              (if my:theme-terminal-loaded
                                  (enable-theme my:theme)
                                (load-theme my:theme t)
-                               (my-powerline-theme))
+                               (my-telephone-line-theme))
                              (setq my:theme-window-loaded t))
                          (unless my:theme-terminal-loaded
                            (if my:theme-window-loaded
                                (enable-theme my:theme)
                              (load-theme my:theme t)
-                             (my-powerline-theme))
+                             (my-telephone-line-theme))
                            (setq my:theme-terminal-loaded t)))))
 
   (progn

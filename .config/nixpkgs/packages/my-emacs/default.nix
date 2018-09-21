@@ -108,9 +108,11 @@ in
     diminish
     all-the-icons
     powerline
+    telephone-line
     spaceline
     spaceline-all-the-icons
     zerodark-theme
+    nord-theme
 
     # Delimiters
     smartparens
@@ -148,6 +150,7 @@ in
     yaml-mode
     markdown-mode
     groovy-mode
+    alchemist # elixir
 
     company-quickhelp
 
