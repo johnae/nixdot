@@ -22,6 +22,9 @@ let
      # remove greeting
      set fish_greeting
 
+     # emacs socket
+     set -x EMACS_SERVER_FILE /var/run/user/1337/emacs1337/server
+
      # aliases (in fish these are actually translated to functions)
      ## manage home
      alias home="env GIT_DIR=$HOME/.cfg GIT_WORK_TREE=$HOME git"
