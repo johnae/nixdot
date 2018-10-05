@@ -82,11 +82,10 @@ let
           set -g prompt_status "<$last_status> "
        end
 
-       printf '%s%s%s %s%s%s%s ' (set_color $fish_color_error)$prompt_status(set_color $fish_color_host) (prompt_hostname) (set_color $fish_color_cwd) (prompt_pwd) (set_color normal) (__fish_git_prompt)
+       printf '%s%s%s %s%s%s%s> ' (set_color $fish_color_error)$prompt_status (set_color $fish_color_cwd)(prompt_pwd) (set_color normal)(__fish_git_prompt)
        if not test $last_status -eq 0
          set_color $fish_color_error
        end
-       echo -n '$ '
        set_color normal
 
        if [ "$PWD" = "$HOME" ];
@@ -171,7 +170,6 @@ let
    };
 
 in
-
 
   {
     __toString = self: ''

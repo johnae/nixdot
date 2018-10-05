@@ -3,6 +3,7 @@
 with lib;
 
 let
+
   libdot = pkgs.callPackage ./libdot.nix { };
   settings = import (builtins.getEnv "HOME") { inherit lib; };
 
@@ -12,28 +13,34 @@ let
     scriptsPkg
   ];
 
-   i3dot = with scriptsPkg.paths; pkgs.callPackage ./i3 {
-         inherit libdot browse launch edit terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
-   };
+  i3dot = with scriptsPkg.paths; pkgs.callPackage ./i3 {
+        inherit libdot browse launch edit terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
+  };
 
-   gnupgDot = pkgs.callPackage ./gnupg { inherit libdot settings; };
-   fishDot = pkgs.callPackage ./fish { inherit libdot settings; };
-   alacrittyDot = pkgs.callPackage ./alacritty { inherit libdot settings; };
-   sshDot = pkgs.callPackage ./ssh { inherit libdot settings; };
-   gitDot = pkgs.callPackage ./git { inherit libdot settings; };
-   pulseDot = pkgs.callPackage ./pulse { inherit libdot settings; };
-   gsimplecalDot = pkgs.callPackage ./gsimplecal { inherit libdot settings; };
-   mimeappsDot = pkgs.callPackage ./mimeapps { inherit libdot settings; };
-   yubicoDot = pkgs.callPackage ./yubico { inherit libdot settings; };
-   direnvDot = pkgs.callPackage ./direnv { inherit libdot settings; };
-   xresourcesDot = pkgs.callPackage ./xresources { inherit libdot settings; };
+  #swaydot = with scriptsPkg.paths; pkgs.callPackage ./sway {
+  #      inherit libdot browse launch edit terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
+  #};
 
-   dotfiles = [ i3dot gnupgDot fishDot
-                alacrittyDot sshDot gitDot
-                pulseDot gsimplecalDot
-                mimeappsDot yubicoDot
-                direnvDot xresourcesDot
-              ];
+  termiteDot = pkgs.callPackage ./termite { inherit libdot settings; };
+  gnupgDot = pkgs.callPackage ./gnupg { inherit libdot settings; };
+  fishDot = pkgs.callPackage ./fish { inherit libdot settings; };
+  alacrittyDot = pkgs.callPackage ./alacritty { inherit libdot settings; };
+  sshDot = pkgs.callPackage ./ssh { inherit libdot settings; };
+  gitDot = pkgs.callPackage ./git { inherit libdot settings; };
+  pulseDot = pkgs.callPackage ./pulse { inherit libdot settings; };
+  gsimplecalDot = pkgs.callPackage ./gsimplecal { inherit libdot settings; };
+  mimeappsDot = pkgs.callPackage ./mimeapps { inherit libdot settings; };
+  yubicoDot = pkgs.callPackage ./yubico { inherit libdot settings; };
+  direnvDot = pkgs.callPackage ./direnv { inherit libdot settings; };
+  xresourcesDot = pkgs.callPackage ./xresources { inherit libdot settings; };
+  tmuxDot = pkgs.callPackage ./tmux { inherit libdot settings; };
+
+  dotfiles = [ i3dot gnupgDot fishDot
+               alacrittyDot sshDot gitDot
+               pulseDot gsimplecalDot tmuxDot
+               mimeappsDot yubicoDot termiteDot
+               direnvDot xresourcesDot #swaydot
+             ];
 
   home = builtins.getEnv "HOME";
 
@@ -79,11 +86,11 @@ let
     popd
     find ${home}/.nix-profile/dotfiles/ -type f | grep -v "set-permissions.sh" | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     echo $latestVersion > $root/.dotfiles_version
-    if [ -z "$SWAYSOCK" ]; then
-       i3-msg restart || true
-    else
-       swaymsg reload || true
-    fi
+    #if [ -z "$SWAYSOCK" ]; then
+    i3-msg restart || true
+    #else
+    #   swaymsg reload || true
+    #fi
     ${pkgs.killall}/bin/killall -s HUP $(${pkgs.coreutils}/bin/basename $SHELL)
   '';
 

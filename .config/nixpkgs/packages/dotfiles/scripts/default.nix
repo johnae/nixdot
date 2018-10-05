@@ -1,7 +1,7 @@
 {
  stdenv,
  writeScriptBin,
- my-emacs,
+ my-emacs, #sway, termite,
  i3, ps, jq, fire,
  fd, fzf, bashInteractive,
  gnupg, gawk, gnused,
@@ -80,8 +80,6 @@ let
     exec ${browser}
   '';
 
-  ## This is what i3 refers to and it could/should be extended
-  ## with different color options and sizes later
   terminal = writeScriptBin "terminal" ''
     #!${stdenv.shell}
     CONFIG=$HOME/.config/alacritty/alacritty$TERMINAL_CONFIG.yml
@@ -94,14 +92,15 @@ let
     if [ -z "$cmd" ]; then
       read cmd
     fi
+    MSG=${i3}/bin/i3-msg
     if [ "$_SET_WS_NAME" = "y" ]; then
       name=$(${coreutils}/bin/echo $cmd | ${gawk}/bin/awk '{print $1}')
       if [ "$_USE_NAME" ]; then
           name=$_USE_NAME
       fi
-      wsname=$(${i3}/bin/i3-msg -t get_workspaces | ${jq}/bin/jq -r '.[] | select(.focused==true).name')
+      wsname=$($MSG -t get_workspaces | ${jq}/bin/jq -r '.[] | select(.focused==true).name')
       if ${coreutils}/bin/echo "$wsname" | ${gnugrep}/bin/grep -E '^[0-9]+$' > /dev/null; then
-        ${i3}/bin/i3-msg "rename workspace to \"$wsname: $name\"" 2>&1 >/dev/null
+        $MSG "rename workspace to \"$wsname: $name\"" 2>&1 >/dev/null
       fi
     fi
     echo "${fire}/bin/fire $cmd" | ${stdenv.shell}
@@ -109,11 +108,12 @@ let
 
   rename-workspace = writeScriptBin "rename-workspace" ''
     #!${stdenv.shell}
-    WSNUM=$(${i3}/bin/i3-msg -t get_workspaces | ${jq}/bin/jq '.[] | select(.focused==true).name' | ${coreutils}/bin/cut -d"\"" -f2 | ${gnugrep}/bin/grep -o -E '[[:digit:]]+')
+    CMD=${i3}/bin/i3-msg
+    WSNUM=$($CMD -t get_workspaces | ${jq}/bin/jq '.[] | select(.focused==true).name' | ${coreutils}/bin/cut -d"\"" -f2 | ${gnugrep}/bin/grep -o -E '[[:digit:]]+')
     if [ -z "$@" ]; then
         exit 0
     fi
-    ${i3}/bin/i3-msg "rename workspace to \"$WSNUM: $@\"" 2>&1 >/dev/null
+    $CMD "rename workspace to \"$WSNUM: $@\"" 2>&1 >/dev/null
   '';
 
   fzf-run = writeScriptBin "fzf-run" ''
@@ -134,7 +134,7 @@ let
     if ${ps}/bin/ps aux | grep '\-c fzf-window' | ${gnugrep}/bin/grep -v grep 2>&1 > /dev/null; then
         exit
     fi
-    exec terminal -t "fzf-window" -e ${stdenv.shell} -c "$cmd $@"
+    exec terminal --class "fzf-window" -t "fzf-window" -e "$cmd $@"
   '';
 
   fzf-passmenu = writeScriptBin "fzf-passmenu" ''
