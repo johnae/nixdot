@@ -80,6 +80,12 @@ let
       echo $cmd
       $cmd
     done
+    if [ -e ${home}/.nix-profile/dconf/dconf.conf ]; then
+      echo "Updating dconf..."
+      cat ${home}/.nix-profile/dconf/dconf.conf | ${pkgs.gnome3.dconf}/bin/dconf load /
+    else
+      echo "No dconf found, skipping"
+    fi
     echo Ensuring permissions on dotfiles...
     pushd $root
     ${stdenv.shell} -x ${home}/.nix-profile/dotfiles/set-permissions.sh
@@ -103,12 +109,25 @@ stdenv.mkDerivation rec {
   installPhase = with pkgs; with libdot; ''
     export PATH=${makeSearchPath "bin" [ coreutils findutils nix i3 gnused ]}:$PATH
     dotfiles=$out/dotfiles
+    dconf=$out/dconf
     bin=$out/bin
     install -dm 755 $dotfiles
+    install -dm 755 $dconf
     install -dm 755 $bin
     pushd $dotfiles
     ${concatStringsSep "\n" dotfiles}
     popd
+    ${toConfig [ settings.dconf ] (name: value: ''
+                                               echo "[${name}]" >> $dconf/dconf.conf
+                                               ${if isAttrs value then
+                                                 toConfig [ value ] (key: conf: ''
+                                                          echo "${key}='${conf}'" >> $dconf/dconf.conf
+                                                          '')
+                                                else
+                                                 value
+                                               }
+                                               ''
+                                               )}
     ${install scripts (name: value: ''
                                        echo "installing script ${name} to $bin"
                                        cp -r ${value}/bin/${name} $bin/

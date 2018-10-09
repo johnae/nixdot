@@ -1,4 +1,15 @@
 {
+  dconf = {
+    "org/gnome/desktop/interface" = {
+      font-name = "Roboto Medium 10";
+      icon-theme = "Papirus-Adapta-Nokto";
+      gtk-theme = "Adapta-Nokto";
+    };
+    "org/gnome/desktop/wm/preferences" = {
+      titlebar-font = "Roboto Medium 10";
+      theme = "Adapta-Nokto";
+    };
+  };
   ssh = {
     hosts = {
       "*.compute.amazonaws.com" = {
