@@ -2,6 +2,7 @@ self: super: {
   home = super.buildEnv {
     name = "home";
     paths = with self; [
+          sway
           dotfiles
           my-emacs
           latest.firefox-beta-bin

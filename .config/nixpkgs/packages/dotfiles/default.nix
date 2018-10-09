@@ -14,12 +14,12 @@ let
   ];
 
   i3dot = with scriptsPkg.paths; pkgs.callPackage ./i3 {
-        inherit libdot browse launch edit terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
+        inherit libdot browse launch edit emacs-server terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
   };
 
-  #swaydot = with scriptsPkg.paths; pkgs.callPackage ./sway {
-  #      inherit libdot browse launch edit terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
-  #};
+  swaydot = with scriptsPkg.paths; pkgs.callPackage ./sway {
+        inherit libdot browse launch edit emacs-server terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
+  };
 
   termiteDot = pkgs.callPackage ./termite { inherit libdot settings; };
   gnupgDot = pkgs.callPackage ./gnupg { inherit libdot settings; };
@@ -39,7 +39,7 @@ let
                alacrittyDot sshDot gitDot
                pulseDot gsimplecalDot tmuxDot
                mimeappsDot yubicoDot termiteDot
-               direnvDot xresourcesDot #swaydot
+               direnvDot xresourcesDot swaydot
              ];
 
   home = builtins.getEnv "HOME";
@@ -86,11 +86,11 @@ let
     popd
     find ${home}/.nix-profile/dotfiles/ -type f | grep -v "set-permissions.sh" | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     echo $latestVersion > $root/.dotfiles_version
-    #if [ -z "$SWAYSOCK" ]; then
-    i3-msg restart || true
-    #else
-    #   swaymsg reload || true
-    #fi
+    if [ -z "$SWAYSOCK" ]; then
+      i3-msg restart || true
+    else
+       swaymsg reload || true
+    fi
     ${pkgs.killall}/bin/killall -s HUP $(${pkgs.coreutils}/bin/basename $SHELL)
   '';
 

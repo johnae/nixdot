@@ -3,6 +3,11 @@
 let
 
   config = writeText "config.fish" ''
+
+     if test "$DISPLAY" = ""; and test (tty) = /dev/tty1; and test "$XDG_SESSION_TYPE" = ""
+        exec start-sway
+     end
+
      if test "$TERM" = "dumb"
        function fish_title; end
      end

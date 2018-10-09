@@ -1,7 +1,7 @@
 {
  stdenv,
  writeScriptBin,
- my-emacs, #sway, termite,
+ my-emacs, sway, termite, wl-clipboard,
  i3, ps, jq, fire,
  fd, fzf, bashInteractive,
  gnupg, gawk, gnused,
@@ -14,24 +14,34 @@
 
 let
   emacsclient = "${my-emacs}/bin/emacsclient";
+  emacs = "${my-emacs}/bin/emacs";
+
+  emacs-server = writeScriptBin "emacs-server" ''
+    #!${stdenv.shell}
+    if [ "$1" = "" -a -e /run/user/1337/emacs1337/server ]; then
+       exit 0
+    fi
+    ${coreutils}/bin/rm -rf /run/user/1337/emacs1337
+    TMPDIR=/run/user/1337 exec ${emacs} --daemon=server
+  '';
 
   edit = writeScriptBin "edit" ''
     #!${stdenv.shell}
-    ${coreutils}/bin/mkdir -p /run/user/1337/emacs1337
-    exec ${emacsclient} -n -a "" -c -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
+    ${emacs-server}/bin/emacs-server
+    exec ${emacsclient} -n -c -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
   '';
 
   edi = writeScriptBin "edi" ''
     #!${stdenv.shell}
+    ${emacs-server}/bin/emacs-server
     export TERM=xterm-24bits
-    ${coreutils}/bin/mkdir -p /run/user/1337/emacs1337
-    exec ${emacsclient} -a "" -t -s /run/user/1337/emacs1337/server $@
+    exec ${emacsclient} -t -s /run/user/1337/emacs1337/server $@
   '';
 
   ed = writeScriptBin "ed" ''
     #!${stdenv.shell}
-    ${coreutils}/bin/mkdir -p /run/user/1337/emacs1337
-    exec ${emacsclient} -a "" -c -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
+    ${emacs-server}/bin/emacs-server
+    exec ${emacsclient} -c -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
   '';
 
   fzf-fzf = writeScriptBin "fzf-fzf" ''
@@ -82,8 +92,13 @@ let
 
   terminal = writeScriptBin "terminal" ''
     #!${stdenv.shell}
-    CONFIG=$HOME/.config/alacritty/alacritty$TERMINAL_CONFIG.yml
-    ${alacritty}/bin/alacritty --config-file $CONFIG $@
+    if [ "$_TERMEMU" = "termite" ]; then
+      CONFIG=$HOME/.config/termite/config$TERMINAL_CONFIG
+      ${termite}/bin/termite --config $CONFIG $@
+    else
+      CONFIG=$HOME/.config/alacritty/alacritty$TERMINAL_CONFIG.yml
+      ${alacritty}/bin/alacritty --config-file $CONFIG $@
+    fi
   '';
 
   launch = writeScriptBin "launch" ''
@@ -92,14 +107,18 @@ let
     if [ -z "$cmd" ]; then
       read cmd
     fi
-    MSG=${i3}/bin/i3-msg
+    if [ -z "$SWAYSOCK" ]; then
+      MSG=${i3}/bin/i3-msg
+    else
+      MSG=${sway}/bin/swaymsg
+    fi
     if [ "$_SET_WS_NAME" = "y" ]; then
       name=$(${coreutils}/bin/echo $cmd | ${gawk}/bin/awk '{print $1}')
       if [ "$_USE_NAME" ]; then
           name=$_USE_NAME
       fi
       wsname=$($MSG -t get_workspaces | ${jq}/bin/jq -r '.[] | select(.focused==true).name')
-      if ${coreutils}/bin/echo "$wsname" | ${gnugrep}/bin/grep -E '^[0-9]+$' > /dev/null; then
+      if ${coreutils}/bin/echo "$wsname" | ${gnugrep}/bin/grep -E '^[0-9]:? ?+$' > /dev/null; then
         $MSG "rename workspace to \"$wsname: $name\"" 2>&1 >/dev/null
       fi
     fi
@@ -108,7 +127,11 @@ let
 
   rename-workspace = writeScriptBin "rename-workspace" ''
     #!${stdenv.shell}
-    CMD=${i3}/bin/i3-msg
+    if [ -z "$SWAYSOCK" ]; then
+      CMD=${i3}/bin/i3-msg
+    else
+      CMD=${sway}/bin/swaymsg
+    fi
     WSNUM=$($CMD -t get_workspaces | ${jq}/bin/jq '.[] | select(.focused==true).name' | ${coreutils}/bin/cut -d"\"" -f2 | ${gnugrep}/bin/grep -o -E '[[:digit:]]+')
     if [ -z "$@" ]; then
         exit 0
@@ -134,7 +157,7 @@ let
     if ${ps}/bin/ps aux | grep '\-c fzf-window' | ${gnugrep}/bin/grep -v grep 2>&1 > /dev/null; then
         exit
     fi
-    exec terminal --class "fzf-window" -t "fzf-window" -e "$cmd $@"
+    exec terminal -t "fzf-window" -e "$cmd $@"
   '';
 
   fzf-passmenu = writeScriptBin "fzf-passmenu" ''
@@ -174,13 +197,17 @@ let
     if [ "$pass" = "" ]; then
       ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
     else
-      if [ -z "$passonly" ]; then
-        ${coreutils}/bin/echo -n $login | ${xdotool}/bin/xdotool type --clearmodifiers --file -
-        ${xdotool}/bin/xdotool key Tab
-      fi
-      ${coreutils}/bin/echo -n $pass | ${xdotool}/bin/xdotool type --clearmodifiers --file -
-      if [ -z "$nosubmit" ]; then
-        ${xdotool}/bin/xdotool key Return
+      if [ -z "$SWAYSOCK"]; then
+        if [ -z "$passonly" ]; then
+          ${coreutils}/bin/echo -n $login | ${xdotool}/bin/xdotool type --clearmodifiers --file -
+          ${xdotool}/bin/xdotool key Tab
+        fi
+        ${coreutils}/bin/echo -n $pass | ${xdotool}/bin/xdotool type --clearmodifiers --file -
+        if [ -z "$nosubmit" ]; then
+          ${xdotool}/bin/xdotool key Return
+        fi
+      else
+          ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
       fi
     fi
 
@@ -195,6 +222,34 @@ let
        ${feh}/bin/feh --bg-fill $BG
     fi
 
+  '';
+
+  start-sway = writeScriptBin "start-sway" ''
+    #!${stdenv.shell}
+    export _TERMEMU=termite ## for now
+
+    export XDG_SESSION_TYPE=wayland
+    export XKB_DEFAULT_LAYOUT=se
+    export XKB_DEFAULT_VARIANT=mac
+    export XKB_DEFAULT_MODEL=pc105
+    export XKB_DEFAULT_OPTIONS=ctrl:nocaps,lv3:lalt_switch,compose:ralt,lv3:ralt_alt
+
+    export QT_STYLE_OVERRIDE=gtk
+    export VISUAL=ed
+    export EDITOR=$VISUAL
+    export PROJECTS=~/Development
+    if [ -e .config/syncthing/config.xml ]; then
+       SYNCTHING_API_KEY=$(cat .config/syncthing/config.xml | grep apikey | awk -F">|</" '{print $2}')
+       if [ "$SYNCTHING_API_KEY" != "" ]; then
+          export SYNCTHING_API_KEY
+       fi
+    fi
+    # Load X resources.
+    if [ -e $HOME/.Xresources ]; then
+       xrdb -merge $HOME/.Xresources
+    fi
+
+    exec dbus-launch --exit-with-session sway
   '';
 
   ## so clearly expects such a named entry in ~.ssh/config
@@ -225,6 +280,7 @@ in
       edit = edit;
       edi = edi;
       ed = ed;
+      emacs-server = emacs-server;
       fzf-fzf = fzf-fzf;
       project-select = project-select;
       terminal = terminal;
@@ -237,5 +293,6 @@ in
       screenshot = screenshot;
       autorandr-postswitch = autorandr-postswitch;
       kctl = kctl;
+      start-sway = start-sway;
     };
   }
