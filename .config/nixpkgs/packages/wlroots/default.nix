@@ -12,8 +12,8 @@ in stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
-    rev = "75005fd58dcf82f8775e1216fb98c9ad3287d116";
-    sha256 = "0fhs33g5qw9z0fqdnsqk1qs8i3yalrhh1r4qz4yig8g8bqkq81w5";
+    rev = "7dedfce1aed99ef3292b8bfcbc2697adcf11e85c";
+    sha256 = "03pb7ms10k6irf3rzim47hivxbsrczxsxvxkgzdwap6kgcky8h96";
   };
 
   #patches = [
