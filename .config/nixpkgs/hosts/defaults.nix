@@ -75,11 +75,27 @@
     rofiColorWindow = "#004b46";
   };
 
+  ## also used for sway
   i3 = rec {
     mod = "Mod4";
 
     fontSize = "10";
     font = "pango:Roboto, FontAwesome, Bold ${fontSize}";
+
+    makoConfig = {
+      font = "Roboto";
+      backgroundColor = "#000021DD";
+      borderSize = "0";
+      defaultTimeout = "3000"; ## ms
+      padding = "20";
+      height = "200";
+      width = "500";
+    };
+
+    swaylockArgs = "-e -i /home/shared/backgrounds/the-host.jpg -s fill --font Roboto --inside-color 00000066 --inside-clear-color 00660099 --inside-ver-color 00006699 --inside-wrong-color 66000099 --key-hl-color FFFFFF99 --ring-color GGGGGGBB --ring-wrong-color FF6666BB --ring-ver-color 6666FFBB --text-color FFFFFFFF --text-clear-color FFFFFFFF --text-wrong-color FFFFFFFF --text-ver-color FFFFFFFF";
+
+    swaylockTimeout = "300";
+    swaylockSleepTimeout = "600";
 
     bgColor = "#4A90E2";
     borderColor = bgColor;
