@@ -11,7 +11,7 @@ let
   '';
 
   emacsPackages =
-    pkgs.emacsPackagesNg.overrideScope
+    pkgs.emacsPackagesNg.overrideScope'
     (self: super: {
       inherit (self.melpaPackages)
         evil flycheck-haskell haskell-mode
