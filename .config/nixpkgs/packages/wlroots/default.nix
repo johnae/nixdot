@@ -16,9 +16,9 @@ in stdenv.mkDerivation rec {
     sha256 = "03pb7ms10k6irf3rzim47hivxbsrczxsxvxkgzdwap6kgcky8h96";
   };
 
-  #patches = [
-  #  ./0001-Add-fix.patch
-  #];
+  patches = [
+    ./0001-Add-fix.patch
+  ];
 
   # $out for the library and $bin for rootston
   outputs = [ "out" "bin" ];
