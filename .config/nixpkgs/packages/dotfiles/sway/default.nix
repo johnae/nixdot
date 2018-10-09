@@ -1,5 +1,6 @@
 {
   stdenv,
+  lib,
   writeText,
   writeScriptBin,
   libdot,
@@ -13,9 +14,14 @@
   ...
 }:
 
+with lib;
 with settings.i3;
 
 let
+
+  outputs =  [ sway-outputs ];
+  toOutputs = xs: fun: concatStringsSep "\n" (concatMap (x: (mapAttrsToList fun x)) xs);
+
   loginctlPath = "${udev}/bin/loginctl";
   systemctlPath = "${udev}/bin/systemctl";
   rofiPath = "${rofi}/bin/rofi";
@@ -50,8 +56,7 @@ let
     focus_follows_mouse yes
     focus_on_window_activation smart
 
-    output * bg /home/shared/backgrounds/konsum.jpg fill
-    output eDP-1 pos 0 0
+    ${toOutputs outputs (name: value: '' output ${name} ${value} '')}
 
     input "1739:30383:DLL075B:01_06CB:76AF_Touchpad" {
       dwt enabled

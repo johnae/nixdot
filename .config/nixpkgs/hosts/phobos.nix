@@ -9,5 +9,8 @@
   };
   i3 = rec {
     fontSize = "14";
+    sway-outputs = {
+      eDP-1 = "scale 2 pos 0 0";
+    };
   };
 }

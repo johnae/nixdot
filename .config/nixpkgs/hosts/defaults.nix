@@ -97,6 +97,11 @@
     swaylockTimeout = "300";
     swaylockSleepTimeout = "600";
 
+    sway-outputs = {
+      "*" = "bg /home/shared/backgrounds/konsum.jpg fill";
+      eDP-1 = "pos 0 0";
+    };
+
     bgColor = "#4A90E2";
     borderColor = bgColor;
     inactiveBgColor = "#000000";
