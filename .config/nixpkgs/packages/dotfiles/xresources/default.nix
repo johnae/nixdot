@@ -15,7 +15,7 @@ let
     Xft.dpi: ${dpi}
     ! }}}
 
-    ## rofi config
+    ! rofi config
     rofi.color-enabled: true
     rofi.color-normal: ${rofiColorNormal}
     rofi.color-window: ${rofiColorWindow}
