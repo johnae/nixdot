@@ -20,8 +20,7 @@ let
 
     foreground = #d8dee9
     foreground_bold = #d8dee9
-    # background = #2e3440
-    background = #002b36
+    background = rgba(20, 51, 80, 0.95)
 
     highlight = #4c566a
 
@@ -57,7 +56,7 @@ let
     foreground_bold     = #eee8d5
     cursor              = #eee8d5
     cursor_foreground   = #002b36
-    background          = rgba(0, 43, 54, 0.96)
+    background = rgba(20, 51, 80, 0.95)
 
     # 16 color space
 
