@@ -278,6 +278,8 @@ let
 
     exec ${emacs-server}/bin/emacs-server --force
 
+    exec ${xorg.xrdb}/bin/xrdb -merge ~/.Xresources
+
     ######### Bar
     bar {
 

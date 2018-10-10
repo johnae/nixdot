@@ -244,10 +244,6 @@ let
           export SYNCTHING_API_KEY
        fi
     fi
-    # Load X resources.
-    if [ -e $HOME/.Xresources ]; then
-       xrdb -merge $HOME/.Xresources
-    fi
 
     exec dbus-launch --exit-with-session sway
   '';
