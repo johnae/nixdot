@@ -86,6 +86,13 @@ let
     else
       echo "No dconf found, skipping"
     fi
+    if [ -d ${home}/.nix-profile/terminfo ]; then
+      echo "Updating terminfo database..."
+      rm -rf ${home}/.terminfo
+      for file in ${home}/.nix-profile/terminfo/*; do
+        ${pkgs.ncurses}/bin/tic -x -o ~/.terminfo $file
+      done
+    fi
     echo Ensuring permissions on dotfiles...
     pushd $root
     ${stdenv.shell} -x ${home}/.nix-profile/dotfiles/set-permissions.sh
@@ -110,9 +117,11 @@ stdenv.mkDerivation rec {
     export PATH=${makeSearchPath "bin" [ coreutils findutils nix i3 gnused ]}:$PATH
     dotfiles=$out/dotfiles
     dconf=$out/dconf
+    terminfo=$out/terminfo
     bin=$out/bin
     install -dm 755 $dotfiles
     install -dm 755 $dconf
+    install -dm 755 $terminfo
     install -dm 755 $bin
     pushd $dotfiles
     ${concatStringsSep "\n" dotfiles}
@@ -128,6 +137,11 @@ stdenv.mkDerivation rec {
                                                }
                                                ''
                                                )}
+
+    ${toConfig [ settings.terminfo ] (name: value: ''
+                                               echo "${value}" >> $terminfo/${name}.terminfo
+                                               ''
+    )}
     ${install scripts (name: value: ''
                                        echo "installing script ${name} to $bin"
                                        cp -r ${value}/bin/${name} $bin/
