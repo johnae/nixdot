@@ -261,6 +261,8 @@ let
 
     ######## Autostart
 
+    exec ${xorg.xrdb}/bin/xrdb -merge ~/.Xresources
+
     # locks the screen on sleep etc
     exec ${sway}/bin/swayidle \
       timeout ${swaylockTimeout} '${sway}/bin/swaylock ${swaylockArgs}' \
@@ -277,8 +279,6 @@ let
     exec echo "UPDATESTARTUPTTY" | ${gnupg}/bin/gpg-connect-agent > /dev/null 2>&1
 
     exec ${emacs-server}/bin/emacs-server --force
-
-    exec ${xorg.xrdb}/bin/xrdb -merge ~/.Xresources
 
     ######### Bar
     bar {
