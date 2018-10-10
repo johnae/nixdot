@@ -1,12 +1,12 @@
 {
   dconf = {
     "org/gnome/desktop/interface" = {
-      font-name = "Roboto Medium 10";
+      font-name = "Roboto Medium 11";
       icon-theme = "Papirus-Adapta-Nokto";
       gtk-theme = "Adapta-Nokto";
     };
     "org/gnome/desktop/wm/preferences" = {
-      titlebar-font = "Roboto Medium 10";
+      titlebar-font = "Roboto Medium 11";
       theme = "Adapta-Nokto";
     };
   };
