@@ -55,6 +55,7 @@ let
     hide_edge_borders smart
     focus_follows_mouse yes
     focus_on_window_activation smart
+    popup_during_fullscreen smart
 
     ${toOutputs outputs (name: value: '' output ${name} ${value} '')}
 
