@@ -4,20 +4,19 @@ with lib;
 
 let
 
+  toShell = x: fun: concatStringsSep "\n" (mapAttrsToList fun x);
+
   libdot = pkgs.callPackage ./libdot.nix { };
   settings = import (builtins.getEnv "HOME") { inherit lib; };
 
-  scriptsPkg = pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-beta-bin}/bin/firefox"; inherit settings; };
+  # scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-beta-bin}/bin/firefox"; inherit settings; }).paths;
+  scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.epiphany}/bin/epiphany"; inherit settings; }).paths;
 
-  scripts = [
-    scriptsPkg
-  ];
-
-  i3dot = with scriptsPkg.paths; pkgs.callPackage ./i3 {
+  i3dot = with scripts; pkgs.callPackage ./i3 {
         inherit libdot browse launch edit emacs-server terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
   };
 
-  swaydot = with scriptsPkg.paths; pkgs.callPackage ./sway {
+  swaydot = with scripts; pkgs.callPackage ./sway {
         inherit libdot browse launch edit emacs-server terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
   };
 
@@ -123,30 +122,39 @@ stdenv.mkDerivation rec {
     install -dm 755 $dconf
     install -dm 755 $terminfo
     install -dm 755 $bin
+
     pushd $dotfiles
     ${concatStringsSep "\n" dotfiles}
     popd
-    ${toConfig [ settings.dconf ] (name: value: ''
-                                               echo "[${name}]" >> $dconf/dconf.conf
-                                               ${if isAttrs value then
-                                                 toConfig [ value ] (key: conf: ''
-                                                          echo "${key}='${conf}'" >> $dconf/dconf.conf
-                                                          '')
-                                                else
-                                                 value
-                                               }
-                                               ''
-                                               )}
 
-    ${toConfig [ settings.terminfo ] (name: value: ''
-                                               echo "${value}" >> $terminfo/${name}.terminfo
-                                               ''
+    ${toShell settings.dconf (name: value:
+    ''
+      echo "[${name}]" >> $dconf/dconf.conf
+      ${if isAttrs value then
+          toShell value (name: value:
+          ''
+            echo "${name}='${value}'" >> $dconf/dconf.conf
+          ''
+          )
+        else
+          value
+      }
+    ''
     )}
-    ${install scripts (name: value: ''
-                                       echo "installing script ${name} to $bin"
-                                       cp -r ${value}/bin/${name} $bin/
-                                    ''
+
+    ${toShell settings.terminfo (name: value:
+    ''
+      echo "${value}" >> $terminfo/${name}.terminfo
+    ''
     )}
+
+    ${toShell scripts (name: value:
+    ''
+      echo "installing script ${name} to $bin"
+      cp -r ${value}/bin/${name} $bin/
+    ''
+    )}
+
     cp ${home-update}/bin/home-update $bin/home-update
   '';
 }

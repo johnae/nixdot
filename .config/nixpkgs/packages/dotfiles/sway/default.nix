@@ -19,8 +19,7 @@ with settings.i3;
 
 let
 
-  outputs =  [ sway-outputs ];
-  toOutputs = xs: fun: concatStringsSep "\n" (concatMap (x: (mapAttrsToList fun x)) xs);
+  toOutputs = x: fun: concatStringsSep "\n" (mapAttrsToList fun x);
 
   loginctlPath = "${udev}/bin/loginctl";
   systemctlPath = "${udev}/bin/systemctl";
@@ -58,7 +57,7 @@ let
     popup_during_fullscreen smart
     mouse_warping container
 
-    ${toOutputs outputs (name: value: '' output ${name} ${value} '')}
+    ${toOutputs sway-outputs (name: value: '' output ${name} ${value} '')}
 
     input "1739:30383:DLL075B:01_06CB:76AF_Touchpad" {
       dwt enabled
@@ -299,7 +298,6 @@ let
 
       # tray_output primary
       status_command ${swayBarStatusCmd}/bin/swaybar-status
-      #status_command ${nixShellPath} --command '${spookPath} -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar' ~/Development/moonbar/shell.nix
     }
 
   '';

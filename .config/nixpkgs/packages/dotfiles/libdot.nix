@@ -4,10 +4,6 @@ with lib;
 
 let
 
-  install = xs: fun: concatStringsSep "\n" (concatMap (x: (mapAttrsToList fun x.paths)) xs);
-
-  toConfig = xs: fun: concatStringsSep "\n" (concatMap (x: (mapAttrsToList fun x)) xs);
-
   mkdir = {path, mode ? "0755"}: ''
         ${coreutils}/bin/echo "mkdir $PWD/${path} with mode ${mode}"
         ${coreutils}/bin/mkdir -p ${path}
@@ -25,8 +21,6 @@ let
 in
 
 {
-  install = install;
-  toConfig = toConfig;
   mkdir = mkdir;
   copy = copy;
 }
