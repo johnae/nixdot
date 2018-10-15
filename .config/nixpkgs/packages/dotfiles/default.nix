@@ -4,9 +4,10 @@ with lib;
 
 let
 
-  toShell = x: fun: concatStringsSep "\n" (mapAttrsToList fun x);
 
   libdot = pkgs.callPackage ./libdot.nix { };
+  toShell = libdot.mapAttrsToMultilineString;
+
   settings = import (builtins.getEnv "HOME") { inherit lib; };
 
   # scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-beta-bin}/bin/firefox"; inherit settings; }).paths;

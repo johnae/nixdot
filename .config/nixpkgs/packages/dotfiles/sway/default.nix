@@ -19,7 +19,7 @@ with settings.i3;
 
 let
 
-  toOutputs = x: fun: concatStringsSep "\n" (mapAttrsToList fun x);
+  toOutputs = libdot.mapAttrsToMultilineString;
 
   loginctlPath = "${udev}/bin/loginctl";
   systemctlPath = "${udev}/bin/systemctl";
@@ -266,8 +266,8 @@ let
 
     # locks the screen on sleep etc
     exec ${sway}/bin/swayidle \
-      timeout ${swaylockTimeout} '${sway}/bin/swaylock ${swaylockArgs}' \
-      timeout ${swaylockSleepTimeout} '${sway}/bin/swaymsg "output * dpms off"' \
+      timeout ${swaylockTimeout} 'test -e .inhibit-idle || ${sway}/bin/swaylock ${swaylockArgs}' \
+      timeout ${swaylockSleepTimeout} 'test -e .inhibit-idle || ${sway}/bin/swaymsg "output * dpms off"' \
       resume '${sway}/bin/swaymsg "output * dpms on"' \
       before-sleep '${sway}/bin/swaylock ${swaylockArgs}'
 

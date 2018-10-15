@@ -4,6 +4,8 @@ with lib;
 
 let
 
+  mapAttrsToMultilineString = x: fun: concatStringsSep "\n" (mapAttrsToList fun x);
+
   mkdir = {path, mode ? "0755"}: ''
         ${coreutils}/bin/echo "mkdir $PWD/${path} with mode ${mode}"
         ${coreutils}/bin/mkdir -p ${path}
@@ -21,6 +23,7 @@ let
 in
 
 {
+  mapAttrsToMultilineString = mapAttrsToMultilineString;
   mkdir = mkdir;
   copy = copy;
 }

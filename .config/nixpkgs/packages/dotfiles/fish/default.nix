@@ -8,6 +8,8 @@ let
         exec start-sway
      end
 
+     echo "UPDATESTARTUPTTY" | gpg-connect-agent > /dev/null 2>&1
+
      if test "$TERM" = "dumb"
        function fish_title; end
      end
