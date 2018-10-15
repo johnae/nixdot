@@ -1,8 +1,8 @@
 {
  stdenv,
  writeScriptBin,
- my-emacs, sway, termite, wl-clipboard,
- i3, ps, jq, fire,
+ my-emacs, termite, wl-clipboard,
+ ps, jq, fire, sway,
  fd, fzf, bashInteractive,
  gnupg, gawk, gnused,
  gnugrep, findutils, coreutils,
@@ -82,7 +82,6 @@ let
     ${coreutils}/bin/mkdir -p $output_dir
     #killall compton
     ${maim}/bin/maim -s --format=$fmt $output_dir/$name.$fmt
-    #~/.i3/compton
   '';
 
   browse = writeScriptBin "browse" ''
@@ -107,11 +106,7 @@ let
     if [ -z "$cmd" ]; then
       read cmd
     fi
-    if [ -z "$SWAYSOCK" ]; then
-      MSG=${i3}/bin/i3-msg
-    else
-      MSG=${sway}/bin/swaymsg
-    fi
+    MSG=${sway}/bin/swaymsg
     if [ "$_SET_WS_NAME" = "y" ]; then
       name=$(${coreutils}/bin/echo $cmd | ${gawk}/bin/awk '{print $1}')
       if [ "$_USE_NAME" ]; then
@@ -127,11 +122,7 @@ let
 
   rename-workspace = writeScriptBin "rename-workspace" ''
     #!${stdenv.shell}
-    if [ -z "$SWAYSOCK" ]; then
-      CMD=${i3}/bin/i3-msg
-    else
-      CMD=${sway}/bin/swaymsg
-    fi
+    CMD=${sway}/bin/swaymsg
     WSNUM=$($CMD -t get_workspaces | ${jq}/bin/jq '.[] | select(.focused==true).name' | ${coreutils}/bin/cut -d"\"" -f2 | ${gnugrep}/bin/grep -o -E '[[:digit:]]+')
     if [ -z "$@" ]; then
         exit 0

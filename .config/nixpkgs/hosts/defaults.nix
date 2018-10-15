@@ -96,8 +96,7 @@
     rofiColorWindow = "#004b46";
   };
 
-  ## also used for sway
-  i3 = rec {
+  sway = rec {
     mod = "Mod4";
 
     fontSize = "10";

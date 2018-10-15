@@ -13,10 +13,6 @@ let
   # scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-beta-bin}/bin/firefox"; inherit settings; }).paths;
   scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.epiphany}/bin/epiphany"; inherit settings; }).paths;
 
-  i3dot = with scripts; pkgs.callPackage ./i3 {
-        inherit libdot browse launch edit emacs-server terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
-  };
-
   swaydot = with scripts; pkgs.callPackage ./sway {
         inherit libdot browse launch edit emacs-server terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
   };
@@ -35,11 +31,11 @@ let
   xresourcesDot = pkgs.callPackage ./xresources { inherit libdot settings; };
   tmuxDot = pkgs.callPackage ./tmux { inherit libdot settings; };
 
-  dotfiles = [ i3dot gnupgDot fishDot
+  dotfiles = [ gnupgDot fishDot swaydot
                alacrittyDot sshDot gitDot
                pulseDot gsimplecalDot tmuxDot
                mimeappsDot yubicoDot termiteDot
-               direnvDot xresourcesDot swaydot
+               direnvDot xresourcesDot
              ];
 
   home = builtins.getEnv "HOME";
@@ -47,7 +43,7 @@ let
   home-update = with libdot; with pkgs; pkgs.writeShellScriptBin "home-update" ''
     #!${stdenv.shell}
     set -e
-    export PATH=${makeSearchPath "bin" [ coreutils findutils nix i3 gnused ]}:$PATH
+    export PATH=${makeSearchPath "bin" [ coreutils findutils nix sway gnused ]}:$PATH
     root=''${1:-${home}}
     latestVersion=$(nix-store --query --hash $(readlink ${home}/.nix-profile/dotfiles))
     currentVersion=""
@@ -99,11 +95,7 @@ let
     popd
     find ${home}/.nix-profile/dotfiles/ -type f | grep -v "set-permissions.sh" | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     echo $latestVersion > $root/.dotfiles_version
-    if [ -z "$SWAYSOCK" ]; then
-      i3-msg restart || true
-    else
-       swaymsg reload || true
-    fi
+    swaymsg reload || true
     ${pkgs.killall}/bin/killall -s HUP $(${pkgs.coreutils}/bin/basename $SHELL)
   '';
 
@@ -114,7 +106,7 @@ stdenv.mkDerivation rec {
   phases = [ "installPhase" ];
   src = ./.;
   installPhase = with pkgs; with libdot; ''
-    export PATH=${makeSearchPath "bin" [ coreutils findutils nix i3 gnused ]}:$PATH
+    export PATH=${makeSearchPath "bin" [ coreutils findutils nix sway gnused ]}:$PATH
     dotfiles=$out/dotfiles
     dconf=$out/dconf
     terminfo=$out/terminfo

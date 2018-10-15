@@ -15,7 +15,7 @@
 }:
 
 with lib;
-with settings.i3;
+with settings.sway;
 
 let
 
