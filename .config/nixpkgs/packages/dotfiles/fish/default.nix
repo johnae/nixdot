@@ -11,7 +11,7 @@ let
      echo "UPDATESTARTUPTTY" | gpg-connect-agent > /dev/null 2>&1
 
      if test "$TERM" = "dumb"
-       function fish_title; end
+        function fish_title; end
      end
 
      set -x TERM xterm-256color
@@ -45,8 +45,9 @@ let
        date +%s > ~/.direnv_cache_cleared
      end
 
-     if not test -e ~/.direnv_cache_cleared; or test (math (date +%s) " - " (cat ~/.direnv_cache_cleared)) -ge 72000 ## auto clear after 20 hours
-       clear_direnv_cache
+     ## auto clear after 20 hours
+     if not test -e ~/.direnv_cache_cleared; or test (math (date +%s) " - " (cat ~/.direnv_cache_cleared)) -ge 72000
+        clear_direnv_cache
      end
 
      function reload_fish_config --on-signal HUP
