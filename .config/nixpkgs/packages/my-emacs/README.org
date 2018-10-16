@@ -689,6 +689,15 @@ Using control-x control-z to zoom in / out a window (eg. "fullscreen" it).
 #+END_SRC
 
 
+Highlight the part of a line that goes beyond 80 chars
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package column-enforce-mode
+:config
+(global-column-enforce-mode t))
+#+END_SRC
+
+
 ** Other configuration
 
 Define a function to set the telephone line theme. This is so that when using emacsclient we

@@ -153,6 +153,7 @@ in
     alchemist # elixir
 
     company-quickhelp
+    column-enforce-mode
 
     # Go
     go-mode
