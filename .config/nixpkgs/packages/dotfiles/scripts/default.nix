@@ -269,6 +269,7 @@ let
     export XKB_DEFAULT_MODEL=pc105
     export XKB_DEFAULT_OPTIONS=ctrl:nocaps,lv3:lalt_switch,compose:ralt,lv3:ralt_alt
 
+    export GTK_THEME="${settings.dconf."org/gnome/desktop/interface".gtk-theme}"
     export QT_STYLE_OVERRIDE=gtk
     export VISUAL=ed
     export EDITOR=$VISUAL
