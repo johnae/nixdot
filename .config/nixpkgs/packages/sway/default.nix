@@ -7,13 +7,13 @@
 
 stdenv.mkDerivation rec {
   name = "sway-${version}";
-  version = "56c388b51076c3d96363e6afb62d0138cd3dce36";
+  version = "cd02d60a992ee38689a0d17fc69c4e2b1956f266";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "sway";
     rev = version;
-    sha256 = "0ba49zkgd2q04zvfg3f00l7nhp9k1yzf4yvhslzbyzlqddjwcdvy";
+    sha256 = "0fxbqg9b7k428krbhsvnbq8kmaxg4c07yin6n2r6aacx2v5wpa2k";
   };
 
   nativeBuildInputs = [
@@ -24,8 +24,6 @@ stdenv.mkDerivation rec {
     pango cairo libinput libcap pam gdk_pixbuf libpthreadstubs
     libXdmcp wlroots systemd
   ];
-
-  CFLAGS = "-std=gnu99";
 
   mesonFlags = [
     "-Dsway-version=${version}"

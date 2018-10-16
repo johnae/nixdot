@@ -1,10 +1,10 @@
 { stdenv, fetchFromGitHub, meson048, ninja, pkgconfig
 , wayland, libGL, wayland-protocols, xwayland, libinput, libxkbcommon, pixman
-, xcbutilwm, libX11, libcap, xcbutilimage, xcbutilerrors, mesa_noglu
+, xcbutilwm, libX11, libcap, xcbutilimage, xcbutilerrors, libdrm, mesa_noglu
 }:
 
 let pname = "wlroots";
-    version = "2018-10-09";
+    version = "2018-10-16";
 
 in stdenv.mkDerivation rec {
   name = "${pname}"; #-${version}";
@@ -12,8 +12,8 @@ in stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
-    rev = "7daca85bcf4f3c0567697afb3603472394a85273";
-    sha256 = "0faj78vxxydk8pvjy2ksy19smysmyak38ddh5yz2hrf9xdzrnndq";
+    rev = "8beeb88309d87474e1b4e8eadcf245a24f04b2d0";
+    sha256 = "0nnimd04mlqi44qcdn6fg2dhfsps5kzkdk5g1m5gzi05ciln6nd6";
   };
 
   # patches = [
@@ -29,7 +29,7 @@ in stdenv.mkDerivation rec {
 
   buildInputs = [
     wayland libGL wayland-protocols xwayland libinput libxkbcommon pixman
-    xcbutilwm libX11 libcap xcbutilimage xcbutilerrors mesa_noglu
+    xcbutilwm libX11 libcap xcbutilimage xcbutilerrors mesa_noglu libdrm
   ];
 
   # Install rootston (the reference compositor) to $bin
@@ -38,7 +38,8 @@ in stdenv.mkDerivation rec {
     cp rootston/rootston $bin/bin/
     mkdir $bin/lib
     cp libwlroots* $bin/lib/
-    patchelf --set-rpath "$bin/lib:${stdenv.lib.makeLibraryPath buildInputs}" $bin/bin/rootston
+    patchelf --set-rpath "$bin/lib:${stdenv.lib.makeLibraryPath buildInputs}" \
+        $bin/bin/rootston
     mkdir $bin/etc
     cp ../rootston/rootston.ini.example $bin/etc/rootston.ini
   '';
