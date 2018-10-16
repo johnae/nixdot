@@ -14,7 +14,7 @@ let
   scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.epiphany}/bin/epiphany"; inherit settings; }).paths;
 
   swaydot = with scripts; pkgs.callPackage ./sway {
-        inherit libdot browse launch edit emacs-server terminal fzf-window fzf-run fzf-passmenu rename-workspace screenshot settings;
+        inherit libdot browse launch edit emacs-server terminal fzf-window fzf-run fzf-passmenu rofi-passmenu rename-workspace screenshot settings;
   };
 
   termiteDot = pkgs.callPackage ./termite { inherit libdot settings; };

@@ -2,7 +2,7 @@
  stdenv,
  writeScriptBin,
  my-emacs, termite, wl-clipboard,
- ps, jq, fire, sway,
+ ps, jq, fire, sway, rofi,
  fd, fzf, bashInteractive,
  gnupg, gawk, gnused,
  gnugrep, findutils, coreutils,
@@ -144,6 +144,7 @@ let
     #!${stdenv.shell}
     cmd=$1
     shift
+    export _TERMEMU=termite
     export TERMINAL_CONFIG=-large-font
     if ${ps}/bin/ps aux | grep '\-c fzf-window' | ${gnugrep}/bin/grep -v grep 2>&1 > /dev/null; then
         exit
@@ -153,6 +154,7 @@ let
 
   fzf-passmenu = writeScriptBin "fzf-passmenu" ''
     #!${stdenv.shell}
+    export _TERMEMU=termite
     export FZF_PROMPT="search for password >"
     ## because of some stupid bug: https://github.com/jordansissel/xdotool/issues/49
 
@@ -203,6 +205,50 @@ let
 
   '';
 
+  rofi-passmenu = writeScriptBin "rofi-passmenu" ''
+    #!${stdenv.shell}
+    PROMPT=" for password >"
+
+    prefix=$(readlink -f $HOME/.password-store)
+    passfile=$(${fd}/bin/fd --type f -E '/notes/' '.gpg$' $HOME/.password-store | \
+       ${gnused}/bin/sed "s|$prefix/||g" | ${gnused}/bin/sed 's|.gpg$||g' | \
+       ${rofi}/bin/rofi -dmenu -p "$PROMPT")
+
+    if [ "$passfile" = "" ]; then
+      exit
+    fi
+
+    error_icon=~/Pictures/icons/essential/error.svg
+
+    getlogin() {
+      ${coreutils}/bin/echo -n $(${coreutils}/bin/basename "$1")
+    }
+
+    getpass() {
+      ${coreutils}/bin/echo -n $(${gnupg}/bin/gpg --decrypt "$prefix/$1.gpg" 2>/dev/null | ${coreutils}/bin/head -1)
+    }
+
+    login=$(getlogin "$passfile")
+    pass=$(getpass "$passfile")
+
+    if [ "$pass" = "" ]; then
+      ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
+    else
+      if [ -z "$SWAYSOCK"]; then
+        if [ -z "$passonly" ]; then
+          ${coreutils}/bin/echo -n $login | ${xdotool}/bin/xdotool type --clearmodifiers --file -
+          ${xdotool}/bin/xdotool key Tab
+        fi
+        ${coreutils}/bin/echo -n $pass | ${xdotool}/bin/xdotool type --clearmodifiers --file -
+        if [ -z "$nosubmit" ]; then
+          ${xdotool}/bin/xdotool key Return
+        fi
+      else
+          ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
+      fi
+    fi
+  '';
+
   autorandr-postswitch = writeScriptBin "autorandr-postswitch" ''
     #!${stdenv.shell}
     BG=$(${coreutils}/bin/cat /etc/nixos/meta.nix | ${gnugrep}/bin/grep dmBackground | ${gawk}/bin/awk '{print $3}' | ${gnused}/bin/sed 's|[";]||g')
@@ -216,7 +262,6 @@ let
 
   start-sway = writeScriptBin "start-sway" ''
     #!${stdenv.shell}
-    export _TERMEMU=termite ## for now
 
     export XDG_SESSION_TYPE=wayland
     export XKB_DEFAULT_LAYOUT=se
@@ -272,6 +317,7 @@ in
       terminal = terminal;
       launch = launch;
       fzf-passmenu = fzf-passmenu;
+      rofi-passmenu = rofi-passmenu;
       fzf-run = fzf-run;
       fzf-window = fzf-window;
       browse = browse;

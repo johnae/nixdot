@@ -10,7 +10,7 @@
   spook, nix, edit, emacs-server, gnome3,
   terminal, fzf-window, fzf-run,
   fzf-passmenu, launch, rename-workspace,
-  screenshot, settings, browse,
+  screenshot, settings, browse, rofi-passmenu,
   ...
 }:
 
@@ -35,7 +35,9 @@ let
   playerctlPath = "${playerctl}/bin/playerctl";
 
   swayBarStatusCmd = writeScriptBin "swaybar-status" ''
-    exec ${nixShellPath} --command "${spookPath} -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" ~/Development/moonbar/shell.nix
+    exec ${nixShellPath} --command "${spookPath} \
+         -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" \
+         ~/Development/moonbar/shell.nix
   '';
 
   config = writeText "sway-config" ''
@@ -97,19 +99,21 @@ let
     # bindsym ${mod}+Control+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal-large
 
     # use fzf as a program launcher
-    bindsym ${mod}+d exec ${fzf-window}/bin/fzf-window ${fzf-run}/bin/fzf-run
+    # bindsym ${mod}+d exec ${fzf-window}/bin/fzf-window ${fzf-run}/bin/fzf-run
+    bindsym ${mod}+d exec ${rofiPath} -show run -run-command "launch {cmd}"
 
     # use rofi for switching between windows
     bindsym ${mod}+Tab exec ${rofiPath} -show window -matching normal
 
     # passmenu
-    bindsym ${mod}+minus exec ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
+    # bindsym ${mod}+minus exec ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
+    bindsym ${mod}+minus exec ${rofi-passmenu}/bin/rofi-passmenu
 
     # passmenu pass only
-    bindsym ${mod}+Shift+minus exec passonly=y ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
+    # bindsym ${mod}+Shift+minus exec passonly=y ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
 
     # passmenu pass only no submit
-    bindsym ${mod}+Control+minus exec nosubmit=y passonly=y ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
+    # bindsym ${mod}+Control+minus exec nosubmit=y passonly=y ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
 
     # create new password input
     # bindsym ${mod}+Shift+m exec ${inputWindowPath} "read-input login | xargs -I{} new-password {}"
@@ -271,7 +275,7 @@ let
       resume '${sway}/bin/swaymsg "output * dpms on"' \
       before-sleep '${sway}/bin/swaylock ${swaylockArgs}'
 
-    exec ${mako}/bin/mako --font ${makoConfig.font} --background-color "${makoConfig.backgroundColor}" --border-size ${makoConfig.borderSize} --default-timeout ${makoConfig.defaultTimeout} --padding ${makoConfig.padding} --height ${makoConfig.height} --width ${makoConfig.width}
+    exec ${mako}/bin/mako --font ${makoConfig.font} --background-color "${makoConfig.backgroundColor}" --border-size ${makoConfig.borderSize} --default-timeout ${makoConfig.defaultTimeout} --padding ${makoConfig.padding} --height ${makoConfig.height} --width ${makoConfig.width} --markup 1
 
     exec ${persway}/bin/persway
 
