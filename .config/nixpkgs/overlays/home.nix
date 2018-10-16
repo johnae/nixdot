@@ -18,6 +18,7 @@ self: super: {
           vlc
 
           gnome3.gedit
+          libreoffice
           gimp
           inkscape
           evince
