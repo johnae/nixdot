@@ -4,6 +4,9 @@ let
 
   config = writeText "config.fish" ''
 
+     set fish_term24bit 1
+     set -x TERM xterm-24bit
+
      if test "$DISPLAY" = ""; and test (tty) = /dev/tty1; and test "$XDG_SESSION_TYPE" = ""
         exec start-sway
      end
@@ -14,7 +17,6 @@ let
         function fish_title; end
      end
 
-     set -x TERM xterm-256color
      set fish_color_error ff8a00
 
      # c0 to c4 progress from dark to bright
