@@ -28,6 +28,8 @@ let
     rofi.fullscreen: true
     rofi.opacity: 85
     rofi.matching: fuzzy
+    rofi.sort: true
+    rofi.sorting-method: fzf
     rofi.font: ${rofiFont}
   '';
 
