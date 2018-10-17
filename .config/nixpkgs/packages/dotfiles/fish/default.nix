@@ -4,8 +4,9 @@ let
 
   config = writeText "config.fish" ''
 
-     set fish_term24bit 1
-     set -x TERM xterm-24bit
+     if test "$TERM" = "xterm-termite"
+       set -x TERM termite
+     end
 
      if test "$DISPLAY" = ""; and test (tty) = /dev/tty1; and test "$XDG_SESSION_TYPE" = ""
         exec start-sway
