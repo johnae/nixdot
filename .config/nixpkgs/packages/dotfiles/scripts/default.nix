@@ -1,5 +1,5 @@
 {
- stdenv,
+ stdenv, lib,
  writeScriptBin,
  my-emacs, termite, wl-clipboard,
  ps, jq, fire, sway, rofi,
@@ -96,6 +96,9 @@ let
       ${termite}/bin/termite --config $CONFIG $@
     else
       CONFIG=$HOME/.config/alacritty/alacritty$TERMINAL_CONFIG.yml
+      ${if builtins.hasAttr "WINIT_HIDPI_FACTOR" settings then
+      "export WINIT_HIDPI_FACTOR=${settings.WINIT_HIDPI_FACTOR}"
+      else ""}
       ${alacritty}/bin/alacritty --config-file $CONFIG $@
     fi
   '';
@@ -263,6 +266,7 @@ let
   start-sway = writeScriptBin "start-sway" ''
     #!${stdenv.shell}
 
+    export _TERMEMU=termite
     export XDG_SESSION_TYPE=wayland
     export XKB_DEFAULT_LAYOUT=se
     export XKB_DEFAULT_VARIANT=mac
@@ -281,7 +285,7 @@ let
        fi
     fi
 
-    exec dbus-launch --exit-with-session sway
+    exec dbus-launch --exit-with-session sway $@
   '';
 
   ## so clearly expects such a named entry in ~.ssh/config
