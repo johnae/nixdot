@@ -7,19 +7,21 @@
   sway, udev, gnupg,
   rofi, xorg, mako, persway,
   pulseaudioFull, coreutils, playerctl,
-  spook, nix, edit, emacs-server, gnome3,
-  terminal, fzf-window, fzf-run,
+  spook, nix, edi, edit, emacs-server, gnome3,
+  terminal, termite, fzf-window, fzf-run,
   fzf-passmenu, launch, rename-workspace,
   screenshot, settings, browse, rofi-passmenu,
   ...
 }:
 
 with lib;
+with libdot;
 with settings.sway;
 
 let
 
-  toOutputs = libdot.mapAttrsToMultilineString;
+  toOutputs = mapAttrsToMultilineString;
+  toInputs = mapAttrsToMultilineString;
 
   loginctlPath = "${udev}/bin/loginctl";
   systemctlPath = "${udev}/bin/systemctl";
@@ -61,19 +63,14 @@ let
 
     ${toOutputs sway-outputs (name: value: '' output ${name} ${value} '')}
 
-    input "1739:30383:DLL075B:01_06CB:76AF_Touchpad" {
-      dwt enabled
-      tap enabled
-      natural_scroll enabled
-      # middle_emulation enabled
-    }
-
-    input "1118:2354:Surface_Arc_Mouse_Keyboard" {
-      dwt enabled
-      # tap enabled
-      natural_scroll enabled
-      # middle_emulation enabled
-    }
+    ${toInputs sway-inputs (name: value: ''
+                                         input "${name}" {
+                                         ${concatStringsSep "\n" (mapAttrsToList (name: value: ''
+                                             ${"  "+name} ${if isBool value then (
+                                                      if value then "enabled" else "disabled"
+                                                  ) else value }'') value)}
+                                         }
+                                         '')}
 
     # class                   border             background text         indicator          child_border
     client.focused            ${inactiveBgColor} ${bgColor} ${textColor} ${indicatorColor}  ${indicatorColor}
