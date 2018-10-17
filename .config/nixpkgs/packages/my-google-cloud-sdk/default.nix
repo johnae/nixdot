@@ -6,35 +6,35 @@ let
   pp = pkgs.python2Packages;
   pythonInputs = [ pp.cffi pp.cryptography pp.pyopenssl pp.crcmod ];
   pythonPath = lib.makeSearchPath python.sitePackages pythonInputs;
-  gcloudVersion = "214.0.0";
+  gcloudVersion = "221.0.0";
 
   # see: https://console.cloud.google.com/storage/browser/cloud-sdk-release?authuser=0
   componentBaseUrl = "https://storage.googleapis.com/cloud-sdk-release/for_packagers/linux";
   appengine-go-sdk-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-app-engine-go_${gcloudVersion}.orig_amd64.tar.gz";
-    sha256 = "07jml099w0li6ahsglpg2g1q1wwmgw8agmwbxr0h5hlp34wwwksa";
+    sha256 = "039z9iknsa2q5m23xbpfcanbf50l4hcv80wyr2wp8fkcgrkbvymz";
   };
 
   appengine-python-sdk-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-app-engine-python_${gcloudVersion}.orig.tar.gz";
-    sha256 = "1nw1yrfwkihan1cx9c5sji57s9ka4hxixx4xwrd5w8sd4cw9wdxn";
+    sha256 = "180vdf32illl7i3lra8bmv6jix3wgc7wpmki31pvplrl5rh08x31";
   };
 
   datastore-emulator-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-datastore-emulator_${gcloudVersion}.orig.tar.gz";
-    sha256 = "0bk94zqwq5vjfwkhdda03sfivwlah0mp962hc9n0b5zpdkhcjiad";
+    sha256 = "0aah16glb0nv49g7lssca2gxckk2xd399rwnc0xnvls9pscmjsqf";
   };
 
   pub-sub-emulator-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-pubsub-emulator_${gcloudVersion}.orig.tar.gz";
-    sha256 = "1ky6cpkav1x6ag85sbvaym5zqss1p795m4h6aamhjhccjv1i3qzz";
+    sha256 = "0ykhhnh16d5yfp1kcpy637jlvzz6zvmcp87141ll92q2ksicwzc4";
   };
 
   baseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads";
   sources = name: system: {
     x86_64-linux = {
       url = "${baseUrl}/${name}-linux-x86_64.tar.gz";
-      sha256 = "1sssz1pffaay6cqfx35lyzp4fyx9lr41cgfvsgs6fhmvbw4hdi3z";
+      sha256 = "0cyw3i2isq6jg00wkfcljy6jdnana306j0sxsq4zhf7xc873i2s7";
     };
   }.${system};
 
