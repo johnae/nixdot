@@ -116,7 +116,9 @@ let
     # bindsym ${mod}+Shift+m exec ${inputWindowPath} "read-input login | xargs -I{} new-password {}"
 
     # (new empty emacs window really - starts server if not running)
-    bindsym ${mod}+Shift+e exec ${edit}/bin/edit -e '(insane-new-empty-buffer)'
+    # unfortuately gui emacs on wayland is blurry if screen is scaled (eg. hidpi)
+    # bindsym ${mod}+Shift+e exec ${edit}/bin/edit -e '(insane-new-empty-buffer)'
+    bindsym ${mod}+Shift+e exec _SET_WS_NAME=y _USE_NAME=edit ${launch}/bin/launch ${termite}/bin/termite -t edit -e "${edi}/bin/edi"
 
     # new browser
     bindsym ${mod}+Shift+b exec ${browse}/bin/browse
@@ -276,7 +278,7 @@ let
 
     exec ${persway}/bin/persway
 
-    #exec --no-startup-id ${gnome3.gnome_settings_daemon}/libexec/gsd-xsettings
+    exec --no-startup-id ${gnome3.gnome_settings_daemon}/libexec/gsd-xsettings
 
     exec echo "UPDATESTARTUPTTY" | ${gnupg}/bin/gpg-connect-agent > /dev/null 2>&1
 
