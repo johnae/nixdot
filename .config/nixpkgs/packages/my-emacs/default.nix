@@ -25,6 +25,23 @@ let
     }
   );
 
+  ## use a nord-theme that works with 24-bit terminals
+  nord-theme = emacsPackages.melpaBuild {
+    pname = "nord-theme";
+    version = "20181017";
+    src = fetchFromGitHub {
+      owner = "visigoth";
+      repo = "nord-emacs";
+      rev = "4f1cdf095a0c99c926fcf296dd6b4f8db1e4ee57";
+      sha256 = "1p89n8wrzkwvqhrxpzr2fhy4hnw44mha8ydwjbxr3fpnc120q2qs";
+    };
+
+    recipe = writeText "nord-theme-recipe" ''
+      (nord-theme :repo "visigoth/nord-theme.el" :fetcher github
+                 :files (:defaults))
+    '';
+  };
+
   ## use up-to-date nix-mode
   nix-mode = emacsPackages.melpaBuild {
     pname = "nix-mode";
@@ -112,7 +129,6 @@ in
     spaceline
     spaceline-all-the-icons
     zerodark-theme
-    nord-theme
 
     # Delimiters
     smartparens
@@ -202,5 +218,5 @@ in
   ] ++
 
   # Custom packages
-  [ nix-mode prescient ivy-prescient company-prescient ]
+  [ nix-mode prescient ivy-prescient company-prescient nord-theme ]
 )
