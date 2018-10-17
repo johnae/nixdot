@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, meson048, ninja, pkgconfig
+{ stdenv, fetchFromGitHub, meson048, ninja, pkgconfig, udev, systemd
 , wayland, libGL, wayland-protocols, xwayland, libinput, libxkbcommon, pixman
 , xcbutilwm, libX11, libcap, xcbutilimage, xcbutilerrors, libdrm, mesa_noglu
 }:
@@ -12,8 +12,8 @@ in stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
-    rev = "8beeb88309d87474e1b4e8eadcf245a24f04b2d0";
-    sha256 = "0nnimd04mlqi44qcdn6fg2dhfsps5kzkdk5g1m5gzi05ciln6nd6";
+    rev = "67a2040cad9cdbaee3ad0f768cc673b76f1fc2dd";
+    sha256 = "00a3yzn5pyvhwal3i1nq1cwkdmmwj0idzm62i068znymrshzaqrg";
   };
 
   # patches = [
@@ -30,6 +30,7 @@ in stdenv.mkDerivation rec {
   buildInputs = [
     wayland libGL wayland-protocols xwayland libinput libxkbcommon pixman
     xcbutilwm libX11 libcap xcbutilimage xcbutilerrors mesa_noglu libdrm
+    libcap systemd
   ];
 
   # Install rootston (the reference compositor) to $bin

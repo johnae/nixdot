@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig
+{ stdenv, fetchFromGitHub, meson048, ninja, pkgconfig
 , asciidoc, libxslt, docbook_xsl, scdoc
 , wayland, wayland-protocols, xwayland, libxkbcommon
 , pcre, json_c, dbus_libs, pango, cairo, libinput
@@ -9,17 +9,17 @@
 
 stdenv.mkDerivation rec {
   name = "sway-${version}";
-  version = "113751ea48b9ffa537c357373913ca9caecb68e0";
+  version = "10d07478ad95336ad0bf40d53c60bbaf85fd2c4d";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "sway";
     rev = version;
-    sha256 = "1m0jwdcjk5v66i2cdhhpfm2gscl6kbxnw83bzgqiys3b3m6lvjm3";
+    sha256 = "04jcl5343bbcm24jxidwg5kf9226r2j12qb55kybzw29mawcmzsk";
   };
 
   nativeBuildInputs = [
-    meson ninja pkgconfig git wrapGAppsHook
+    meson048 ninja pkgconfig git wrapGAppsHook
   ] ++ stdenv.lib.optional buildDocs [ asciidoc libxslt docbook_xsl ];
   buildInputs = [
     wayland wayland-protocols xwayland libxkbcommon pcre json_c dbus_libs
