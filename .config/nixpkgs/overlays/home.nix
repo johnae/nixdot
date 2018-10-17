@@ -2,6 +2,7 @@ self: super: {
   home = super.buildEnv {
     name = "home";
     paths = with self; [
+          xwayland
           sway
           dotfiles
           my-emacs
@@ -9,6 +10,8 @@ self: super: {
           signal-desktop
           awscli
           my-google-cloud-sdk
+          kubectl
+          kubernetes-helm
           slack
           direnv
           playerctl
