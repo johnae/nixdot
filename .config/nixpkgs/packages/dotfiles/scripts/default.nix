@@ -275,7 +275,7 @@ let
 
     export GTK_THEME="${settings.dconf."org/gnome/desktop/interface".gtk-theme}"
     export QT_STYLE_OVERRIDE=gtk
-    export VISUAL=ed
+    export VISUAL=edi
     export EDITOR=$VISUAL
     export PROJECTS=~/Development
     if [ -e .config/syncthing/config.xml ]; then

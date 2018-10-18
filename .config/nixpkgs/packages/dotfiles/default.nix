@@ -22,7 +22,7 @@ let
   fishDot = pkgs.callPackage ./fish { inherit libdot settings; };
   alacrittyDot = pkgs.callPackage ./alacritty { inherit libdot settings; };
   sshDot = pkgs.callPackage ./ssh { inherit libdot settings; };
-  gitDot = pkgs.callPackage ./git { inherit libdot settings; };
+  gitDot = with scripts; pkgs.callPackage ./git { inherit libdot settings edi; };
   pulseDot = pkgs.callPackage ./pulse { inherit libdot settings; };
   gsimplecalDot = pkgs.callPackage ./gsimplecal { inherit libdot settings; };
   mimeappsDot = pkgs.callPackage ./mimeapps { inherit libdot settings; };

@@ -1,4 +1,4 @@
-{stdenv, libdot, writeText, settings, my-emacs, ...}:
+{stdenv, libdot, writeText, settings, edi, ...}:
 
 with settings.git;
 
@@ -9,7 +9,7 @@ let
       email = ${email}
       signingkey = ${signingKey}
     [core]
-      editor = ${my-emacs}/bin/emacsclient -c
+      editor = ${edi}/bin/edi -t
     [push]
       # only push current branch to tracking branch
       default = upstream
