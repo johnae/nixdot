@@ -33,7 +33,7 @@ let
      set fish_greeting
 
      # emacs socket
-     set -x EMACS_SERVER_FILE /var/run/user/1337/emacs1337/server
+     set -x EMACS_SERVER_FILE /run/user/1337/emacs1337/server
 
      # aliases (in fish these are actually translated to functions)
      ## manage home
