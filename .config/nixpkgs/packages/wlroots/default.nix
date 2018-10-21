@@ -12,13 +12,13 @@ in stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
-    rev = "7bb04887a7f86c868fe9e93248dc3a202380ca4b";
-    sha256 = "17agkd3g8z1yq2hs4hmhr68b8jdkdl7w6cmzqy07jcqjyif2q66i";
+    rev = "be6210cf8216c08a91e085dac0ec11d0e34fb217";
+    sha256 = "148nhaxyqxqjzb0mcc2rhhdjj8nzizwiizppg7scfs6rff193frv";
   };
 
-  # patches = [
-  #   ./0001-Add-fix.patch
-  # ];
+  patches = [
+    ./0001-Add-fix.patch
+  ];
 
   # $out for the library and $bin for rootston
   outputs = [ "out" "bin" ];
