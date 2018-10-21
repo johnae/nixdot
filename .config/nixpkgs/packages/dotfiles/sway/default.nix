@@ -137,8 +137,8 @@ let
     bindsym ${mod}+Shift+s move scratchpad
 
     # screen brightness controls
-    bindsym XF86MonBrightnessUp exec ${xbacklightPath} -inc 5
-    bindsym XF86MonBrightnessDown exec ${xbacklightPath} -dec 5
+    bindsym XF86MonBrightnessUp exec light -As "sysfs/backlight/intel_backlight" 5
+    bindsym XF86MonBrightnessDown exec light -Us "sysfs/backlight/intel_backlight" 5
 
     bindsym XF86AudioRaiseVolume exec --no-startup-id ${killPath} -USR1 $(${catPath} $XDG_RUNTIME_DIR/moonbar.pid)
     bindsym XF86AudioLowerVolume exec --no-startup-id ${killPath} -USR2 $(${catPath} $XDG_RUNTIME_DIR/moonbar.pid)
