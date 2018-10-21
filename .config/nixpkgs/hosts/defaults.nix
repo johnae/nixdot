@@ -122,7 +122,6 @@
     swaylockSleepTimeout = "600";
 
     sway-outputs = {
-      "*" = "bg ~/Pictures/backgrounds/konsum.jpg fill";
       eDP-1 = "pos 0 0";
     };
 

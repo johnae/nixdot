@@ -28,7 +28,8 @@ let
   edit = writeScriptBin "edit" ''
     #!${stdenv.shell}
     ${emacs-server}/bin/emacs-server
-    exec ${emacsclient} -n -c -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
+    exec ${emacsclient} -n -c \
+         -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
   '';
 
   edi = writeScriptBin "edi" ''
@@ -115,8 +116,10 @@ let
       if [ "$_USE_NAME" ]; then
           name=$_USE_NAME
       fi
-      wsname=$($MSG -t get_workspaces | ${jq}/bin/jq -r '.[] | select(.focused==true).name')
-      if ${coreutils}/bin/echo "$wsname" | ${gnugrep}/bin/grep -E '^[0-9]:? ?+$' > /dev/null; then
+      wsname=$($MSG -t get_workspaces | ${jq}/bin/jq -r \
+               '.[] | select(.focused==true).name')
+      if ${coreutils}/bin/echo "$wsname" | \
+         ${gnugrep}/bin/grep -E '^[0-9]:? ?+$' > /dev/null; then
         $MSG "rename workspace to \"$wsname: $name\"" 2>&1 >/dev/null
       fi
     fi
@@ -126,7 +129,10 @@ let
   rename-workspace = writeScriptBin "rename-workspace" ''
     #!${stdenv.shell}
     CMD=${sway}/bin/swaymsg
-    WSNUM=$($CMD -t get_workspaces | ${jq}/bin/jq '.[] | select(.focused==true).name' | ${coreutils}/bin/cut -d"\"" -f2 | ${gnugrep}/bin/grep -o -E '[[:digit:]]+')
+    WSNUM=$($CMD -t get_workspaces | ${jq}/bin/jq \
+            '.[] | select(.focused==true).name' | \
+            ${coreutils}/bin/cut -d"\"" -f2 | \
+            ${gnugrep}/bin/grep -o -E '[[:digit:]]+')
     if [ -z "$@" ]; then
         exit 0
     fi
@@ -149,7 +155,8 @@ let
     shift
     export _TERMEMU=termite
     export TERMINAL_CONFIG=-large-font
-    if ${ps}/bin/ps aux | grep '\-c fzf-window' | ${gnugrep}/bin/grep -v grep 2>&1 > /dev/null; then
+    if ${ps}/bin/ps aux | grep '\-c fzf-window' | \
+       ${gnugrep}/bin/grep -v grep 2>&1 > /dev/null; then
         exit
     fi
     exec terminal -t "fzf-window" -e "$cmd $@"
@@ -159,7 +166,7 @@ let
     #!${stdenv.shell}
     export _TERMEMU=termite
     export FZF_PROMPT="search for password >"
-    ## because of some stupid bug: https://github.com/jordansissel/xdotool/issues/49
+    ## because bug: https://github.com/jordansissel/xdotool/issues/49
 
     passfile=$1
     prefix=$(readlink -f $HOME/.password-store)
@@ -183,21 +190,25 @@ let
     }
 
     getpass() {
-      ${coreutils}/bin/echo -n $(${gnupg}/bin/gpg --decrypt "$prefix/$1.gpg" 2>/dev/null | ${coreutils}/bin/head -1)
+      ${coreutils}/bin/echo -n $(${gnupg}/bin/gpg --decrypt "$prefix/$1.gpg" \
+                            2>/dev/null | ${coreutils}/bin/head -1)
     }
 
     login=$(getlogin "$passfile")
     pass=$(getpass "$passfile")
 
     if [ "$pass" = "" ]; then
-      ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
+      ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical \
+      "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
     else
       if [ -z "$SWAYSOCK"]; then
         if [ -z "$passonly" ]; then
-          ${coreutils}/bin/echo -n $login | ${xdotool}/bin/xdotool type --clearmodifiers --file -
+          ${coreutils}/bin/echo -n $login | ${xdotool}/bin/xdotool type \
+                                            --clearmodifiers --file -
           ${xdotool}/bin/xdotool key Tab
         fi
-        ${coreutils}/bin/echo -n $pass | ${xdotool}/bin/xdotool type --clearmodifiers --file -
+        ${coreutils}/bin/echo -n $pass | ${xdotool}/bin/xdotool type \
+                                         --clearmodifiers --file -
         if [ -z "$nosubmit" ]; then
           ${xdotool}/bin/xdotool key Return
         fi
@@ -228,21 +239,25 @@ let
     }
 
     getpass() {
-      ${coreutils}/bin/echo -n $(${gnupg}/bin/gpg --decrypt "$prefix/$1.gpg" 2>/dev/null | ${coreutils}/bin/head -1)
+      ${coreutils}/bin/echo -n $(${gnupg}/bin/gpg \
+          --decrypt "$prefix/$1.gpg" 2>/dev/null | ${coreutils}/bin/head -1)
     }
 
     login=$(getlogin "$passfile")
     pass=$(getpass "$passfile")
 
     if [ "$pass" = "" ]; then
-      ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
+      ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical \
+      "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
     else
       if [ -z "$SWAYSOCK"]; then
         if [ -z "$passonly" ]; then
-          ${coreutils}/bin/echo -n $login | ${xdotool}/bin/xdotool type --clearmodifiers --file -
+          ${coreutils}/bin/echo -n $login | ${xdotool}/bin/xdotool type \
+                                            --clearmodifiers --file -
           ${xdotool}/bin/xdotool key Tab
         fi
-        ${coreutils}/bin/echo -n $pass | ${xdotool}/bin/xdotool type --clearmodifiers --file -
+        ${coreutils}/bin/echo -n $pass | ${xdotool}/bin/xdotool type \
+                                         --clearmodifiers --file -
         if [ -z "$nosubmit" ]; then
           ${xdotool}/bin/xdotool key Return
         fi
@@ -254,13 +269,21 @@ let
 
   autorandr-postswitch = writeScriptBin "autorandr-postswitch" ''
     #!${stdenv.shell}
-    BG=$(${coreutils}/bin/cat /etc/nixos/meta.nix | ${gnugrep}/bin/grep dmBackground | ${gawk}/bin/awk '{print $3}' | ${gnused}/bin/sed 's|[";]||g')
+    BG=$(${coreutils}/bin/cat /etc/nixos/meta.nix | \
+         ${gnugrep}/bin/grep dmBackground | \
+         ${gawk}/bin/awk '{print $3}' | ${gnused}/bin/sed 's|[";]||g')
     ${killall}/bin/killall compton
     ${coreutils}/bin/echo "Setting background: '$BG'"
     if [ -e "$BG" ]; then
        ${feh}/bin/feh --bg-fill $BG
     fi
 
+  '';
+
+  random-background = writeScriptBin "random-background" ''
+    #!${stdenv.shell}
+    ${findutils}/bin/find $HOME/Pictures/backgrounds -type f | \
+         ${coreutils}/bin/sort -R | ${coreutils}/bin/head -1
   '';
 
   start-sway = writeScriptBin "start-sway" ''
@@ -279,7 +302,8 @@ let
     export EDITOR=$VISUAL
     export PROJECTS=~/Development
     if [ -e .config/syncthing/config.xml ]; then
-       SYNCTHING_API_KEY=$(cat .config/syncthing/config.xml | grep apikey | awk -F">|</" '{print $2}')
+       SYNCTHING_API_KEY=$(cat .config/syncthing/config.xml | grep apikey | \
+                                awk -F">|</" '{print $2}')
        if [ "$SYNCTHING_API_KEY" != "" ]; then
           export SYNCTHING_API_KEY
        fi
@@ -331,5 +355,6 @@ in
       autorandr-postswitch = autorandr-postswitch;
       kctl = kctl;
       start-sway = start-sway;
+      random-background = random-background;
     };
   }

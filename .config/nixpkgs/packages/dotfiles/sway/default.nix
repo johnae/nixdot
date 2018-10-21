@@ -5,7 +5,7 @@
   writeScriptBin,
   libdot,
   sway, udev, gnupg,
-  rofi, xorg, mako, persway,
+  rofi, xorg, mako, persway, random-background,
   pulseaudioFull, coreutils, playerctl,
   spook, nix, edi, edit, emacs-server, gnome3,
   terminal, termite, fzf-window, fzf-run,
@@ -61,7 +61,9 @@ let
     popup_during_fullscreen smart
     mouse_warping container
 
+
     ${toOutputs sway-outputs (name: value: '' output ${name} ${value} '')}
+    output * bg `${random-background}/bin/random-background` fill
 
     ${toInputs sway-inputs (name: value: ''
                                          input "${name}" {
