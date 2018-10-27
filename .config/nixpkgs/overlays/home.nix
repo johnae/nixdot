@@ -2,6 +2,7 @@ self: super: {
   home = super.buildEnv {
     name = "home";
     paths = with self; [
+          xdg_utils
           xwayland
           sway
           dotfiles
@@ -11,7 +12,9 @@ self: super: {
           awscli
           my-google-cloud-sdk
           kubectl
+          kubectx
           kubernetes-helm
+          kustomize
           slack
           direnv
           playerctl
@@ -34,6 +37,7 @@ self: super: {
 
           python2Packages.docker_compose
           bc
+          bat ## alias to cat = awesome
 
           acpi
           iw
