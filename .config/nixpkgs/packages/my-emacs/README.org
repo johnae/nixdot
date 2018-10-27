@@ -199,7 +199,7 @@ See: [[https://github.com/abo-abo/avy][https://github.com/abo-abo/avy]]
 #+BEGIN_SRC elisp :tangle default.el
 (use-package avy
   :config
-  (global-set-key (kbd "C-¨") 'avy-goto-char)
+  (global-set-key (kbd "C-c ¨") 'avy-goto-char)
 )
 #+END_SRC
 
@@ -395,8 +395,13 @@ Highlights uncommitted changes.
 #+BEGIN_SRC elisp :tangle default.el
 (use-package diff-hl
   :config
+  (setq diff-hl-side 'right)
   (global-diff-hl-mode t)
   (diff-hl-flydiff-mode)
+  (add-hook 'after-make-frame-functions(lambda (frame)
+    (if (window-system frame)
+      (diff-hl-mode)
+      (diff-hl-margin-mode))))
   (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 #+END_SRC
 
@@ -445,6 +450,23 @@ Intero is an awesome haskell environment for emacs. It's disabled now because it
 ;;   :config
 ;;   (add-hook 'haskell-mode-hook 'intero-mode))
 #+END_SRC
+
+
+
+TypeScript mode.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package tide
+  :ensure t
+  :bind (("C-c C-j" . tide-jump-to-definition)
+         ("C-c C-d" . tide-documentation-at-point))
+  :after (typescript-mode company flycheck)
+  :hook  ((typescript-mode . tide-restart-server)
+         (typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
+#+END_SRC
+
 
 
 Mode for elm. Disabled atm.

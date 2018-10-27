@@ -197,6 +197,7 @@ in
     scala-mode
     sbt-mode
     js2-mode
+    tide
 
     # Haskell
     haskell-mode
