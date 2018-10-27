@@ -8,6 +8,41 @@ let
        set -x TERM termite
      end
 
+     function i
+       nix-env -iA nixos.$argv
+     end
+
+     function s
+       nix-env -qaP ".*$argv.*"
+     end
+
+     if not set -q abbrs_initialized
+       set -U abbrs_initialized
+       echo -n Setup abbreviations...
+
+       abbr cat bat
+       abbr hr 'nix-env -iA nixos.home; and home-update'
+
+       abbr g 'git'
+       abbr ga 'git add'
+       abbr gb 'git branch'
+       abbr gbl 'git blame'
+       abbr gc 'git commit -m'
+       abbr gco 'git checkout'
+       abbr gcp 'git cherry-pick'
+       abbr gd 'git diff'
+       abbr gf 'git fetch'
+       abbr gl 'git log'
+       abbr gm 'git merge'
+       abbr gp 'git push'
+       abbr gpl 'git pull'
+       abbr gr 'git remote'
+       abbr gs 'git status'
+       abbr gst 'git stash'
+
+       echo 'Done'
+     end
+
      if test "$DISPLAY" = ""; and test (tty) = /dev/tty1; and test "$XDG_SESSION_TYPE" = ""
         exec start-sway
      end
