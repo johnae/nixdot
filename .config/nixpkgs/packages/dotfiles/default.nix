@@ -6,7 +6,7 @@ let
 
 
   libdot = pkgs.callPackage ./libdot.nix { };
-  toShell = libdot.mapAttrsToMultilineString;
+  toShell = libdot.setToStringSep "\n";
 
   settings = import (builtins.getEnv "HOME") { inherit lib; };
 

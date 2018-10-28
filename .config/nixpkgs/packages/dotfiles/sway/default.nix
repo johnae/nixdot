@@ -20,8 +20,7 @@ with settings.sway;
 
 let
 
-  toOutputs = mapAttrsToMultilineString;
-  toInputs = mapAttrsToMultilineString;
+  toConfig = setToStringSep "\n";
 
   loginctlPath = "${udev}/bin/loginctl";
   systemctlPath = "${udev}/bin/systemctl";
@@ -62,17 +61,19 @@ let
     mouse_warping container
 
 
-    ${toOutputs sway-outputs (name: value: '' output ${name} ${value} '')}
+    ${toConfig sway-outputs (output-name: output-config: ''
+       output ${output-name} ${output-config}
+    '')}
+
     output * bg `${random-background}/bin/random-background` fill
 
-    ${toInputs sway-inputs (name: value: ''
-                                         input "${name}" {
-                                         ${concatStringsSep "\n" (mapAttrsToList (name: value: ''
-                                             ${"  "+name} ${if isBool value then (
-                                                      if value then "enabled" else "disabled"
-                                                  ) else value }'') value)}
-                                         }
-                                         '')}
+    ${toConfig sway-inputs (input-name: config-set: ''
+       input "${input-name}" {
+       ${toConfig config-set (opt-name: value: ''
+       ${"   "+opt-name} ${if isBool value then (
+                          if value then "enabled" else "disabled"
+                     ) else value } '')}
+       }'')}
 
     # class                   border             background text         indicator          child_border
     client.focused            ${inactiveBgColor} ${bgColor} ${textColor} ${indicatorColor}  ${indicatorColor}
@@ -102,7 +103,7 @@ let
     bindsym ${mod}+d exec _SET_WS_NAME=y ${rofiPath} -show run -run-command "launch {cmd}"
 
     # use rofi for switching between windows
-    bindsym ${mod}+Tab exec ${rofiPath} -show window -matching normal
+    # bindsym ${mod}+Tab exec ${rofiPath} -show window -matching normal
 
     # passmenu
     # bindsym ${mod}+minus exec ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
