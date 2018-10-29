@@ -76,7 +76,7 @@ let
        }'')}
 
     # class                   border             background text         indicator          child_border
-    client.focused            ${inactiveBgColor} ${bgColor} ${textColor} ${indicatorColor}  ${indicatorColor}
+    client.focused            ${bgColor} ${bgColor} ${textColor} ${indicatorColor}  ${indicatorColor}
     client.focused_inactive   ${inactiveBgColor} ${inactiveBgColor} ${inactiveTextColor} ${indicatorColor} ${indicatorColor}
     client.unfocused          ${inactiveBgColor} ${inactiveBgColor} ${inactiveTextColor} ${indicatorColor} ${indicatorColor}
     client.urgent             ${urgentBgColor} ${urgentBgColor} ${textColor} ${indicatorColor} ${indicatorColor}
@@ -292,7 +292,7 @@ let
 
       colors {
           # Whole color settings
-          background ${inactiveBgColor}
+          background ${barInactiveWorkspaceColorBackground}
           statusline ${barStatuslineColor}
           separator ${barSeparatorColor}
 

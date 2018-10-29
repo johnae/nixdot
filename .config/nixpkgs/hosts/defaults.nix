@@ -125,12 +125,11 @@
       eDP-1 = "pos 0 0";
     };
 
-    bgColor = "#4A90E2";
-    borderColor = bgColor;
-    inactiveBgColor = "#000000";
+    bgColor = "#4A90E2FF";
+    inactiveBgColor = "#000000FF";
     textColor = "#fdf6e3";
     inactiveTextColor = "#839496";
-    urgentBgColor = "#d24939";
+    urgentBgColor = "#d24939FF";
     selectedColor = "#9999FF";
     indicatorColor = "#00ff00";
 
@@ -141,12 +140,12 @@
     barFocusedWorkspaceColorBackground = bgColor;
     barFocusedWorkspaceColorText = textColor;
 
-    barActiveWorkspaceColorBorder = "#333333";
-    barActiveWorkspaceColorBackground = "#5f676a";
+    barActiveWorkspaceColorBorder = "#333333DD";
+    barActiveWorkspaceColorBackground = "#5f676aDD";
     barActiveWorkspaceColorText = textColor;
 
-    barInactiveWorkspaceColorBorder = inactiveBgColor;
-    barInactiveWorkspaceColorBackground = inactiveBgColor;
+    barInactiveWorkspaceColorBorder = "#000000DD";
+    barInactiveWorkspaceColorBackground = barInactiveWorkspaceColorBorder;
     barInactiveWorkspaceColorText = inactiveTextColor;
 
     barUrgentWorkspaceColorBorder = urgentBgColor;
