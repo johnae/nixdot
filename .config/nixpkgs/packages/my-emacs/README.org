@@ -305,6 +305,14 @@ You know, for docker.
 #+END_SRC
 
 
+HashiCorps terraform.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package terraform-mode
+  :mode "\\.tf$")
+#+END_SRC
+
+
 Elixir mode.
 
 #+BEGIN_SRC elisp :tangle default.el

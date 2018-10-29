@@ -167,6 +167,7 @@ in
     markdown-mode
     groovy-mode
     alchemist # elixir
+    terraform-mode
 
     company-quickhelp
     column-enforce-mode
