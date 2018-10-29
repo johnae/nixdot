@@ -128,7 +128,7 @@ let
           set -g prompt_status "<$last_status> "
        end
 
-       printf '%s%s%s %s%s%s%s> ' (set_color $fish_color_error)$prompt_status (set_color $fish_color_cwd)(prompt_pwd) (set_color normal)(__fish_git_prompt)
+       printf '%s%s%s %s%s%s%s%s> ' (set_color $fish_color_error)$prompt_status (set_color $fish_color_cwd)(prompt_pwd) (set_color normal)(__fish_git_prompt)(set_color green)(_kube_context)(set_color normal)
        if not test $last_status -eq 0
          set_color $fish_color_error
        end
@@ -137,6 +137,14 @@ let
        if [ "$PWD" = "$HOME" ];
           set -e GIT_DIR
           set -e GIT_WORK_TREE
+       end
+     end
+
+     function _kube_context --description 'Returns the current kube context'
+       if command -sq kubectl
+         echo " | "(kubectl config current-context)
+       else
+         echo ""
        end
      end
 
