@@ -4,7 +4,7 @@
 }:
 
 let pname = "wlroots";
-    version = "2018-10-28";
+    version = "2018-10-29";
 
 in stdenv.mkDerivation rec {
   name = "${pname}"; #-${version}";
@@ -12,8 +12,8 @@ in stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
-    rev = "f668e49faeeb06bf71e8b0d21f745e0f68aab4ba";
-    sha256 = "0amfa8qfkgmycfn8gax603rxrrxhbw24w8r73wnnv1x261q4h7mn";
+    rev = "659d39baaaa51e27c3e078390e3f1b588f390aa3";
+    sha256 = "10vj7nyyx7f3fjdnlziivwvqnjfykhcakq54f9bj47vx1lvk6a0z";
   };
 
   patches = [
