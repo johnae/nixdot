@@ -60,20 +60,19 @@ let
     popup_during_fullscreen smart
     mouse_warping container
 
+    output * bg `${random-background}/bin/random-background` fill
 
     ${toConfig sway-outputs (output-name: output-config: ''
-       output ${output-name} ${output-config}
-    '')}
-
-    output * bg `${random-background}/bin/random-background` fill
+       output ${output-name} ${output-config}'')}
 
     ${toConfig sway-inputs (input-name: config-set: ''
        input "${input-name}" {
        ${toConfig config-set (opt-name: value: ''
        ${"   "+opt-name} ${if isBool value then (
                           if value then "enabled" else "disabled"
-                     ) else value } '')}
-       }'')}
+                     ) else value }'')}
+       }
+     '')}
 
     # class                   border             background text         indicator          child_border
     client.focused            ${bgColor} ${bgColor} ${textColor} ${indicatorColor}  ${indicatorColor}
