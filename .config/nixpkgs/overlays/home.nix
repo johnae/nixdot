@@ -18,6 +18,7 @@ self: super: {
           slack
           direnv
           playerctl
+          _1password
 
           spotify
           mpv
