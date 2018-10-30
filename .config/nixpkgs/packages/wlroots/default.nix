@@ -4,7 +4,7 @@
 }:
 
 let pname = "wlroots";
-    version = "2018-10-29";
+    version = "2018-10-30";
 
 in stdenv.mkDerivation rec {
   name = "${pname}"; #-${version}";
@@ -12,13 +12,13 @@ in stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
-    rev = "659d39baaaa51e27c3e078390e3f1b588f390aa3";
-    sha256 = "10vj7nyyx7f3fjdnlziivwvqnjfykhcakq54f9bj47vx1lvk6a0z";
+    rev = "70ca7daeb232ac591a78111fc2cc31093cbbbc3b";
+    sha256 = "160lkbz4q4gr6h5sdi3hcgvj1m6q28792zgim2xb4w0bm6dv9bzl";
   };
 
-  patches = [
-    ./0001-Add-fix.patch
-  ];
+  # patches = [
+  #   ./0001-Add-fix.patch
+  # ];
 
   # $out for the library and $bin for rootston
   outputs = [ "out" "bin" ];
