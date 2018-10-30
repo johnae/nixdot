@@ -206,6 +206,17 @@ let
        if bind -M insert > /dev/null 2>&1
          bind -M insert \cg fzf-jump-to-project-widget
        end
+       function kubectx-select -d "Select kubernetes cluster"
+         if command -sq kubectx
+           kubectx
+         else
+           echo Missing command kubectx
+         end
+       end
+       bind \ck kubectx-select
+       if bind -M insert > /dev/null 2>&1
+         bind -M insert \ck kubectx-select
+       end
      end
    '';
 
