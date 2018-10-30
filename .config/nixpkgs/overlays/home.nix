@@ -24,6 +24,8 @@ self: super: {
           mpv
           vlc
 
+          wl-clipboard
+
           gnome3.gedit
           libreoffice
           gimp
