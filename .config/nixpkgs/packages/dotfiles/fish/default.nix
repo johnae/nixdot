@@ -191,6 +191,7 @@ let
      source ${fzf}/share/fzf/key-bindings.fish
      function fish_user_key_bindings
        fzf_key_bindings
+
        function fzf-jump-to-project-widget -d "Show list of projects"
          set -q FZF_TMUX_HEIGHT; or set FZF_TMUX_HEIGHT 40%
          begin
@@ -206,6 +207,7 @@ let
        if bind -M insert > /dev/null 2>&1
          bind -M insert \cg fzf-jump-to-project-widget
        end
+
        function kubectx-select -d "Select kubernetes cluster"
          if command -sq kubectx
            kubectx
@@ -217,6 +219,21 @@ let
        if bind -M insert > /dev/null 2>&1
          bind -M insert \ck kubectx-select
        end
+
+       function gcloud-project-select -d "Select gcloud project"
+         if command -sq gcloud
+           set proj (gcloud projects list | tail -n +2 | awk '{print $1}' | fzf)
+           gcloud config set project $proj
+         else
+           echo Missing command gcloud
+         end
+       end
+       bind \cw gcloud-project-select
+       if bind -M insert > /dev/null 2>&1
+         bind -M insert \cw gcloud-project-select
+       end
+
+
      end
    '';
 
