@@ -43,6 +43,7 @@ let
 
     [options]
     font = Source Code Pro 14
+    scrollback_lines = 20000
   '';
 
   configLargeFont = writeText "termite-large-font-config" ''
@@ -100,6 +101,7 @@ let
 
     [options]
     font = Source Code Pro 28
+    scrollback_lines = 20000
   '';
 
 in
