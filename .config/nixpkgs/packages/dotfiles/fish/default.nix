@@ -16,6 +16,8 @@ let
        nix-env -qaP ".*$argv.*"
      end
 
+     complete -c home -w git
+
      if not set -q abbrs_initialized
        set -U abbrs_initialized
        echo -n Setup abbreviations...
