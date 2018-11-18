@@ -8,7 +8,7 @@ let
   libdot = pkgs.callPackage ./libdot.nix { };
   toShell = libdot.setToStringSep "\n";
 
-  settings = import (builtins.getEnv "HOME") { inherit lib; };
+  settings = import (builtins.getEnv "HOME") { inherit stdenv lib pkgs; };
 
   # scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-beta-bin}/bin/firefox"; inherit settings; }).paths;
   scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.epiphany}/bin/epiphany"; inherit settings; }).paths;

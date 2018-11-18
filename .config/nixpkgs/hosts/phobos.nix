@@ -1,3 +1,5 @@
+{stdenv, lib, pkgs, ...}:
+
 {
   sway = rec {
     sway-outputs = {
