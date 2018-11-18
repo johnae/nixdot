@@ -20,18 +20,19 @@ let
       # `infocmp xterm-256color`.
       TERM: xterm-256color
 
-    # Window dimensions in character columns and lines
-    # (changes require restart)
-    dimensions:
-      columns: 80
-      lines: 24
+    window:
+      # Window dimensions in character columns and lines
+      # (changes require restart)
+      dimensions:
+        columns: 80
+        lines: 24
 
-    # Adds this many blank pixels of padding around the window
-    # Units are physical pixels; this is not DPI aware.
-    # (change requires restart)
-    padding:
-      x: 2
-      y: 2
+      # Adds this many blank pixels of padding around the window
+      # Units are physical pixels; this is not DPI aware.
+      # (change requires restart)
+      padding:
+        x: 2
+        y: 2
 
     # Display tabs using this many cells (changes require restart)
     tabspaces: 8
@@ -68,15 +69,15 @@ let
       # Offset is the extra space around each character. offset.y can be thought of
       # as modifying the linespacing, and offset.x as modifying the letter spacing.
       offset:
-        x: 0.0
-        y: 0.0
+        x: 0
+        y: 0
 
       # Glyph offset determines the locations of the glyphs within their cells with
       # the default being at the bottom. Increase the x offset to move the glyph to
       # the right, increase the y offset to move the glyph upward.
       glyph_offset:
-        x: 0.0
-        y: 0.0
+        x: 0
+        y: 0
 
       # OS X only: use thin stroke font rendering. Thin strokes are suitable
       # for retina displays, but for non-retina you probably want this set to
@@ -85,10 +86,6 @@ let
 
     # Should display the render timer
     render_timer: false
-
-    # Use custom cursor colors. If true, display the cursor in the cursor.foreground
-    # and cursor.background colors, otherwise invert the colors of the cursor.
-    custom_cursor_colors: false
 
     background_opacity: ${backgroundOpacity}
 
@@ -227,11 +224,10 @@ let
     mouse:
       double_click: { threshold: 300 }
       triple_click: { threshold: 300 }
+      hide_cursor_when_typing: true
 
     selection:
       semantic_escape_chars: ",│`|:\"' ()[]{}<>"
-
-    hide_cursor_when_typing: true
 
     # Shell
     #
@@ -259,18 +255,19 @@ let
       # `infocmp xterm-256color`.
       TERM: xterm-256color
 
-    # Window dimensions in character columns and lines
-    # (changes require restart)
-    dimensions:
-      columns: 80
-      lines: 24
+    window:
+      # Window dimensions in character columns and lines
+      # (changes require restart)
+      dimensions:
+        columns: 80
+        lines: 24
 
-    # Adds this many blank pixels of padding around the window
-    # Units are physical pixels; this is not DPI aware.
-    # (change requires restart)
-    padding:
-      x: 2
-      y: 2
+      # Adds this many blank pixels of padding around the window
+      # Units are physical pixels; this is not DPI aware.
+      # (change requires restart)
+      padding:
+        x: 2
+        y: 2
 
     # Display tabs using this many cells (changes require restart)
     tabspaces: 8
@@ -307,15 +304,15 @@ let
       # Offset is the extra space around each character. offset.y can be thought of
       # as modifying the linespacing, and offset.x as modifying the letter spacing.
       offset:
-        x: 0.0
-        y: 0.0
+        x: 0
+        y: 0
 
       # Glyph offset determines the locations of the glyphs within their cells with
       # the default being at the bottom. Increase the x offset to move the glyph to
       # the right, increase the y offset to move the glyph upward.
       glyph_offset:
-        x: 0.0
-        y: 0.0
+        x: 0
+        y: 0
 
       # OS X only: use thin stroke font rendering. Thin strokes are suitable
       # for retina displays, but for non-retina you probably want this set to
@@ -324,10 +321,6 @@ let
 
     # Should display the render timer
     render_timer: false
-
-    # Use custom cursor colors. If true, display the cursor in the cursor.foreground
-    # and cursor.background colors, otherwise invert the colors of the cursor.
-    custom_cursor_colors: false
 
     # background_opacity: 0.95
 
@@ -466,11 +459,10 @@ let
     mouse:
       double_click: { threshold: 300 }
       triple_click: { threshold: 300 }
+      hide_cursor_when_typing: true
 
     selection:
       semantic_escape_chars: ",│`|:\"' ()[]{}<>"
-
-    hide_cursor_when_typing: true
 
     # Shell
     #
