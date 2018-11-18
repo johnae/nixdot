@@ -1,15 +1,19 @@
+{stdenv, lib, pkgs, ...}:
+
 {
+
   dconf = {
     "org/gnome/desktop/interface" = {
       font-name = "Roboto Medium 11";
       icon-theme = "Papirus-Adapta-Nokto";
-      gtk-theme = "Adapta-Nokto";
+      gtk-theme = "Adapta-Nokto-Eta";
     };
     "org/gnome/desktop/wm/preferences" = {
       titlebar-font = "Roboto Medium 11";
-      theme = "Adapta-Nokto";
+      theme = "Adapta-Nokto-Eta";
     };
   };
+
   terminfo = {
     xterm-24bits = ''
       # Use colon separators.
@@ -24,6 +28,7 @@
         setf24=\E[38;2;%p1%{65536}%/%d;%p1%{256}%/%{255}%&%d;%p1%{255}%&%dm,
     '';
   };
+
   ssh = {
     hosts = {
       "*.compute.amazonaws.com" = {
@@ -50,8 +55,8 @@
 
   alacritty = {
     font = "Source Code Pro";
-    fontSize = "8.0";
-    largeFontSize = "20.0";
+    fontSize = "14.0";
+    largeFontSize = "28.0";
     backgroundOpacity = "0.95";
     colors = ''
       # Copyright (c) 2017-present Arctic Ice Studio <development@arcticicestudio.com>
