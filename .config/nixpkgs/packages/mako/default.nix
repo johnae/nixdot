@@ -4,13 +4,13 @@
 
 stdenv.mkDerivation rec {
   name = "mako-${version}";
-  version = "5c01d129bf448aad451b113dc6b76b60e10334e2";
+  version = "ce1978865935dbff1b3bf3065ff607a4178fe57b";
 
   src = fetchFromGitHub {
     owner = "emersion";
     repo = "mako";
     rev = version;
-    sha256 = "19p0abvgvncqx7dv8cssngvrij5wszplbk05i61p1qgzlxw52cp6";
+    sha256 = "0cw8gs3si4v4684qfsnvpr8sv45h70k6syz3yk9ns05dm7r0fnzq";
   };
 
   nativeBuildInputs = [
@@ -20,15 +20,10 @@ stdenv.mkDerivation rec {
     wayland wayland-protocols dbus_libs pango cairo systemd
   ];
 
-  #enableParallelBuilding = true;
-
-  #cmakeFlags = "-DVERSION=${version} -DLD_LIBRARY_PATH=/run/opengl-driver/lib:/run/opengl-driver-32/lib";
-
   meta = with stdenv.lib; {
     description = "notification daemon for Wayland";
     homepage    = https://mako-project.org/;
     license     = licenses.mit;
     platforms   = platforms.linux;
-    #maintainers = with maintainers; [ johnae ]; # Trying to keep it up-to-date.
   };
 }
