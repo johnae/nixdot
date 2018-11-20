@@ -18,13 +18,6 @@ let
         use-package;
     });
 
-  ## searches for git at build time and atm this isn't reflected in nixpkgs
-  evil-magit = pkgs.emacsPackagesNg.evil-magit.overrideAttrs (
-    attrs: {
-    nativeBuildInputs = (attrs.nativeBuildInputs or []) ++ [ git ];
-    }
-  );
-
   ## use a nord-theme that works with 24-bit terminals
   nord-theme = emacsPackages.melpaBuild {
     pname = "nord-theme";
@@ -45,13 +38,13 @@ let
   ## use up-to-date nix-mode
   nix-mode = emacsPackages.melpaBuild {
     pname = "nix-mode";
-    version = "20180801";
+    version = "20181120";
 
     src = fetchFromGitHub {
       owner = "NixOS";
       repo = "nix-mode";
-      rev = "fbcbc446f84bbfdafac0d6f37df5918cab2e4610";
-      sha256 = "1yhga5rgbc9aqnbqq7rbdv8ycbw8jk40l2m04p5d1065q8icpaka";
+      rev = "84ee98019fbb48854ebd57cc74848b7e7327a78c";
+      sha256 = "1i9vg5q1fqp2h49p5m5p6a0nv796v0wq8ljbmfg1z4kmwll69mkx";
     };
 
     recipe = writeText "nix-mode-recipe" ''
@@ -63,13 +56,13 @@ let
   prescientSource = fetchFromGitHub {
     owner  = "raxod502";
     repo   = "prescient.el";
-    rev    = "27c94636489d5b062970a0f7e9041ca186b6b659";
-    sha256 = "05jk8cms48dhpbaimmx3akmnq32fgbc0q4dja7lvpvssmq398cn7";
+    rev    = "1623a0d4e5b9a752db45923fd91da48b49c85068";
+    sha256 = "0yan4m9xf4iia4ns8kqa0zsham4h2mcnwsq9xnfwm26rkn94xrw0";
   };
 
   prescient = emacsPackages.melpaBuild {
     pname   = "prescient";
-    version = "1.0";
+    version = "2.2.1";
     src     = prescientSource;
 
     recipe = writeText "prescient-recipe" ''
@@ -80,7 +73,7 @@ let
 
   ivy-prescient = emacsPackages.melpaBuild {
     pname   = "ivy-prescient";
-    version = "1.0";
+    version = "2.2.1";
     src     = prescientSource;
     packageRequires = [ prescient ];
 
@@ -92,7 +85,7 @@ let
 
   company-prescient = emacsPackages.melpaBuild {
     pname   = "company-prescient";
-    version = "1.0";
+    version = "2.2.1";
     src     = prescientSource;
     packageRequires = [ prescient ];
 
