@@ -38,7 +38,7 @@ self: super: {
           ii
           direnv
 
-          python2Packages.docker_compose
+          docker_compose
           bc
           bat ## alias to cat = awesome
 
@@ -78,8 +78,6 @@ self: super: {
           global
           rtags
           stack
-
-          alacritty
     ];
   };
 }
