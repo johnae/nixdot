@@ -7,7 +7,7 @@ self: super: {
           sway
           dotfiles
           my-emacs
-          latest.firefox-beta-bin
+          latest.firefox-nightly-bin
           signal-desktop
           awscli
           my-google-cloud-sdk
