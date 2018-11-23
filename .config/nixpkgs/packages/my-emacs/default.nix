@@ -192,6 +192,7 @@ in
     sbt-mode
     js2-mode
     tide
+    prettier-js
 
     # Haskell
     haskell-mode

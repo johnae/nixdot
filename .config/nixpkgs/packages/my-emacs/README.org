@@ -471,10 +471,19 @@ TypeScript mode.
   :after (typescript-mode company flycheck)
   :hook  ((typescript-mode . tide-restart-server)
          (typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save)))
+         (typescript-mode . tide-hl-identifier-mode)))
 #+END_SRC
 
+
+Prettier for js/typescript etc code formatting.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package prettier-js
+  :ensure t
+  :config
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'typescript-mode-hook 'prettier-js-mode))
+#+END_SRC
 
 
 Mode for elm. Disabled atm.
