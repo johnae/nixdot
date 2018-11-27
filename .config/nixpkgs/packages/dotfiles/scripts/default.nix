@@ -4,6 +4,7 @@
  my-emacs, termite, wl-clipboard,
  ps, jq, fire, sway, rofi,
  fd, fzf, bashInteractive,
+ pass, wpa_supplicant,
  gnupg, gawk, gnused,
  gnugrep, findutils, coreutils,
  alacritty, libnotify, xdotool,
@@ -267,6 +268,42 @@ let
     fi
   '';
 
+  update-wifi-networks = writeScriptBin "update-wifi-networks" ''
+    #!${stdenv.shell}
+    OIFS=$IFS
+    IFS=$'\n'
+    for NET in $(find ~/.password-store/wifi/networks/ -type f | xargs -I{} basename {}); do
+      NETNAME=$(basename $NET .gpg)
+      echo "Ensure wireless network \"$NETNAME\" is available"
+      ${pass}/bin/pass show "wifi/networks/$NETNAME" | sudo tee "/var/lib/iwd/$NETNAME.psk" > /dev/null
+    done
+  '';
+
+  add-wifi-network = writeScriptBin "add-wifi-network" ''
+    #!${stdenv.shell}
+    NET=$1
+    PASS=$2
+    if [ -z "$NET" ]; then
+      echo Please provide the network as first argument
+      exit 1
+    fi
+    if [ -z "$PASS" ]; then
+      echo Please provide the password as second argument
+      exit 1
+    fi
+    PSK=$(${wpa_supplicant}/bin/wpa_passphrase "$1" "$2" | grep "[^#]psk=" | awk -F'=' '{print $2}')
+    if [ -z "$PSK" ]; then
+      echo Hmm PSK was empty
+      exit 1
+    fi
+    cat <<EOF | ${pass}/bin/pass insert "wifi/networks/$NET"
+    [Security]
+    PreSharedKey=$PSK
+    Passphrase=$PASS
+    EOF
+    ${update-wifi-networks}/bin/update-wifi-networks
+  '';
+
   autorandr-postswitch = writeScriptBin "autorandr-postswitch" ''
     #!${stdenv.shell}
     BG=$(${coreutils}/bin/cat /etc/nixos/meta.nix | \
@@ -358,5 +395,7 @@ in
       kctl = kctl;
       start-sway = start-sway;
       random-background = random-background;
+      add-wifi-network = add-wifi-network;
+      update-wifi-networks = update-wifi-networks;
     };
   }
