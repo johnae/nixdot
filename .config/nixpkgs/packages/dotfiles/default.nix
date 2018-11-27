@@ -11,7 +11,8 @@ let
   settings = import (builtins.getEnv "HOME") { inherit stdenv lib pkgs; };
 
   # scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-beta-bin}/bin/firefox"; inherit settings; }).paths;
-  scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.epiphany}/bin/epiphany"; inherit settings; }).paths;
+
+  scripts = (pkgs.callPackage ./scripts { browser = "${pkgs.latest.firefox-nightly-bin}/bin/firefox"; inherit settings; }).paths;
 
   swaydot = with scripts; pkgs.callPackage ./sway {
         inherit libdot browse launch edi edit random-background emacs-server terminal fzf-window fzf-run fzf-passmenu rofi-passmenu rename-workspace screenshot settings;
