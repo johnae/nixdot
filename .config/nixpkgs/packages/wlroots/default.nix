@@ -3,22 +3,15 @@
 , xcbutilwm, libX11, libcap, xcbutilimage, xcbutilerrors, libdrm, mesa_noglu
 }:
 
-let pname = "wlroots";
-    version = "2018-10-30";
-
-in stdenv.mkDerivation rec {
-  name = "${pname}"; #-${version}";
+stdenv.mkDerivation rec {
+  name = "wlroots";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
-    rev = "c70b8f64b7f1ea0a603517c7e6852ef3743a483a";
-    sha256 = "1ldjbkr31k0kf9nyx8yv1dbr52iw0639cnmbfxw3phd9y0ry1ngh";
+    rev = "05bb44078667a11216611a8fbe87c5fe69e117f8";
+    sha256 = "0mr7zvxlzyvryli7ah85v234brc4ip1fbnrwjdklp7bfmnvb0fkp";
   };
-
-  # patches = [
-  #   ./0001-Add-fix.patch
-  # ];
 
   # $out for the library and $bin for rootston
   outputs = [ "out" "bin" ];
