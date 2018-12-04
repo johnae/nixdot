@@ -131,7 +131,7 @@ let
           set -g prompt_status "<$last_status> "
        end
 
-       printf '%s%s%s %s%s%s%s%s> ' (set_color $fish_color_error)$prompt_status (set_color $fish_color_cwd)(prompt_pwd) (set_color normal)(__fish_git_prompt)(set_color green)(_kube_context)(set_color normal)
+       printf '%s%s%s%s %s%s%s%s%s> ' (set_color $fish_color_error)$prompt_status (set_color --bold brmagenta)(_in_nix_shell)(set_color $fish_color_cwd)(prompt_pwd) (set_color normal)(__fish_git_prompt)(set_color green)(_kube_context)(set_color normal)
        if not test $last_status -eq 0
          set_color $fish_color_error
        end
@@ -141,6 +141,14 @@ let
           set -e GIT_DIR
           set -e GIT_WORK_TREE
           set -e __nountracked
+       end
+     end
+
+     function _in_nix_shell --description 'Returns whether we are in a nix shell'
+       if [ "$IN_NIX_SHELL" = "" ]
+         echo ""
+       else
+         echo "[NIX] "
        end
      end
 
