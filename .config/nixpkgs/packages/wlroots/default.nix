@@ -9,8 +9,8 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
-    rev = "3efc6bc363b4200d9cd73e76a7e95778595f5049";
-    sha256 = "1h6jd0l597xhf1zrgf4p6finqmrdkzhn5pci1jkqy15i5ihiaf47";
+    rev = "fdb67ff63bdb301ee202a128c0b8cb616736707d";
+    sha256 = "15qi0fzclc2b3gzxcirmnz6khvfvka0yh36b91p2dv05bf1sg1v9";
   };
 
   # $out for the library and $bin for rootston
