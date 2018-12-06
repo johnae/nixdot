@@ -99,7 +99,7 @@ let
 
     # use fzf as a program launcher
     # bindsym ${mod}+d exec ${fzf-window}/bin/fzf-window ${fzf-run}/bin/fzf-run
-    bindsym ${mod}+d exec _SET_WS_NAME=y ${rofiPath} -show run -run-command "launch {cmd}"
+    bindsym ${mod}+d exec _SET_WS_NAME=y ${rofiPath} -show run -run-command "${launch}/bin/launch {cmd}"
 
     # use rofi for switching between windows
     # bindsym ${mod}+Tab exec ${rofiPath} -show window -matching normal
