@@ -27,7 +27,6 @@ self: super: {
           wl-clipboard
 
           gnome3.gedit
-          libreoffice
           gimp
           inkscape
           evince
