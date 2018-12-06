@@ -1,10 +1,26 @@
-{stdenv, lib, coreutils, attr, ...}:
+{stdenv, shellcheck, lib, writeTextFile, coreutils, ...}:
 
 with lib;
 
-let
+{
 
   setToStringSep = sep: x: fun: concatStringsSep sep (mapAttrsToList fun x);
+
+  writeStrictShellScriptBin = name: text:
+    writeTextFile {
+      inherit name;
+      executable = true;
+      destination = "/bin/${name}";
+      text = ''
+        #!${stdenv.shell}
+        set -euo pipefail
+        ${text}
+      '';
+      checkPhase = ''
+        ${stdenv.shell} -n $out/bin/${name}
+        ${shellcheck}/bin/shellcheck -s bash -f tty $out/bin/${name}
+      '';
+    };
 
   mkdir = {path, mode ? "0755"}: ''
         ${coreutils}/bin/echo "mkdir $PWD/${path} with mode ${mode}"
@@ -20,10 +36,4 @@ let
         ${coreutils}/bin/echo ${coreutils}/bin/chmod ${mode} ${to} >> set-permissions.sh
   '';
 
-in
-
-{
-  setToStringSep = setToStringSep;
-  mkdir = mkdir;
-  copy = copy;
 }

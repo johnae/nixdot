@@ -1,6 +1,7 @@
 {
  stdenv, lib,
  writeScriptBin,
+ writeStrictShellScriptBin,
  my-emacs, termite, wl-clipboard,
  ps, jq, fire, sway, rofi,
  fd, fzf, bashInteractive,
@@ -17,127 +18,127 @@ let
   emacsclient = "${my-emacs}/bin/emacsclient";
   emacs = "${my-emacs}/bin/emacs";
 
-  emacs-server = writeScriptBin "emacs-server" ''
-    #!${stdenv.shell}
-    if [ "$1" = "" -a -e /run/user/1337/emacs1337/server ]; then
+  emacs-server = writeStrictShellScriptBin "emacs-server" ''
+    if [ -e /run/user/1337/emacs1337/server ]; then
        exit 0
     fi
     ${coreutils}/bin/rm -rf /run/user/1337/emacs1337
     TMPDIR=/run/user/1337 exec ${emacs} --daemon=server
   '';
 
-  edit = writeScriptBin "edit" ''
-    #!${stdenv.shell}
+  edit = writeStrictShellScriptBin "edit" ''
     ${emacs-server}/bin/emacs-server
     exec ${emacsclient} -n -c \
-         -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
+         -s /run/user/1337/emacs1337/server "$@" >/dev/null 2>&1
   '';
 
-  edi = writeScriptBin "edi" ''
-    #!${stdenv.shell}
+  edi = writeStrictShellScriptBin "edi" ''
     ${emacs-server}/bin/emacs-server
     export TERM=xterm-24bits
-    exec ${emacsclient} -t -s /run/user/1337/emacs1337/server $@
+    exec ${emacsclient} -t -s /run/user/1337/emacs1337/server "$@"
   '';
 
-  ed = writeScriptBin "ed" ''
-    #!${stdenv.shell}
+  ed = writeStrictShellScriptBin "ed" ''
     ${emacs-server}/bin/emacs-server
-    exec ${emacsclient} -c -s /run/user/1337/emacs1337/server $@ 2>&1 >/dev/null
+    exec ${emacsclient} -c -s /run/user/1337/emacs1337/server "$@" >/dev/null 2>&1
   '';
 
-  fzf-fzf = writeScriptBin "fzf-fzf" ''
-    #!${stdenv.shell}
-    FZF_HEIGHT=''${FZF_HEIGHT:-100}
+  fzf-fzf = writeStrictShellScriptBin "fzf-fzf" ''
     FZF_MIN_HEIGHT=''${FZF_MIN_HEIGHT:-100}
     FZF_MARGIN=''${FZF_MARGIN:-5,5,5,5}
     FZF_PROMPT=''${FZF_PROMPT:- >}
     FZF_OPTS=''${FZF_OPTS:-"--reverse"}
-    exec ${fzf}/bin/fzf --height=$FZF_HEIGHT \
-        --min-height=$FZF_MIN_HEIGHT \
-        --margin=$FZF_MARGIN \
+    exec ${fzf}/bin/fzf --min-height="$FZF_MIN_HEIGHT" \
+        --margin="$FZF_MARGIN" \
         --prompt="$FZF_PROMPT" \
-        --tac
-        $FZF_OPTS⏎
+        --tac "$FZF_OPTS"
   '';
 
-  project-select = writeScriptBin "project-select" ''
-    #!${stdenv.shell}
-    projects=$@
+  project-select = writeStrictShellScriptBin "project-select" ''
+    projects=$*
     if [ -z "$projects" ]; then
       ${coreutils}/bin/echo "Please provide the project root directories to search as arguments"
       exit 1
     fi
     export FZF_PROMPT="goto project >"
-    ${fd}/bin/fd -d 8 -pHI -t f '.*\.git/config$' $projects | \
+    ${fd}/bin/fd -d 8 -pHI -t f '.*\.git/config$' "$projects" | \
       ${gnused}/bin/sed 's|/\.git/config||g' | \
       ${gnused}/bin/sed "s|$HOME/||g" | \
       ${fzf-fzf}/bin/fzf-fzf | \
       ${findutils}/bin/xargs -I{} ${coreutils}/bin/echo "$HOME/{}"
   '';
 
-  screenshot = writeScriptBin "screenshot" ''
-    #!${stdenv.shell}
+  screenshot = writeStrictShellScriptBin "screenshot" ''
     name=$(${coreutils}/bin/date +%Y-%m-%d_%H:%M:%S_screen)
     output_dir=$HOME/Pictures/screenshots
     fmt=png
-    ${coreutils}/bin/mkdir -p $output_dir
+    ${coreutils}/bin/mkdir -p "$output_dir"
     #killall compton
-    ${maim}/bin/maim -s --format=$fmt $output_dir/$name.$fmt
+    ${maim}/bin/maim -s --format="$fmt $output_dir/$name.$fmt"
   '';
 
-  browse = writeScriptBin "browse" ''
-    #!${stdenv.shell}
-    exec ${browser}
+  browse = writeStrictShellScriptBin "browse" ''
+    exec ${browser} -P default
   '';
 
-  terminal = writeScriptBin "terminal" ''
-    #!${stdenv.shell}
+  slacks = writeStrictShellScriptBin "slacks" ''
+    WS=''${1:-}
+    if [ -z "$WS" ]; then
+      echo Please provide a workspace as argument
+      exit 1
+    fi
+    exec ${browser} --new-instance -P slack --new-window "https://$WS.slack.com"
+  '';
+
+  terminal = writeStrictShellScriptBin "terminal" ''
+    _TERMEMU=''${_TERMEMU:-}
+    TERMINAL_CONFIG=''${TERMINAL_CONFIG:-}
     if [ "$_TERMEMU" = "termite" ]; then
       CONFIG=$HOME/.config/termite/config$TERMINAL_CONFIG
-      ${termite}/bin/termite --config $CONFIG $@
+      ${termite}/bin/termite --config "$CONFIG" "$@"
     else
       CONFIG=$HOME/.config/alacritty/alacritty$TERMINAL_CONFIG.yml
       ${if builtins.hasAttr "WINIT_HIDPI_FACTOR" settings then
       "export WINIT_HIDPI_FACTOR=${settings.WINIT_HIDPI_FACTOR}"
       else ""}
-      ${alacritty}/bin/alacritty --config-file $CONFIG $@
+      ${alacritty}/bin/alacritty --config-file "$CONFIG" "$@"
     fi
   '';
 
-  launch = writeScriptBin "launch" ''
-    #!${stdenv.shell}
-    cmd=$@
+  launch = writeStrictShellScriptBin "launch" ''
+    cmd=$*
+    _SET_WS_NAME=''${_SET_WS_NAME:-}
+    _USE_NAME=''${_USE_NAME:-}
     if [ -z "$cmd" ]; then
-      read cmd
+      read -r cmd
     fi
     MSG=${sway}/bin/swaymsg
     if [ "$_SET_WS_NAME" = "y" ]; then
-      name=$(${coreutils}/bin/echo $cmd | ${gawk}/bin/awk '{print $1}')
+      name=$(${coreutils}/bin/echo "$cmd" | ${gawk}/bin/awk '{print $1}')
       if [ "$_USE_NAME" ]; then
           name=$_USE_NAME
       fi
+      echo "$name"
       wsname=$($MSG -t get_workspaces | ${jq}/bin/jq -r \
                '.[] | select(.focused==true).name')
       if ${coreutils}/bin/echo "$wsname" | \
          ${gnugrep}/bin/grep -E '^[0-9]:? ?+$' > /dev/null; then
-        $MSG "rename workspace to \"$wsname: $name\"" 2>&1 >/dev/null
+        $MSG "rename workspace to \"$wsname: $name\"" >/dev/null 2>&1
       fi
     fi
     echo "${fire}/bin/fire $cmd" | ${stdenv.shell}
   '';
 
-  rename-workspace = writeScriptBin "rename-workspace" ''
-    #!${stdenv.shell}
+  rename-workspace = writeStrictShellScriptBin "rename-workspace" ''
     CMD=${sway}/bin/swaymsg
     WSNUM=$($CMD -t get_workspaces | ${jq}/bin/jq \
             '.[] | select(.focused==true).name' | \
             ${coreutils}/bin/cut -d"\"" -f2 | \
             ${gnugrep}/bin/grep -o -E '[[:digit:]]+')
-    if [ -z "$@" ]; then
+    if [ -z "$*" ]; then
         exit 0
     fi
-    $CMD "rename workspace to \"$WSNUM: $@\"" 2>&1 >/dev/null
+    $CMD "rename workspace to \"$WSNUM: $*\"" >/dev/null 2>&1
   '';
 
   fzf-run = writeScriptBin "fzf-run" ''
@@ -150,30 +151,36 @@ let
     launch
   '';
 
-  fzf-window = writeScriptBin "fzf-window" ''
-    #!${stdenv.shell}
-    cmd=$1
+  fzf-window = writeStrictShellScriptBin "fzf-window" ''
+    cmd=''${1:-}
+    if [ -z "$cmd" ]; then
+      echo "Please provide a command to run in the window as the argument"
+      exit 1
+    fi
     shift
     export _TERMEMU=termite
     export TERMINAL_CONFIG=-large-font
     if ${ps}/bin/ps aux | grep '\-c fzf-window' | \
-       ${gnugrep}/bin/grep -v grep 2>&1 > /dev/null; then
+       ${gnugrep}/bin/grep -v grep > /dev/null 2>&1; then
         exit
     fi
-    exec terminal -t "fzf-window" -e "$cmd $@"
+    exec terminal -t "fzf-window" -e "$cmd $*"
   '';
 
-  fzf-passmenu = writeScriptBin "fzf-passmenu" ''
-    #!${stdenv.shell}
+  fzf-passmenu = writeStrictShellScriptBin "fzf-passmenu" ''
     export _TERMEMU=termite
     export FZF_PROMPT="search for password >"
     ## because bug: https://github.com/jordansissel/xdotool/issues/49
 
-    passfile=$1
-    prefix=$(readlink -f $HOME/.password-store)
+    passfile=''${1:-}
+    nosubmit=''${nosubmit:-}
+    passonly=''${passonly:-}
+    _passmenu_didsearch=''${_passmenu_didsearch:-}
+    SWAYSOCK=''${SWAYSOCK:-}
+    prefix=$(readlink -f "$HOME/.password-store")
     if [ -z "$_passmenu_didsearch" ]; then
       export _passmenu_didsearch=y
-      ${fd}/bin/fd --type f -E '/notes/' '.gpg$' $HOME/.password-store | \
+      ${fd}/bin/fd --type f -E '/notes/' '.gpg$' "$HOME/.password-store" | \
          ${gnused}/bin/sed "s|$prefix/||g" | ${gnused}/bin/sed 's|.gpg$||g' | \
          ${fzf-fzf}/bin/fzf-fzf | \
          ${findutils}/bin/xargs -r -I{} ${coreutils}/bin/echo "$0 {}" | \
@@ -187,12 +194,12 @@ let
     error_icon=~/Pictures/icons/essential/error.svg
 
     getlogin() {
-      ${coreutils}/bin/echo -n $(${coreutils}/bin/basename "$1")
+      ${coreutils}/bin/echo -n "$(${coreutils}/bin/basename "$1")"
     }
 
     getpass() {
-      ${coreutils}/bin/echo -n $(${gnupg}/bin/gpg --decrypt "$prefix/$1.gpg" \
-                            2>/dev/null | ${coreutils}/bin/head -1)
+      ${coreutils}/bin/echo -n "$(${gnupg}/bin/gpg --decrypt "$prefix/$1.gpg" \
+                            2>/dev/null | ${coreutils}/bin/head -1)"
     }
 
     login=$(getlogin "$passfile")
@@ -202,13 +209,13 @@ let
       ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical \
       "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
     else
-      if [ -z "$SWAYSOCK"]; then
+      if [ -z "$SWAYSOCK" ]; then
         if [ -z "$passonly" ]; then
-          ${coreutils}/bin/echo -n $login | ${xdotool}/bin/xdotool type \
+          ${coreutils}/bin/echo -n "$login" | ${xdotool}/bin/xdotool type \
                                             --clearmodifiers --file -
           ${xdotool}/bin/xdotool key Tab
         fi
-        ${coreutils}/bin/echo -n $pass | ${xdotool}/bin/xdotool type \
+        ${coreutils}/bin/echo -n "$pass" | ${xdotool}/bin/xdotool type \
                                          --clearmodifiers --file -
         if [ -z "$nosubmit" ]; then
           ${xdotool}/bin/xdotool key Return
@@ -220,12 +227,13 @@ let
 
   '';
 
-  rofi-passmenu = writeScriptBin "rofi-passmenu" ''
-    #!${stdenv.shell}
+  rofi-passmenu = writeStrictShellScriptBin "rofi-passmenu" ''
     PROMPT=" for password >"
 
-    prefix=$(readlink -f $HOME/.password-store)
-    passfile=$(${fd}/bin/fd --type f -E '/notes/' '.gpg$' $HOME/.password-store | \
+    prefix=$(readlink -f "$HOME/.password-store")
+    nosubmit=''${nosubmit:-}
+    passonly=''${passonly:-}
+    passfile=$(${fd}/bin/fd --type f -E '/notes/' '.gpg$' "$HOME/.password-store" | \
        ${gnused}/bin/sed "s|$prefix/||g" | ${gnused}/bin/sed 's|.gpg$||g' | \
        ${rofi}/bin/rofi -dmenu -p "$PROMPT")
 
@@ -236,12 +244,12 @@ let
     error_icon=~/Pictures/icons/essential/error.svg
 
     getlogin() {
-      ${coreutils}/bin/echo -n $(${coreutils}/bin/basename "$1")
+      ${coreutils}/bin/echo -n "$(${coreutils}/bin/basename "$1")"
     }
 
     getpass() {
-      ${coreutils}/bin/echo -n $(${gnupg}/bin/gpg \
-          --decrypt "$prefix/$1.gpg" 2>/dev/null | ${coreutils}/bin/head -1)
+      ${coreutils}/bin/echo -n "$(${gnupg}/bin/gpg \
+          --decrypt "$prefix/$1.gpg" 2>/dev/null | ${coreutils}/bin/head -1)"
     }
 
     login=$(getlogin "$passfile")
@@ -251,13 +259,13 @@ let
       ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical \
       "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
     else
-      if [ -z "$SWAYSOCK"]; then
+      if [ -z "$SWAYSOCK" ]; then
         if [ -z "$passonly" ]; then
-          ${coreutils}/bin/echo -n $login | ${xdotool}/bin/xdotool type \
+          ${coreutils}/bin/echo -n "$login" | ${xdotool}/bin/xdotool type \
                                             --clearmodifiers --file -
           ${xdotool}/bin/xdotool key Tab
         fi
-        ${coreutils}/bin/echo -n $pass | ${xdotool}/bin/xdotool type \
+        ${coreutils}/bin/echo -n "$pass" | ${xdotool}/bin/xdotool type \
                                          --clearmodifiers --file -
         if [ -z "$nosubmit" ]; then
           ${xdotool}/bin/xdotool key Return
@@ -268,21 +276,18 @@ let
     fi
   '';
 
-  update-wifi-networks = writeScriptBin "update-wifi-networks" ''
-    #!${stdenv.shell}
-    OIFS=$IFS
+  update-wifi-networks = writeStrictShellScriptBin "update-wifi-networks" ''
     IFS=$'\n'
-    for NET in $(find ~/.password-store/wifi/networks/ -type f | xargs -I{} basename {}); do
-      NETNAME=$(basename $NET .gpg)
+    for NET in $(find ~/.password-store/wifi/networks/ -print0 -type f | xargs -I{} basename {}); do
+      NETNAME=$(basename "$NET" .gpg)
       echo "Ensure wireless network \"$NETNAME\" is available"
       ${pass}/bin/pass show "wifi/networks/$NETNAME" | sudo tee "/var/lib/iwd/$NETNAME.psk" > /dev/null
     done
   '';
 
-  add-wifi-network = writeScriptBin "add-wifi-network" ''
-    #!${stdenv.shell}
-    NET=$1
-    PASS=$2
+  add-wifi-network = writeStrictShellScriptBin "add-wifi-network" ''
+    NET=''${1:-}
+    PASS=''${2:-}
     if [ -z "$NET" ]; then
       echo Please provide the network as first argument
       exit 1
@@ -304,28 +309,23 @@ let
     ${update-wifi-networks}/bin/update-wifi-networks
   '';
 
-  autorandr-postswitch = writeScriptBin "autorandr-postswitch" ''
-    #!${stdenv.shell}
-    BG=$(${coreutils}/bin/cat /etc/nixos/meta.nix | \
-         ${gnugrep}/bin/grep dmBackground | \
+  autorandr-postswitch = writeStrictShellScriptBin "autorandr-postswitch" ''
+    BG=$(${gnugrep}/bin/grep dmBackground < /etc/nixos/meta.nix | \
          ${gawk}/bin/awk '{print $3}' | ${gnused}/bin/sed 's|[";]||g')
     ${killall}/bin/killall compton
     ${coreutils}/bin/echo "Setting background: '$BG'"
     if [ -e "$BG" ]; then
-       ${feh}/bin/feh --bg-fill $BG
+       ${feh}/bin/feh --bg-fill "$BG"
     fi
 
   '';
 
-  random-background = writeScriptBin "random-background" ''
-    #!${stdenv.shell}
-    ${findutils}/bin/find $HOME/Pictures/backgrounds -type f | \
+  random-background = writeStrictShellScriptBin "random-background" ''
+    ${findutils}/bin/find "$HOME/Pictures/backgrounds" -type f | \
          ${coreutils}/bin/sort -R | ${coreutils}/bin/head -1
   '';
 
-  start-sway = writeScriptBin "start-sway" ''
-    #!${stdenv.shell}
-
+  start-sway = writeStrictShellScriptBin "start-sway" ''
     export _TERMEMU=termite
     export XDG_SESSION_TYPE=wayland
     export XKB_DEFAULT_LAYOUT=se
@@ -341,61 +341,30 @@ let
     export EDITOR=$VISUAL
     export PROJECTS=~/Development
     if [ -e .config/syncthing/config.xml ]; then
-       SYNCTHING_API_KEY=$(cat .config/syncthing/config.xml | grep apikey | \
+       SYNCTHING_API_KEY=$(grep apikey < .config/syncthing/config.xml | \
                                 awk -F">|</" '{print $2}')
        if [ "$SYNCTHING_API_KEY" != "" ]; then
           export SYNCTHING_API_KEY
        fi
     fi
 
-    exec dbus-launch --exit-with-session sway $@
-  '';
-
-  ## so clearly expects such a named entry in ~.ssh/config
-  kctl = writeScriptBin "kctl" ''
-     #!${stdenv.shell}
-
-     TUNNEL=kubetunnel
-
-     if [ "$1" = "stop-tunnel" ]; then
-       if ${openssh}/bin/ssh -O check $TUNNEL 2>&1 > /dev/null; then
-         ${openssh}/bin/ssh -O exit $TUNNEL
-       fi
-       exit
-     fi
-
-     if ! ${openssh}/bin/ssh -qf -N $TUNNEL 2>&1 > /dev/null; then
-       echo "ERROR: couldn't start $TUNNEL" >&2
-       exit 1
-     fi
-
-     ${kubectl}/bin/kubectl --server=https://127.0.0.1:6443 --insecure-skip-tls-verify=true $@
+    exec dbus-launch --exit-with-session sway "$@"
   '';
 
 in
 
   {
     paths = {
-      edit = edit;
-      edi = edi;
-      ed = ed;
-      emacs-server = emacs-server;
-      fzf-fzf = fzf-fzf;
-      project-select = project-select;
-      terminal = terminal;
-      launch = launch;
-      fzf-passmenu = fzf-passmenu;
-      rofi-passmenu = rofi-passmenu;
-      fzf-run = fzf-run;
-      fzf-window = fzf-window;
-      browse = browse;
-      rename-workspace = rename-workspace;
-      screenshot = screenshot;
-      autorandr-postswitch = autorandr-postswitch;
-      kctl = kctl;
-      start-sway = start-sway;
-      random-background = random-background;
-      add-wifi-network = add-wifi-network;
-      update-wifi-networks = update-wifi-networks;
+      inherit edit edi ed
+              emacs-server
+              fzf-fzf project-select
+              terminal launch
+              fzf-passmenu rofi-passmenu
+              fzf-run fzf-window
+              browse slacks
+              rename-workspace screenshot
+              autorandr-postswitch
+              start-sway random-background
+              add-wifi-network update-wifi-networks;
     };
   }
