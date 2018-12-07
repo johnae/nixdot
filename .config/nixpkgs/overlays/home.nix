@@ -10,7 +10,7 @@ self: super: {
           latest.firefox-nightly-bin
           signal-desktop
           awscli
-          my-google-cloud-sdk
+          google-cloud-sdk
           kubectl
           kubectx
           kubernetes-helm
