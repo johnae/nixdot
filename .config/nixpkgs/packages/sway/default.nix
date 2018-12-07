@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, meson048, ninja, pkgconfig
+{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig
 , asciidoc, libxslt, docbook_xsl, scdoc
 , wayland, wayland-protocols, xwayland, libxkbcommon
 , pcre, json_c, dbus_libs, pango, cairo, libinput
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    meson048 ninja pkgconfig git wrapGAppsHook
+    meson ninja pkgconfig git wrapGAppsHook
   ] ++ stdenv.lib.optional buildDocs [ asciidoc libxslt docbook_xsl ];
   buildInputs = [
     wayland wayland-protocols xwayland libxkbcommon pcre json_c dbus_libs
