@@ -38,13 +38,13 @@ let
   ## use up-to-date nix-mode
   nix-mode = emacsPackages.melpaBuild {
     pname = "nix-mode";
-    version = "20181120";
+    version = "20181212";
 
     src = fetchFromGitHub {
       owner = "NixOS";
       repo = "nix-mode";
-      rev = "84ee98019fbb48854ebd57cc74848b7e7327a78c";
-      sha256 = "1i9vg5q1fqp2h49p5m5p6a0nv796v0wq8ljbmfg1z4kmwll69mkx";
+      rev = "1512d02830fe90dddd35c9b4bd83d0ee963de57b";
+      sha256 = "1sn2077vmn71vwjvgs7a5prlp94kyds5x6dyspckxc78l2byb661";
     };
 
     recipe = writeText "nix-mode-recipe" ''
