@@ -42,7 +42,7 @@ let
     color15 = #eceff4
 
     [options]
-    font = Source Code Pro 14
+    font = Office Code Pro D 14
     scrollback_lines = 20000
   '';
 
@@ -100,7 +100,7 @@ let
     color21 = #eee8d5
 
     [options]
-    font = Source Code Pro 28
+    font = Office Code Pro D 28
     scrollback_lines = 20000
   '';
 

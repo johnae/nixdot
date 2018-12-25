@@ -54,7 +54,7 @@
   };
 
   alacritty = {
-    font = "Source Code Pro";
+    font = "Office Code Pro D";
     fontSize = "14.0";
     largeFontSize = "28.0";
     backgroundOpacity = "0.95";
