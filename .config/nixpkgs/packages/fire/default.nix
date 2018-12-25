@@ -1,14 +1,14 @@
 { stdenv, fetchFromGitHub, ghc }:
 
 stdenv.mkDerivation rec {
-  version = "1.0.0";
+  version = "1.0.1";
   name = "fire-${version}";
 
   src = fetchFromGitHub {
     owner = "johnae";
     repo = "fire";
-    rev = "ec28249213bc0539f43693d06985072061ae6b09";
-    sha256 = "1mszff839ksjivj1w3shih1s6mvmh1pi187w30c13fvipaab62d4";
+    rev = "2a64559b4364828b651305d89b76ba3f03661355";
+    sha256 = "1lg6yvzqs34s7lmdw2fvdz6zk3g4lbgfzrcb27fdv0kqsnhfhg3z";
   };
 
   buildPhase = ''
