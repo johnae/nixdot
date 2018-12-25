@@ -161,6 +161,7 @@ So [[https://github.com/emacs-evil/evil][evil]] is vim for emacs. A better vim b
   (define-key evil-normal-state-map (kbd ", <RET>") 'projectile-ag))
 #+END_SRC
 
+
 [[https://github.com/redguardtoo/evil-nerd-commenter][Evil nerd commenter]] let's me comment out one of more lines. In Evil mode this is done using
 C-c i (multiple lines by selecting a region). A reimplementation of the vim version.
 
@@ -169,6 +170,17 @@ C-c i (multiple lines by selecting a region). A reimplementation of the vim vers
   :ensure t
   :config
   (evilnc-default-hotkeys))
+#+END_SRC
+
+
+[[https://github.com/redguardtoo/evil-nerd-commenter][Evil surround]] makes it easy to surround text in say quotes or parens.
+See: https://github.com/emacs-evil/evil-surround
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
 #+END_SRC
 
 
@@ -855,8 +867,8 @@ Disable some things I'm not interested in, like tool bars and menu bars.
 This is a nice font :-).
 
 #+BEGIN_SRC elisp :tangle default.el
-(add-to-list 'default-frame-alist '(font . "Source Code Pro-14"))
-(set-face-attribute 'default t :font "Source Code Pro-14")
+(add-to-list 'default-frame-alist '(font . "Office Code Pro D-14"))
+(set-face-attribute 'default t :font "Office Code Pro D-14")
 #+END_SRC
 
 

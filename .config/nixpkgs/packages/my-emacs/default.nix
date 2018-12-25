@@ -137,6 +137,7 @@ in
     evil-magit
     evil-indent-textobject
     evil-nerd-commenter
+    evil-surround
     ## evil-cleverparens ## use lispyville / lispy instead?
 
     undo-tree
