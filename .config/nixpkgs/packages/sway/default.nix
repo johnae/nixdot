@@ -2,20 +2,20 @@
 , asciidoc, libxslt, docbook_xsl, scdoc
 , wayland, wayland-protocols, xwayland, libxkbcommon
 , pcre, json_c, dbus_libs, pango, cairo, libinput
-, libcap, pam, gdk_pixbuf, libpthreadstubs
+, libcap, pam, gdk_pixbuf, libpthreadstubs, libevdev
 , libXdmcp, wlroots, git, systemd, wrapGAppsHook
 , buildDocs ? true
 }:
 
 stdenv.mkDerivation rec {
   name = "sway-${version}";
-  version = "cf7c77e56ab895efd3b113debd53fc5881dd7205";
+  version = "9bf1b7a029afe2fdb07cb2bfe35cca4ad76098f9";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "sway";
     rev = version;
-    sha256 = "04m96415w3wj7bmg4i8y8prbv26af7i21ikzjz70ch92vdbs1qww";
+    sha256 = "0hnmyqic5xy97zlma2svi534n8v5mpmbz8w4fbz3f3m7qz28dczs";
   };
 
   nativeBuildInputs = [
@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     wayland wayland-protocols xwayland libxkbcommon pcre json_c dbus_libs
     pango cairo libinput libcap pam gdk_pixbuf libpthreadstubs
-    libXdmcp wlroots systemd
+    libXdmcp wlroots systemd libevdev
   ];
 
   mesonFlags = [
