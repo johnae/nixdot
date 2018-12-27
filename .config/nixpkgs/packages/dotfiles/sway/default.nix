@@ -1,8 +1,8 @@
 {
   stdenv,
   lib,
-  writeText,
-  writeScriptBin,
+  writeTextFile,
+  writeStrictShellScriptBin,
   libdot,
   sway, udev, gnupg,
   rofi, xorg, mako, persway, random-background,
@@ -20,6 +20,14 @@ with settings.sway;
 
 let
 
+  writeSwayConfig = name: text:
+    writeTextFile {
+      inherit name text;
+      #checkPhase = ''
+      #  ${sway}/bin/sway -C -c $out
+      #'';
+    };
+
   toConfig = setToStringSep "\n";
 
   loginctlPath = "${udev}/bin/loginctl";
@@ -35,13 +43,45 @@ let
   swayMsgPath = "${sway}/bin/swaymsg";
   playerctlPath = "${playerctl}/bin/playerctl";
 
-  swayBarStatusCmd = writeScriptBin "swaybar-status" ''
+  should-idle = writeStrictShellScriptBin "should-idle" ''
+    if ${sway}/bin/swaymsg -t get_tree | \
+       grep '"fullscreen_mode": 1' >/dev/null; then
+       exit 1
+    fi
+    if [ -e ~/.inhibit-idle ]; then
+       exit 1
+    fi
+    exit 0
+  '';
+
+  swayidle-helper = writeStrictShellScriptBin "swayidle-helper" ''
+    exec ${sway}/bin/swayidle \
+      timeout ${swaylockTimeout} \
+       '${should-idle}/bin/should-idle && ${sway}/bin/swaylock ${swaylockArgs}' \
+      timeout ${swaylockSleepTimeout} \
+       '${should-idle}/bin/should-idle && ${sway}/bin/swaymsg "output * dpms off"' \
+      resume '${sway}/bin/swaymsg "output * dpms on"' \
+      before-sleep '${sway}/bin/swaylock ${swaylockArgs}'
+  '';
+
+  notification-daemon = writeStrictShellScriptBin "notification-daemon" ''
+    exec ${mako}/bin/mako --font ${makoConfig.font} \
+                          --background-color "${makoConfig.backgroundColor}" \
+                          --border-size ${makoConfig.borderSize} \
+                          --default-timeout ${makoConfig.defaultTimeout} \
+                          --padding ${makoConfig.padding} \
+                          --height ${makoConfig.height} \
+                          --width ${makoConfig.width} \
+                          --markup 1
+  '';
+
+  swayBarStatusCmd = writeStrictShellScriptBin "swaybar-status" ''
     exec ${nixShellPath} --command "${spookPath} \
          -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" \
          ~/Development/moonbar/shell.nix
   '';
 
-  config = writeText "sway-config" ''
+  config = writeSwayConfig "sway-config" ''
     ######## Settings etc
     font ${font}
 
@@ -254,9 +294,9 @@ let
     mode "(p)oweroff, (s)uspend, (r)eboot, (l)ogout" {
             # These bindings trigger as soon as you enter the system mode
 
-            bindsym p exec "${swayMsgPath} mode 'default' && ${udev}/bin/systemctl poweroff"
-            bindsym s exec "${swayMsgPath} mode 'default' && ${udev}/bin/systemctl suspend"
-            bindsym r exec "${swayMsgPath} mode 'default' && ${udev}/bin/systemctl reboot"
+            bindsym p exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl poweroff"
+            bindsym s exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl suspend"
+            bindsym r exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl reboot"
             bindsym l exec "${swayMsgPath} exit"
 
             # back to normal: Enter or Escape
@@ -270,13 +310,10 @@ let
     exec ${xorg.xrdb}/bin/xrdb -merge ~/.Xresources
 
     # locks the screen on sleep etc
-    exec ${sway}/bin/swayidle \
-      timeout ${swaylockTimeout} 'test -e .inhibit-idle || ${sway}/bin/swaylock ${swaylockArgs}' \
-      timeout ${swaylockSleepTimeout} 'test -e .inhibit-idle || ${sway}/bin/swaymsg "output * dpms off"' \
-      resume '${sway}/bin/swaymsg "output * dpms on"' \
-      before-sleep '${sway}/bin/swaylock ${swaylockArgs}'
+    exec ${swayidle-helper}/bin/swayidle-helper
 
-    exec ${mako}/bin/mako --font ${makoConfig.font} --background-color "${makoConfig.backgroundColor}" --border-size ${makoConfig.borderSize} --default-timeout ${makoConfig.defaultTimeout} --padding ${makoConfig.padding} --height ${makoConfig.height} --width ${makoConfig.width} --markup 1
+    # notifications
+    exec ${notification-daemon}/bin/notification-daemon
 
     exec ${persway}/bin/persway
 
