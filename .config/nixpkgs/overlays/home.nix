@@ -24,6 +24,8 @@ self: super: {
           mpv
           vlc
 
+          steam
+
           wl-clipboard
 
           gnome3.gedit
