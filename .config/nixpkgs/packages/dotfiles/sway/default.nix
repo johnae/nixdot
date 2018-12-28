@@ -295,7 +295,7 @@ let
             # These bindings trigger as soon as you enter the system mode
 
             bindsym p exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl poweroff"
-            bindsym s exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl suspend"
+            bindsym s exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl suspend-then-hibernate"
             bindsym h exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl hibernate"
             bindsym r exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl reboot"
             bindsym l exec "${swayMsgPath} exit"
