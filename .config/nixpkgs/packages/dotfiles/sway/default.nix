@@ -290,12 +290,13 @@ let
     }
     bindsym ${mod}+r mode "resize"
 
-    # system eg. suspend, logout, reboot, poweroff
-    mode "(p)oweroff, (s)uspend, (r)eboot, (l)ogout" {
+    # system eg. suspend, hibernate, logout, reboot, poweroff
+    mode "(p)oweroff, (s)uspend, (h)ibernate, (r)eboot, (l)ogout" {
             # These bindings trigger as soon as you enter the system mode
 
             bindsym p exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl poweroff"
             bindsym s exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl suspend"
+            bindsym h exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl hibernate"
             bindsym r exec "${swayMsgPath} 'mode default' && ${udev}/bin/systemctl reboot"
             bindsym l exec "${swayMsgPath} exit"
 
@@ -303,7 +304,7 @@ let
             bindsym Return mode "default"
             bindsym Escape mode "default"
     }
-    bindsym ${mod}+Escape mode "(p)oweroff, (s)uspend, (r)eboot, (l)ogout"
+    bindsym ${mod}+Escape mode "(p)oweroff, (s)uspend, (h)ibernate, (r)eboot, (l)ogout"
 
     ######## Autostart
 
