@@ -42,6 +42,7 @@ self: super: {
           docker_compose
           bc
           bat ## alias to cat = awesome
+          gotop
 
           acpi
           iw
