@@ -149,7 +149,7 @@ let
     #!${bashInteractive}/bin/bash
     export FZF_PROMPT="run >> "
     export _SET_WS_NAME=y
-    export FZF_OPTS="--no-bold --no-color --height=40 --no-hscroll --no-mouse --no-extended --print-query --reverse --tac"
+    export FZF_OPTS="$FZF_OPTS''${FZF_OPTS:+ }--no-bold --no-color --height=40 --no-hscroll --no-mouse --no-extended --print-query --reverse"
 
     compgen -c | \
     sort -u | \
