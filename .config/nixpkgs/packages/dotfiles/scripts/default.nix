@@ -147,9 +147,9 @@ let
 
   fzf-run = writeScriptBin "fzf-run" ''
     #!${bashInteractive}/bin/bash
-    export FZF_PROMPT="run >"
+    export FZF_PROMPT="run >> "
     export _SET_WS_NAME=y
-    export FZF_OPTS="--no-bold --no-color --height=40 --inline-info --no-hscroll --no-mouse --no-extended --print-query --reverse --tac"
+    export FZF_OPTS="--no-bold --no-color --height=40 --no-hscroll --no-mouse --no-extended --print-query --reverse --tac"
 
     compgen -c | \
     sort -u | \
@@ -169,8 +169,13 @@ let
     shift
     export _TERMEMU=termite
     export TERMINAL_CONFIG=-launcher
-    if ${ps}/bin/ps aux | grep '\-c fzf-window' | \
+    if ${ps}/bin/ps aux | ${gnugrep}/bin/grep '\-t fzf-window' | \
        ${gnugrep}/bin/grep -v grep > /dev/null 2>&1; then
+        ${ps}/bin/ps aux | \
+            ${gnugrep}/bin/grep '\-t fzf-window' | \
+            ${gnugrep}/bin/grep -v grep | \
+            ${gawk}/bin/awk '{print $2}' | \
+            ${findutils}/bin/xargs -r -I{} kill {}
         exit
     fi
 
@@ -179,8 +184,8 @@ let
 
   fzf-passmenu = writeStrictShellScriptBin "fzf-passmenu" ''
     export _TERMEMU=termite
-    export FZF_PROMPT="search for password >"
-    export FZF_OPTS="--no-bold --no-color --height=40 --inline-info --reverse --no-hscroll --no-mouse --no-extended"
+    export FZF_PROMPT="copy password >> "
+    export FZF_OPTS="--no-bold --no-color --height=40 --reverse --no-hscroll --no-mouse --no-extended"
     ## because bug: https://github.com/jordansissel/xdotool/issues/49
 
     passfile=''${1:-}
