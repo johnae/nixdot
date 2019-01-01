@@ -185,7 +185,7 @@ let
   fzf-passmenu = writeStrictShellScriptBin "fzf-passmenu" ''
     export _TERMEMU=termite
     export FZF_PROMPT="copy password >> "
-    export FZF_OPTS="--no-bold --no-color --height=40 --reverse --no-hscroll --no-mouse --no-extended"
+    export FZF_OPTS="--no-bold --no-color --height=40 --reverse --no-hscroll --no-mouse"
     ## because bug: https://github.com/jordansissel/xdotool/issues/49
 
     passfile=''${1:-}
