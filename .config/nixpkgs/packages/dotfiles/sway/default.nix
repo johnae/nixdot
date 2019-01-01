@@ -85,8 +85,8 @@ let
     ######## Settings etc
     font ${font}
 
-    for_window [class="fzf-window"] fullscreen enable
-    for_window [title="fzf-window"] fullscreen enable
+    for_window [class="fzf-window"] floating enable, resize set width 100ppt height 100ppt
+    for_window [title="fzf-window"] floating enable, resize set width 100ppt height 100ppt
     for_window [class="input-window"] floating enable
     for_window [class="gcr-prompter"] floating enable
     no_focus [window_role="browser"]
