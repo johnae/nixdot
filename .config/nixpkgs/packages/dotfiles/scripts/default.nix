@@ -47,11 +47,10 @@ let
     FZF_MIN_HEIGHT=''${FZF_MIN_HEIGHT:-100}
     FZF_MARGIN=''${FZF_MARGIN:-5,5,5,5}
     FZF_PROMPT=''${FZF_PROMPT:- >}
-    FZF_OPTS=''${FZF_OPTS:-"--reverse"}
+    export FZF_DEFAULT_OPTS=''${FZF_OPTS:-"--reverse"}
     exec ${fzf}/bin/fzf --min-height="$FZF_MIN_HEIGHT" \
         --margin="$FZF_MARGIN" \
-        --prompt="$FZF_PROMPT" \
-        --tac "$FZF_OPTS"
+        --prompt="$FZF_PROMPT"
   '';
 
   project-select = writeStrictShellScriptBin "project-select" ''
@@ -61,6 +60,7 @@ let
       exit 1
     fi
     export FZF_PROMPT="goto project >"
+    export FZF_OPTS="--tac --reverse"
     ${fd}/bin/fd -d 8 -pHI -t f '.*\.git/config$' "$projects" | \
       ${gnused}/bin/sed 's|/\.git/config||g' | \
       ${gnused}/bin/sed "s|$HOME/||g" | \
@@ -149,10 +149,13 @@ let
     #!${bashInteractive}/bin/bash
     export FZF_PROMPT="run >"
     export _SET_WS_NAME=y
+    export FZF_OPTS="--no-bold --no-color --height=40 --inline-info --no-hscroll --no-mouse --no-extended --print-query --reverse --tac"
 
     compgen -c | \
+    sort -u | \
     fzf-fzf | \
-    launch
+    tail -n1 | \
+    ${findutils}/bin/xargs -r ${launch}/bin/launch
   '';
 
   fzf-window = writeStrictShellScriptBin "fzf-window" ''
@@ -163,17 +166,19 @@ let
     fi
     shift
     export _TERMEMU=termite
-    export TERMINAL_CONFIG=-large-font
+    export TERMINAL_CONFIG=-launcher
     if ${ps}/bin/ps aux | grep '\-c fzf-window' | \
        ${gnugrep}/bin/grep -v grep > /dev/null 2>&1; then
         exit
     fi
+
     exec terminal -t "fzf-window" -e "$cmd $*"
   '';
 
   fzf-passmenu = writeStrictShellScriptBin "fzf-passmenu" ''
     export _TERMEMU=termite
     export FZF_PROMPT="search for password >"
+    export FZF_OPTS="--no-bold --no-color --height=40 --inline-info --reverse --no-hscroll --no-mouse --no-extended"
     ## because bug: https://github.com/jordansissel/xdotool/issues/49
 
     passfile=''${1:-}

@@ -138,15 +138,15 @@ let
     # bindsym ${mod}+Control+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal-large
 
     # use fzf as a program launcher
-    # bindsym ${mod}+d exec ${fzf-window}/bin/fzf-window ${fzf-run}/bin/fzf-run
-    bindsym ${mod}+d exec _SET_WS_NAME=y ${rofiPath} -show run -run-command "${launch}/bin/launch {cmd}"
+    bindsym ${mod}+d exec ${fzf-window}/bin/fzf-window ${fzf-run}/bin/fzf-run
+    # bindsym ${mod}+d exec _SET_WS_NAME=y ${rofiPath} -show run -run-command "${launch}/bin/launch {cmd}"
 
     # use rofi for switching between windows
     # bindsym ${mod}+Tab exec ${rofiPath} -show window -matching normal
 
     # passmenu
-    # bindsym ${mod}+minus exec ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
-    bindsym ${mod}+minus exec ${rofi-passmenu}/bin/rofi-passmenu
+    bindsym ${mod}+minus exec ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
+    # bindsym ${mod}+minus exec ${rofi-passmenu}/bin/rofi-passmenu
 
     # passmenu pass only
     # bindsym ${mod}+Shift+minus exec passonly=y ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
