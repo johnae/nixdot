@@ -3,14 +3,14 @@
 buildGoPackage rec {
   name = "persway-unstable-${version}";
   version = "2018-10-08";
-  rev = "4edc21dd1c776521c64fb3d5b1d09a2f5ef43766";
+  rev = "57152d09d32982c84639e8761359f9ad8f71e1b7";
 
   goPackagePath = "github.com/johnae/persway";
 
   src = fetchgit {
     inherit rev;
     url = "https://github.com/johnae/persway";
-    sha256 = "074kh2n09vjcljczf9p8d1yqza8rd65f9r51w7a2hk4j6wbyav6m";
+    sha256 = "0kkgkwfk8vnnkwl7bhxrzfkd60ymiwjgkwc477wv542rsr1h7h9d";
   };
 
   goDeps = ./deps.nix;
