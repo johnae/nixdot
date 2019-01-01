@@ -153,6 +153,8 @@ let
 
     compgen -c | \
     sort -u | \
+    ${gawk}/bin/awk '{ if (length($0) > 2) print }' | \
+    ${gnugrep}/bin/grep -v -E '^\..*' | \
     fzf-fzf | \
     tail -n1 | \
     ${findutils}/bin/xargs -r ${launch}/bin/launch
