@@ -9,13 +9,13 @@
 
 stdenv.mkDerivation rec {
   name = "sway-${version}";
-  version = "4a3ada303b948ce2bdf21c7e6254005c85b000ea";
+  version = "a96e86744ffd19d9ed8a7fc8e5468bb8b274b228";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "sway";
     rev = version;
-    sha256 = "0n31f5y0i9gnh7dkm2bc2iai1vgyprdga7i8554fdq5nwsn05gvw";
+    sha256 = "0admsmzry6g43805iq7z3pinjg6c2vhfwbywkfsdv12ada6zfjks";
   };
 
   nativeBuildInputs = [
@@ -30,6 +30,7 @@ stdenv.mkDerivation rec {
   mesonFlags = [
     "-Dsway-version=${version}"
     "-Dauto_features=enabled"
+    "-Denable-tray=true"
   ];
 
   enableParallelBuilding = true;
