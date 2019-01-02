@@ -130,6 +130,15 @@
       eDP-1 = "pos 0 0";
     };
 
+    sway-inputs = {
+      "*" = {
+        xkb_layout = "se";
+        xkb_variant = "mac";
+        xkb_model = "pc105";
+        xkb_options = "ctrl:nocaps,lv3:lalt_switch,compose:ralt,lv3:ralt_alt";
+      };
+    };
+
     bgColor = "#4A90E2FF";
     inactiveBgColor = "#000000FF";
     textColor = "#fdf6e3";

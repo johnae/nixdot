@@ -344,11 +344,6 @@ let
   start-sway = writeStrictShellScriptBin "start-sway" ''
     export _TERMEMU=termite
     export XDG_SESSION_TYPE=wayland
-    export XKB_DEFAULT_LAYOUT=se
-    export XKB_DEFAULT_VARIANT=mac
-    export XKB_DEFAULT_MODEL=pc105
-    export XKB_DEFAULT_OPTIONS=ctrl:nocaps,lv3:lalt_switch,compose:ralt,lv3:ralt_alt
-
     export GDK_BACKEND=wayland
     export GTK_THEME="${settings.dconf."org/gnome/desktop/interface".gtk-theme}"
     export QT_STYLE_OVERRIDE=gtk
