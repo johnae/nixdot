@@ -1,7 +1,7 @@
 {stdenv, lib, pkgs, ...}:
 
 {
-  sway = rec {
+  sway = {
     sway-outputs = {
       eDP-1 = "scale 2.0 pos 0 0 res 3840x2160";
     };

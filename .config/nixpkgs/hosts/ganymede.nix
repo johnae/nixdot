@@ -1,7 +1,7 @@
 {stdenv, lib, pkgs, ...}:
 
 {
-  sway = rec {
+  sway = {
     sway-inputs = {
       "2:14:ETPS/2_Elantech_Touchpad" = {
         dwt = true;
