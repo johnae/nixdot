@@ -294,7 +294,7 @@ let
 
   update-wifi-networks = writeStrictShellScriptBin "update-wifi-networks" ''
     IFS=$'\n'
-    for NET in $(find ~/.password-store/wifi/networks/ -print0 -type f | xargs -I{} basename {}); do
+    for NET in $(find ~/.password-store/wifi/networks/ -type f -print0 | xargs -0 -I{} basename {}); do
       NETNAME=$(basename "$NET" .gpg)
       echo "Ensure wireless network \"$NETNAME\" is available"
       ${pass}/bin/pass show "wifi/networks/$NETNAME" | sudo tee "/var/lib/iwd/$NETNAME.psk" > /dev/null
