@@ -14,6 +14,8 @@
     };
   };
 
+  gtk-light-theme = "Adapta-Eta";
+
   terminfo = {
     xterm-24bits = ''
       # Use colon separators.

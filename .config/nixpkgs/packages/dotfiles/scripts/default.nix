@@ -3,7 +3,7 @@
  writeScriptBin,
  writeStrictShellScriptBin,
  my-emacs, termite, wl-clipboard,
- ps, jq, fire, sway, rofi,
+ ps, jq, fire, sway, rofi, evolution,
  fd, fzf, bashInteractive,
  pass, wpa_supplicant,
  gnupg, gawk, gnused,
@@ -362,12 +362,17 @@ let
     exec dbus-launch --exit-with-session sway "$@"
   '';
 
+  mail = writeStrictShellScriptBin "mail" ''
+    export GTK_THEME=${settings.gtk-light-theme}
+    exec ${evolution}/bin/evolution
+  '';
+
 in
 
   {
     paths = {
       inherit edit edi ed
-              emacs-server
+              emacs-server mail
               fzf-fzf project-select
               terminal launch
               fzf-passmenu rofi-passmenu

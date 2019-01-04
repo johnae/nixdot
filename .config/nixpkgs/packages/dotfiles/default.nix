@@ -12,6 +12,7 @@ let
 
   scripts = (with libdot; pkgs.callPackage ./scripts {
           browser = "${pkgs.latest.firefox-nightly-bin}/bin/firefox";
+          evolution = pkgs.gnome3.evolution;
           inherit settings writeStrictShellScriptBin;
           }).paths;
 
