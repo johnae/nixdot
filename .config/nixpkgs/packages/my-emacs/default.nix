@@ -162,6 +162,7 @@ in
     groovy-mode
     alchemist # elixir
     terraform-mode
+    elvish-mode
 
     company-quickhelp
     column-enforce-mode

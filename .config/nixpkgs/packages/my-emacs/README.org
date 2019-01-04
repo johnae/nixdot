@@ -325,6 +325,14 @@ HashiCorps terraform.
 #+END_SRC
 
 
+Elvish mode. See elvish: https://github.com/elves/elvish
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package elvish-mode
+  :mode "\\.elv$")
+#+END_SRC
+
+
 Elixir mode.
 
 #+BEGIN_SRC elisp :tangle default.el
