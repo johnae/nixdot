@@ -4,7 +4,7 @@
  writeStrictShellScriptBin,
  my-emacs, termite, wl-clipboard,
  ps, jq, fire, sway, rofi, evolution,
- fd, fzf, bashInteractive,
+ fd, fzf, skim, bashInteractive,
  pass, wpa_supplicant,
  gnupg, gawk, gnused,
  gnugrep, findutils, coreutils,
@@ -53,18 +53,29 @@ let
         --prompt="$FZF_PROMPT"
   '';
 
+
+  sk-sk = writeStrictShellScriptBin "sk-sk" ''
+    SK_MIN_HEIGHT=''${SK_MIN_HEIGHT:-100}
+    SK_MARGIN=''${SK_MARGIN:-5,5,5,5}
+    SK_PROMPT=''${SK_PROMPT:- >}
+    export SK_DEFAULT_OPTS=''${SK_OPTS:-"--reverse"}
+    exec ${skim}/bin/sk --min-height="$SK_MIN_HEIGHT" \
+        --margin="$SK_MARGIN" \
+        --prompt="$SK_PROMPT"
+  '';
+
   project-select = writeStrictShellScriptBin "project-select" ''
     projects=$*
     if [ -z "$projects" ]; then
       ${coreutils}/bin/echo "Please provide the project root directories to search as arguments"
       exit 1
     fi
-    export FZF_PROMPT="goto project >"
-    export FZF_OPTS="--tac --reverse"
+    export SK_PROMPT="goto project >"
+    export SK_OPTS="--tac --reverse"
     ${fd}/bin/fd -d 8 -pHI -t f '.*\.git/config$' "$projects" | \
       ${gnused}/bin/sed 's|/\.git/config||g' | \
       ${gnused}/bin/sed "s|$HOME/||g" | \
-      ${fzf-fzf}/bin/fzf-fzf | \
+      ${sk-sk}/bin/sk-sk | \
       ${findutils}/bin/xargs -I{} ${coreutils}/bin/echo "$HOME/{}"
   '';
 
@@ -160,6 +171,21 @@ let
     ${findutils}/bin/xargs -r ${launch}/bin/launch
   '';
 
+  sk-run = writeScriptBin "sk-run" ''
+    #!${bashInteractive}/bin/bash
+    export SK_PROMPT="run >> "
+    export _SET_WS_NAME=y
+    export SK_OPTS="$SK_OPTS''${SK_OPTS:+ }--no-bold --no-color --height=40 --no-hscroll --no-mouse --no-extended --print-query --reverse"
+
+    compgen -c | \
+    sort -u | \
+    ${gawk}/bin/awk '{ if (length($0) > 2) print }' | \
+    ${gnugrep}/bin/grep -v -E '^\..*' | \
+    ${sk-sk}/bin/sk-sk | \
+    tail -n1 | \
+    ${findutils}/bin/xargs -r ${launch}/bin/launch
+  '';
+
   fzf-window = writeStrictShellScriptBin "fzf-window" ''
     cmd=''${1:-}
     if [ -z "$cmd" ]; then
@@ -180,6 +206,88 @@ let
     fi
 
     exec terminal -t "fzf-window" -e "$cmd $*"
+  '';
+
+  sk-window = writeStrictShellScriptBin "sk-window" ''
+    cmd=''${1:-}
+    if [ -z "$cmd" ]; then
+      echo "Please provide a command to run in the window as the argument"
+      exit 1
+    fi
+    shift
+    export _TERMEMU=termite
+    export TERMINAL_CONFIG=-launcher
+    if ${ps}/bin/ps aux | ${gnugrep}/bin/grep '\-t sk-window' | \
+       ${gnugrep}/bin/grep -v grep > /dev/null 2>&1; then
+        ${ps}/bin/ps aux | \
+            ${gnugrep}/bin/grep '\-t sk-window' | \
+            ${gnugrep}/bin/grep -v grep | \
+            ${gawk}/bin/awk '{print $2}' | \
+            ${findutils}/bin/xargs -r -I{} kill {}
+        exit
+    fi
+
+    exec terminal -t "sk-window" -e "$cmd $*"
+  '';
+
+  sk-passmenu = writeStrictShellScriptBin "sk-passmenu" ''
+    export _TERMEMU=termite
+    export SK_PROMPT="copy password >> "
+    export SK_OPTS="--no-bold --no-color --height=40 --reverse --no-hscroll --no-mouse"
+
+    passfile=''${1:-}
+    nosubmit=''${nosubmit:-}
+    passonly=''${passonly:-}
+    _passmenu_didsearch=''${_passmenu_didsearch:-}
+    SWAYSOCK=''${SWAYSOCK:-}
+    prefix=$(readlink -f "$HOME/.password-store")
+    if [ -z "$_passmenu_didsearch" ]; then
+      export _passmenu_didsearch=y
+      ${fd}/bin/fd --type f -E '/notes/' '.gpg$' "$HOME/.password-store" | \
+         ${gnused}/bin/sed "s|$prefix/||g" | ${gnused}/bin/sed 's|.gpg$||g' | \
+         ${sk-sk}/bin/sk-sk | \
+         ${findutils}/bin/xargs -r -I{} ${coreutils}/bin/echo "$0 {}" | \
+         ${launch}/bin/launch
+    fi
+
+    if [ "$passfile" = "" ]; then
+      exit
+    fi
+
+    error_icon=~/Pictures/icons/essential/error.svg
+
+    getlogin() {
+      ${coreutils}/bin/echo -n "$(${coreutils}/bin/basename "$1")"
+    }
+
+    getpass() {
+      ${coreutils}/bin/echo -n "$(${gnupg}/bin/gpg --decrypt "$prefix/$1.gpg" \
+                            2>/dev/null | ${coreutils}/bin/head -1)"
+    }
+
+    login=$(getlogin "$passfile")
+    pass=$(getpass "$passfile")
+
+    if [ "$pass" = "" ]; then
+      ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical \
+      "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
+    else
+      if [ -z "$SWAYSOCK" ]; then
+        if [ -z "$passonly" ]; then
+          ${coreutils}/bin/echo -n "$login" | ${xdotool}/bin/xdotool type \
+                                            --clearmodifiers --file -
+          ${xdotool}/bin/xdotool key Tab
+        fi
+        ${coreutils}/bin/echo -n "$pass" | ${xdotool}/bin/xdotool type \
+                                         --clearmodifiers --file -
+        if [ -z "$nosubmit" ]; then
+          ${xdotool}/bin/xdotool key Return
+        fi
+      else
+          ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
+      fi
+    fi
+
   '';
 
   fzf-passmenu = writeStrictShellScriptBin "fzf-passmenu" ''
@@ -377,6 +485,7 @@ in
               terminal launch
               fzf-passmenu rofi-passmenu
               fzf-run fzf-window
+              sk-sk sk-run sk-window sk-passmenu
               browse slacks spotifyweb
               rename-workspace screenshot
               autorandr-postswitch

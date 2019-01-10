@@ -9,7 +9,8 @@
   pulseaudioFull, coreutils, playerctl,
   spook, nix, edi, edit, emacs-server, gnome3,
   terminal, termite, fzf-window, fzf-run,
-  fzf-passmenu, launch, rename-workspace,
+  fzf-passmenu, sk-window, sk-run, sk-passmenu,
+  launch, rename-workspace,
   screenshot, settings, browse, rofi-passmenu,
   ...
 }:
@@ -87,6 +88,8 @@ let
 
     for_window [class="fzf-window"] floating enable, resize set width 100ppt height 100ppt
     for_window [title="fzf-window"] floating enable, resize set width 100ppt height 100ppt
+    for_window [class="sk-window"] floating enable, resize set width 100ppt height 100ppt
+    for_window [title="sk-window"] floating enable, resize set width 100ppt height 100ppt
     for_window [class="input-window"] floating enable
     for_window [class="gcr-prompter"] floating enable
     no_focus [window_role="browser"]
@@ -137,15 +140,15 @@ let
     # start a light + large font terminal
     # bindsym ${mod}+Control+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal-large
 
-    # use fzf as a program launcher
-    bindsym ${mod}+d exec ${fzf-window}/bin/fzf-window ${fzf-run}/bin/fzf-run
+    # use sk as a program launcher
+    bindsym ${mod}+d exec ${sk-window}/bin/sk-window ${sk-run}/bin/sk-run
     # bindsym ${mod}+d exec _SET_WS_NAME=y ${rofiPath} -show run -run-command "${launch}/bin/launch {cmd}"
 
     # use rofi for switching between windows
     # bindsym ${mod}+Tab exec ${rofiPath} -show window -matching normal
 
     # passmenu
-    bindsym ${mod}+minus exec ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
+    bindsym ${mod}+minus exec ${sk-window}/bin/sk-window ${sk-passmenu}/bin/sk-passmenu
     # bindsym ${mod}+minus exec ${rofi-passmenu}/bin/rofi-passmenu
 
     # passmenu pass only

@@ -17,7 +17,7 @@ let
           }).paths;
 
   swaydot = with scripts; with libdot; pkgs.callPackage ./sway {
-        inherit libdot browse launch edi edit random-background emacs-server terminal fzf-window fzf-run fzf-passmenu rofi-passmenu rename-workspace screenshot writeStrictShellScriptBin settings;
+        inherit libdot browse launch edi edit random-background emacs-server terminal fzf-window fzf-run fzf-passmenu sk-window sk-run sk-passmenu rofi-passmenu rename-workspace screenshot writeStrictShellScriptBin settings;
   };
 
   termiteDot = pkgs.callPackage ./termite { inherit libdot settings; };
