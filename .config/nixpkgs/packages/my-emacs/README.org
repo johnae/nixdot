@@ -467,6 +467,31 @@ Some simple modes for a few languages.
   (setq js2-missing-semi-one-line-override t)
   (setq js-indent-level 2)
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+(use-package rust-mode
+  :mode "\\.rs$"
+  :config
+  (setq rust-format-on-save t)
+  (add-hook 'rust-mode-hook 'cargo-minor-mode)
+)
+
+(use-package racer
+  :config
+  (add-hook 'rust-mode-hook 'racer-mode)
+  (add-hook 'racer-mode-hook 'company-mode)
+)
+
+#+END_SRC
+
+
+Flycheck rust enables syntax checking.
+
+#+BEGIN_SRC elisp :tangle default.el
+
+(use-package flycheck-rust
+  :after (rust-mode flycheck)
+  :config
+  (add-hook 'flycheck-mode-hook 'flycheck-rust-setup))
 #+END_SRC
 
 

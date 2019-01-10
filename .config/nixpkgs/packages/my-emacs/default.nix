@@ -206,7 +206,7 @@ in
     org-tree-slide # presentations
 
     # Rust
-    rust-mode cargo flycheck-rust
+    rust-mode cargo flycheck-rust racer
 
     # Nix
     nix-buffer nixos-options company-nixos-options nix-sandbox
