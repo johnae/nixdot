@@ -4,7 +4,7 @@
   writeTextFile,
   writeStrictShellScriptBin,
   libdot,
-  sway, udev, gnupg,
+  sway, swayidle, udev, gnupg,
   rofi, xorg, mako, persway, random-background,
   pulseaudioFull, coreutils, playerctl,
   spook, nix, edi, edit, emacs-server, gnome3,
@@ -56,7 +56,7 @@ let
   '';
 
   swayidle-helper = writeStrictShellScriptBin "swayidle-helper" ''
-    exec ${sway}/bin/swayidle \
+    exec ${swayidle}/bin/swayidle \
       timeout ${swaylockTimeout} \
        '${should-idle}/bin/should-idle && ${sway}/bin/swaylock ${swaylockArgs}' \
       timeout ${swaylockSleepTimeout} \

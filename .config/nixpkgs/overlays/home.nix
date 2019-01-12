@@ -5,6 +5,7 @@ self: super: {
           xdg_utils
           xwayland
           sway
+          swayidle
           dotfiles
           my-emacs
           latest.firefox-nightly-bin

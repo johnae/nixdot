@@ -43,6 +43,10 @@ stdenv.mkDerivation rec {
     inherit (src.meta) homepage;
     license     = licenses.mit;
     platforms   = platforms.linux;
-    maintainers = with maintainers; [ primeos ];
+    maintainers = with maintainers; [ {
+      email = "john@insane.se";
+      github = "johnae";
+      name = "John Axel Eriksson";
+    } ];
   };
 }

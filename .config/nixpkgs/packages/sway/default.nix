@@ -9,18 +9,18 @@
 
 stdenv.mkDerivation rec {
   name = "sway-${version}";
-  version = "d256182f492c3d8a6803fa2a5880b1283fbe1e4c";
+  version = "bc808680b173d5a3c4732265b33e2e8bd81e4d9b";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "sway";
     rev = version;
-    sha256 = "0sx6kq664fa9fjmyd4k5fplzcjxc802z1p1jyqiwb0fpd2j2by3r";
+    sha256 = "1qvyv46nij9sv49ri8ja3f427zqp9yi0mdy5a94k3vsil7w80jk7";
   };
 
   nativeBuildInputs = [
     meson ninja pkgconfig git wrapGAppsHook
-  ] ++ stdenv.lib.optional buildDocs [ asciidoc libxslt docbook_xsl ];
+  ] ++ stdenv.lib.optional buildDocs [ scdoc asciidoc libxslt docbook_xsl ];
   buildInputs = [
     wayland wayland-protocols xwayland libxkbcommon pcre json_c dbus_libs
     pango cairo libinput libcap pam gdk_pixbuf libpthreadstubs
@@ -40,6 +40,10 @@ stdenv.mkDerivation rec {
     homepage    = http://swaywm.org;
     license     = licenses.mit;
     platforms   = platforms.linux;
-    maintainers = with maintainers; [ primeos ]; # Trying to keep it up-to-date.
+    maintainers = with maintainers; [ {
+      email = "john@insane.se";
+      github = "johnae";
+      name = "John Axel Eriksson";
+    } ];
   };
 }
