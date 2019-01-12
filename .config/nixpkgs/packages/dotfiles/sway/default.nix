@@ -3,8 +3,7 @@
   lib,
   writeTextFile,
   writeStrictShellScriptBin,
-  libdot,
-  sway, swayidle, udev, gnupg,
+  libdot, sway, swayidle, udev, gnupg,
   rofi, xorg, mako, persway, random-background,
   pulseaudioFull, coreutils, playerctl,
   spook, nix, edi, edit, emacs-server, gnome3,
@@ -34,7 +33,6 @@ let
   loginctlPath = "${udev}/bin/loginctl";
   systemctlPath = "${udev}/bin/systemctl";
   rofiPath = "${rofi}/bin/rofi";
-  xbacklightPath = "${xorg.xbacklight}/bin/xbacklight";
   inputWindowPath = "input-window";
   pactlPath = "${pulseaudioFull}/bin/pactl";
   killPath = "${coreutils}/bin/kill";
@@ -152,7 +150,7 @@ let
     # bindsym ${mod}+minus exec ${rofi-passmenu}/bin/rofi-passmenu
 
     # passmenu pass only
-    # bindsym ${mod}+Shift+minus exec passonly=y ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu
+    bindsym ${mod}+Shift+minus exec passonly=y ${sk-window}/bin/sk-window ${sk-passmenu}/bin/sk-passmenu
 
     # passmenu pass only no submit
     # bindsym ${mod}+Control+minus exec nosubmit=y passonly=y ${fzf-window}/bin/fzf-window ${fzf-passmenu}/bin/fzf-passmenu

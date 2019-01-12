@@ -8,9 +8,9 @@
  pass, wpa_supplicant,
  gnupg, gawk, gnused,
  gnugrep, findutils, coreutils,
- alacritty, libnotify, xdotool,
- maim, slop, feh, killall,
- openssh, kubectl, xorg,
+ alacritty, libnotify,
+ maim, slop, killall,
+ openssh, kubectl,
  browser, settings,
  ...}:
 
@@ -84,7 +84,6 @@ let
     output_dir=$HOME/Pictures/screenshots
     fmt=png
     ${coreutils}/bin/mkdir -p "$output_dir"
-    #killall compton
     ${maim}/bin/maim -s --format="$fmt $output_dir/$name.$fmt"
   '';
 
@@ -272,19 +271,11 @@ let
       ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical \
       "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
     else
-      if [ -z "$SWAYSOCK" ]; then
-        if [ -z "$passonly" ]; then
-          ${coreutils}/bin/echo -n "$login" | ${xdotool}/bin/xdotool type \
-                                            --clearmodifiers --file -
-          ${xdotool}/bin/xdotool key Tab
-        fi
-        ${coreutils}/bin/echo -n "$pass" | ${xdotool}/bin/xdotool type \
-                                         --clearmodifiers --file -
-        if [ -z "$nosubmit" ]; then
-          ${xdotool}/bin/xdotool key Return
-        fi
+      if [ -z "$passonly" ]; then
+        ${coreutils}/bin/echo -n "$login" | ${wl-clipboard}/bin/wl-copy -of
+        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy -of
       else
-          ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
+        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
       fi
     fi
 
@@ -326,27 +317,14 @@ let
                             2>/dev/null | ${coreutils}/bin/head -1)"
     }
 
-    login=$(getlogin "$passfile")
+    #login=$(getlogin "$passfile")
     pass=$(getpass "$passfile")
 
     if [ "$pass" = "" ]; then
       ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical \
       "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
     else
-      if [ -z "$SWAYSOCK" ]; then
-        if [ -z "$passonly" ]; then
-          ${coreutils}/bin/echo -n "$login" | ${xdotool}/bin/xdotool type \
-                                            --clearmodifiers --file -
-          ${xdotool}/bin/xdotool key Tab
-        fi
-        ${coreutils}/bin/echo -n "$pass" | ${xdotool}/bin/xdotool type \
-                                         --clearmodifiers --file -
-        if [ -z "$nosubmit" ]; then
-          ${xdotool}/bin/xdotool key Return
-        fi
-      else
-          ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
-      fi
+      ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
     fi
 
   '';
@@ -376,27 +354,14 @@ let
           --decrypt "$prefix/$1.gpg" 2>/dev/null | ${coreutils}/bin/head -1)"
     }
 
-    login=$(getlogin "$passfile")
+    #login=$(getlogin "$passfile")
     pass=$(getpass "$passfile")
 
     if [ "$pass" = "" ]; then
       ${libnotify}/bin/notify-send -i $error_icon -a "Password store" -u critical \
       "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
     else
-      if [ -z "$SWAYSOCK" ]; then
-        if [ -z "$passonly" ]; then
-          ${coreutils}/bin/echo -n "$login" | ${xdotool}/bin/xdotool type \
-                                            --clearmodifiers --file -
-          ${xdotool}/bin/xdotool key Tab
-        fi
-        ${coreutils}/bin/echo -n "$pass" | ${xdotool}/bin/xdotool type \
-                                         --clearmodifiers --file -
-        if [ -z "$nosubmit" ]; then
-          ${xdotool}/bin/xdotool key Return
-        fi
-      else
-          ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
-      fi
+      ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
     fi
   '';
 
@@ -431,17 +396,6 @@ let
     Passphrase=$PASS
     EOF
     ${update-wifi-networks}/bin/update-wifi-networks
-  '';
-
-  autorandr-postswitch = writeStrictShellScriptBin "autorandr-postswitch" ''
-    BG=$(${gnugrep}/bin/grep dmBackground < /etc/nixos/meta.nix | \
-         ${gawk}/bin/awk '{print $3}' | ${gnused}/bin/sed 's|[";]||g')
-    ${killall}/bin/killall compton
-    ${coreutils}/bin/echo "Setting background: '$BG'"
-    if [ -e "$BG" ]; then
-       ${feh}/bin/feh --bg-fill "$BG"
-    fi
-
   '';
 
   random-background = writeStrictShellScriptBin "random-background" ''
@@ -488,7 +442,6 @@ in
               sk-sk sk-run sk-window sk-passmenu
               browse slacks spotifyweb
               rename-workspace screenshot
-              autorandr-postswitch
               start-sway random-background
               add-wifi-network update-wifi-networks;
     };
