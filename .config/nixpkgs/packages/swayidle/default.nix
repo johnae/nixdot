@@ -1,25 +1,25 @@
 { stdenv, fetchFromGitHub, meson, ninja, pkgconfig, git
 , asciidoc, libxslt, docbook_xsl, scdoc
-, wayland, wayland-protocols, pixman
+, wayland, wayland-protocols
 , buildDocs ? true
 }:
 
 stdenv.mkDerivation rec {
   name = "swayidle-${version}";
-  version = "be1c0ee027e4702fcc6e6d10ac14e761b9584fdd";
+  version = "1fe7145c186c285ee8036e364342195d53ac296b";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "swayidle";
     rev = version;
-    sha256 = "07b8axpikikph4p940zarqp7wcf2aqhh0vnkyi9s5scmfajhb3h3";
+    sha256 = "1d8952h9fjn57lfypx4qr4z7b4rkn4r4s9jq1gkw01xq0ch39i1j";
   };
 
   nativeBuildInputs = [
     meson ninja pkgconfig git
   ] ++ stdenv.lib.optional buildDocs [ scdoc asciidoc libxslt docbook_xsl ];
   buildInputs = [
-    wayland wayland-protocols pixman
+    wayland wayland-protocols
   ];
 
   enableParallelBuilding = true;
