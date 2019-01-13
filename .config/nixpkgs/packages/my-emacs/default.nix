@@ -38,12 +38,12 @@ let
   ## use up-to-date nix-mode
   nix-mode = emacsPackages.melpaBuild {
     pname = "nix-mode";
-    version = "20181212";
+    version = "20190113";
 
     src = fetchFromGitHub {
       owner = "NixOS";
       repo = "nix-mode";
-      rev = "1512d02830fe90dddd35c9b4bd83d0ee963de57b";
+      rev = "80a1e96c7133925797a748cf9bc097ca6483baeb";
       sha256 = "1sn2077vmn71vwjvgs7a5prlp94kyds5x6dyspckxc78l2byb661";
     };
 
@@ -56,8 +56,8 @@ let
   prescientSource = fetchFromGitHub {
     owner  = "raxod502";
     repo   = "prescient.el";
-    rev    = "1623a0d4e5b9a752db45923fd91da48b49c85068";
-    sha256 = "0yan4m9xf4iia4ns8kqa0zsham4h2mcnwsq9xnfwm26rkn94xrw0";
+    rev    = "c395c6dee67cf269be12467b768343fb10f2399f";
+    sha256 = "0zh0g9vxgqbs48li91ar5swn9mrskmqc0kk7sbymkclkb60xcjs9";
   };
 
   prescient = emacsPackages.melpaBuild {
@@ -92,6 +92,24 @@ let
     recipe = writeText "company-prescient-recipe" ''
       (company-prescient  :repo "raxod502/prescient.el" :fetcher github
                          :files ("company-prescient.el"))
+    '';
+  };
+
+
+  lua-mode = emacsPackages.melpaBuild {
+    pname = "lua-mode";
+    version = "20190113";
+
+    src = fetchFromGitHub {
+      owner = "immerrr";
+      repo = "lua-mode";
+      rev = "95c64bb5634035630e8c59d10d4a1d1003265743";
+      sha256 = "0cawb544qylifkvqads307n0nfqg7lvyphqbpbzr2xvr5iyi4901";
+    };
+
+    recipe = writeText "lua-mode-recipe" ''
+      (lua-mode :repo "immerrr/lua-mode" :fetcher github
+                :files ("lua-mode.el"))
     '';
   };
 
