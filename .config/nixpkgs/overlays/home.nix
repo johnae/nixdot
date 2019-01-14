@@ -6,6 +6,7 @@ self: super: {
           xwayland
           sway
           swayidle
+          swaylock
           dotfiles
           my-emacs
           latest.firefox-nightly-bin
