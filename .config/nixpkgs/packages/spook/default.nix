@@ -1,4 +1,4 @@
-{ stdenv, fetchgit, gnumake, gcc, wget, perl, cacert }:
+{ stdenv, fetchgit, wget, perl, cacert }:
 
 stdenv.mkDerivation rec {
   version = "0.9.6";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  buildInputs = [ gnumake gcc wget perl cacert ];
+  buildInputs = [ wget perl cacert ];
 
   meta = {
     description = "Lightweight evented utility for monitoring file changes and more";
