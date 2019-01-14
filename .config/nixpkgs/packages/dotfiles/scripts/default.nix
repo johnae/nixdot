@@ -58,7 +58,7 @@ let
     SK_MIN_HEIGHT=''${SK_MIN_HEIGHT:-100}
     SK_MARGIN=''${SK_MARGIN:-5,5,5,5}
     SK_PROMPT=''${SK_PROMPT:- >}
-    export SK_DEFAULT_OPTS=''${SK_OPTS:-"--reverse"}
+    export SKIM_DEFAULT_OPTIONS=''${SK_OPTS:-"--reverse"}
     exec ${skim}/bin/sk --min-height="$SK_MIN_HEIGHT" \
         --margin="$SK_MARGIN" \
         --prompt="$SK_PROMPT"
@@ -174,7 +174,7 @@ let
     #!${bashInteractive}/bin/bash
     export SK_PROMPT="run >> "
     export _SET_WS_NAME=y
-    export SK_OPTS="$SK_OPTS''${SK_OPTS:+ }--no-bold --no-color --height=40 --no-hscroll --no-mouse --no-extended --print-query --reverse"
+    export SK_OPTS="$SK_OPTS''${SK_OPTS:+ }--no-bold --color BW --height=40 --no-hscroll --no-mouse --print-query --reverse"
 
     compgen -c | \
     sort -u | \
