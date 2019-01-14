@@ -54,13 +54,13 @@ let
   '';
 
   swayidle-helper = writeStrictShellScriptBin "swayidle-helper" ''
-    exec ${swayidle}/bin/swayidle \
+    exec ${swayidle}/bin/swayidle -w \
       timeout ${swaylockTimeout} \
-       '${should-idle}/bin/should-idle && ${swaylock}/bin/swaylock ${swaylockArgs}' \
+       '${should-idle}/bin/should-idle && ${swaylock}/bin/swaylock -f ${swaylockArgs}' \
       timeout ${swaylockSleepTimeout} \
        '${should-idle}/bin/should-idle && ${sway}/bin/swaymsg "output * dpms off"' \
       resume '${sway}/bin/swaymsg "output * dpms on"' \
-      before-sleep '${swaylock}/bin/swaylock ${swaylockArgs}'
+      before-sleep '${swaylock}/bin/swaylock -f ${swaylockArgs}'
   '';
 
   notification-daemon = writeStrictShellScriptBin "notification-daemon" ''
