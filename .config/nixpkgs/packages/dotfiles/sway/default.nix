@@ -3,7 +3,7 @@
   lib,
   writeTextFile,
   writeStrictShellScriptBin,
-  libdot, sway, swayidle, udev, gnupg,
+  libdot, sway, swayidle, swaylock, udev, gnupg,
   rofi, xorg, mako, persway, random-background,
   pulseaudioFull, coreutils, playerctl,
   spook, nix, edi, edit, emacs-server, gnome3,
@@ -56,11 +56,11 @@ let
   swayidle-helper = writeStrictShellScriptBin "swayidle-helper" ''
     exec ${swayidle}/bin/swayidle \
       timeout ${swaylockTimeout} \
-       '${should-idle}/bin/should-idle && ${sway}/bin/swaylock ${swaylockArgs}' \
+       '${should-idle}/bin/should-idle && ${swaylock}/bin/swaylock ${swaylockArgs}' \
       timeout ${swaylockSleepTimeout} \
        '${should-idle}/bin/should-idle && ${sway}/bin/swaymsg "output * dpms off"' \
       resume '${sway}/bin/swaymsg "output * dpms on"' \
-      before-sleep '${sway}/bin/swaylock ${swaylockArgs}'
+      before-sleep '${swaylock}/bin/swaylock ${swaylockArgs}'
   '';
 
   notification-daemon = writeStrictShellScriptBin "notification-daemon" ''
@@ -124,7 +124,7 @@ let
     ######## Key bindings
 
     # lock the screen
-    bindsym Control+${mod}+l exec ${sway}/bin/swaylock ${swaylockArgs}
+    bindsym Control+${mod}+l exec ${swaylock}/bin/swaylock ${swaylockArgs}
 
     # take a screenshot (stored in ~/Pictures/screenshots as a png)
     # bindsym ${mod}+x exec ${screenshot}/bin/screenshot
