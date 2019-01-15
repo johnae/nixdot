@@ -232,7 +232,7 @@ let
   sk-passmenu = writeStrictShellScriptBin "sk-passmenu" ''
     export _TERMEMU=termite
     export SK_PROMPT="copy password >> "
-    export SK_OPTS="--no-bold --no-color --height=40 --reverse --no-hscroll --no-mouse"
+    export SK_OPTS="--no-bold --color BW  --height=40 --reverse --no-hscroll --no-mouse"
 
     passfile=''${1:-}
     nosubmit=''${nosubmit:-}
