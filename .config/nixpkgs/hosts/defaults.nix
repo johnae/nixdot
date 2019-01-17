@@ -2,6 +2,120 @@
 
 {
 
+  mbsync = {
+    accounts = [
+      rec {
+        imapaccount = rec {
+          imapaccount = "karma-gmail";
+          host = "imap.gmail.com";
+          user = "john@karma.life";
+          passcmd = "${pkgs.gnupg}/bin/gpg2 -q --for-your-eyes-only --no-tty -d ~/.password-store/web/gmail.com/mbsync-john@karma.life.gpg";
+          ssltype = "IMAPS";
+          certificatefile = "/etc/ssl/certs/ca-certificates.crt";
+          pipelinedepth = 50;
+        };
+        imapstore = {
+          imapstore = "${imapaccount.imapaccount}-remote";
+          account = imapaccount.imapaccount;
+        };
+        maildirstore = rec {
+          maildirstore = "${imapaccount.imapaccount}-local";
+          subfolders = "Verbatim";
+          path = "~/.mail/${imapaccount.imapaccount}/";
+          inbox = "${path}Inbox";
+        };
+        channels = [
+          {
+            channel = "sync-${imapaccount.imapaccount}-default";
+            master = ":${imapstore.imapstore}:\"INBOX\"";
+            slave = ":${maildirstore.maildirstore}:INBOX";
+            patterns = "* ![Gmail]*";
+            sync = "All";
+            expunge = "Both";
+          }
+          {
+            channel = "sync-${imapaccount.imapaccount}-sent";
+            master = ":${imapstore.imapstore}:\"[Gmail]/Sent Mail\"";
+            slave = ":${maildirstore.maildirstore}:sent";
+            patterns = "* ![Gmail]*";
+            create = "Slave";
+            sync = "All";
+            expunge = "Both";
+          }
+          {
+            channel = "sync-${imapaccount.imapaccount}-trash";
+            master = ":${imapstore.imapstore}:\"[Gmail]/Trash\"";
+            slave = ":${maildirstore.maildirstore}:trash";
+            patterns = "* ![Gmail]*";
+            create = "Slave";
+            sync = "All";
+          }
+        ];
+        groups = [
+          {
+            group = imapaccount.imapaccount;
+            channels = builtins.map (x: x.channel) channels;
+          }
+        ];
+      }
+
+      rec {
+        imapaccount = rec {
+          imapaccount = "insane-gmail";
+          host = "imap.gmail.com";
+          user = "john@insane.se";
+          passcmd = "${pkgs.gnupg}/bin/gpg2 -q --for-your-eyes-only --no-tty -d ~/.password-store/web/gmail.com/mbsync-john@insane.se.gpg";
+          ssltype = "IMAPS";
+          certificatefile = "/etc/ssl/certs/ca-certificates.crt";
+          pipelinedepth = 50;
+        };
+        imapstore = {
+          imapstore = "${imapaccount.imapaccount}-remote";
+          account = imapaccount.imapaccount;
+        };
+        maildirstore = rec {
+          maildirstore = "${imapaccount.imapaccount}-local";
+          subfolders = "Verbatim";
+          path = "~/.mail/${imapaccount.imapaccount}/";
+          inbox = "${path}Inbox";
+        };
+        channels = [
+          {
+            channel = "sync-${imapaccount.imapaccount}-default";
+            master = ":${imapstore.imapstore}:\"INBOX\"";
+            slave = ":${maildirstore.maildirstore}:INBOX";
+            patterns = "* ![Gmail]*";
+            sync = "All";
+            expunge = "Both";
+          }
+          {
+            channel = "sync-${imapaccount.imapaccount}-sent";
+            master = ":${imapstore.imapstore}:\"[Gmail]/Sent Mail\"";
+            slave = ":${maildirstore.maildirstore}:sent";
+            patterns = "* ![Gmail]*";
+            create = "Slave";
+            sync = "All";
+            expunge = "Both";
+          }
+          {
+            channel = "sync-${imapaccount.imapaccount}-trash";
+            master = ":${imapstore.imapstore}:\"[Gmail]/Trash\"";
+            slave = ":${maildirstore.maildirstore}:trash";
+            patterns = "* ![Gmail]*";
+            create = "Slave";
+            sync = "All";
+          }
+        ];
+        groups = [
+          {
+            group = imapaccount.imapaccount;
+            channels = builtins.map (x: x.channel) channels;
+          }
+        ];
+      }
+    ];
+  };
+
   dconf = {
     "org/gnome/desktop/interface" = {
       font-name = "Roboto Medium 11";
