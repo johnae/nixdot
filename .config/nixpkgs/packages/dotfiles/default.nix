@@ -33,12 +33,13 @@ let
   direnvDot = pkgs.callPackage ./direnv { inherit libdot settings; };
   xresourcesDot = pkgs.callPackage ./xresources { inherit libdot settings; };
   tmuxDot = pkgs.callPackage ./tmux { inherit libdot settings; };
+  mbsyncDot = pkgs.callPackage ./mbsync { inherit libdot settings; };
 
   dotfiles = [ gnupgDot fishDot swaydot
                alacrittyDot sshDot gitDot
                pulseDot gsimplecalDot tmuxDot
                mimeappsDot yubicoDot termiteDot
-               direnvDot xresourcesDot
+               direnvDot xresourcesDot mbsyncDot
              ];
 
   home = builtins.getEnv "HOME";

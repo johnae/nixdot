@@ -1,4 +1,4 @@
-{ pkgs, fetchFromGitHub, git, writeText, ... }:
+{ pkgs, fetchFromGitHub, git, mu, writeText, ... }:
 
 let
 
@@ -17,6 +17,24 @@ let
         evil flycheck-haskell haskell-mode
         use-package;
     });
+
+  compileEmacsFiles = pkgs.callPackage ./builder.nix;
+  fetchFromEmacsWiki = pkgs.callPackage ({ fetchurl, name, sha256 }:
+    fetchurl {
+      inherit sha256;
+      url = "https://www.emacswiki.org/emacs/download/" + name;
+    });
+
+  compileEmacsWikiFile = { name, sha256, buildInputs ? [], patches ? [] }:
+    compileEmacsFiles {
+      inherit name buildInputs patches;
+      src = fetchFromEmacsWiki { inherit name sha256; };
+  };
+
+  jl-encrypt = compileEmacsWikiFile {
+    name = "jl-encrypt.el";
+    sha256 = "16i3rlfp3jxlqvndn8idylhmczync3gwmy8a019v29vyr48rnnr0";
+  };
 
   ## use a nord-theme that works with 24-bit terminals
   nord-theme = emacsPackages.melpaBuild {
@@ -132,6 +150,8 @@ in
     ivy-prescient
     company-prescient
 
+    jl-encrypt
+
     # Themes
     diminish
     all-the-icons
@@ -156,7 +176,12 @@ in
     evil-indent-textobject
     evil-nerd-commenter
     evil-surround
+    #evil-mu4e
+    evil-collection
     ## evil-cleverparens ## use lispyville / lispy instead?
+
+    alert
+    mu4e-alert
 
     undo-tree
     frames-only-mode

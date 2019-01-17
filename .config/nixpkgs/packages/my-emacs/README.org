@@ -57,6 +57,21 @@ Initialize [[https://github.com/jwiegley/use-package][use-package]].
 #+END_SRC
 
 
+Add path to mu4e to load-path.
+
+#+BEGIN_SRC elisp :tangle default.el
+(add-to-list 'load-path "~/.nix-profile/share/emacs/site-lisp/mu4e")
+#+END_SRC
+
+
+Setup auth sources to use pass gpg files.
+
+#+BEGIN_SRC elisp :tangle default.el
+(setq auth-sources
+     '((:source "~/.password-store/emacs/auth/authinfo.gpg")))
+#+END_SRC
+
+
 ** Packages
 
 The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
@@ -194,6 +209,16 @@ Evil keybindings for [[https://orgmode.org/][org-mode]]. See [[https://github.co
   (add-hook 'evil-org-mode-hook
             (lambda ()
               (evil-org-set-key-theme))))
+#+END_SRC
+
+
+Evil keybindings for many things. Woohoo.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
 #+END_SRC
 
 
@@ -777,9 +802,102 @@ Highlight the part of a line that goes beyond 80 chars
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package column-enforce-mode
-:config
-(global-column-enforce-mode t))
+  :config
+  (global-column-enforce-mode t))
 #+END_SRC
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package alert
+  :custom (alert-default-style 'libnotify))
+#+END_SRC
+
+Mu + Mu4e = email :-). (This is added to the load path as it comes with mu).
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package mu4e
+  :ensure nil
+  :config
+  (setq mail-user-agent 'mu4e-user-agent)
+  (setq mu4e-maildir "~/.mail")
+  (setq mu4e-sent-messages-behavior 'delete)
+  (setq mu4e-get-mail-command "mbsync -a")
+  (setq mu4e-update-interval 120)
+  (setq mu4e-view-fields '(:from :to :cc :subject :flags :date :maildir :mailing-list :tags :attachments :signature :decryption))
+)
+#+END_SRC
+
+Mu4e alert. For notifications on new mail.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package mu4e-alert
+    :after mu4e
+    :hook ((after-init . mu4e-alert-enable-mode-line-display)
+           (after-init . mu4e-alert-enable-notifications))
+    :config (mu4e-alert-set-default-style 'libnotify))
+#+END_SRC
+
+
+Sending email.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package jl-encrypt
+  :ensure nil
+  :config
+  (setq mml-secure-insert-signature "always")
+)
+
+(setq user-mail-address "john@insane.se"
+      user-full-name "John Axel Eriksson"
+      send-mail-function 'smtpmail-send-it
+      smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+)
+
+(defvar my-mu4e-account-alist
+  '(("Insane"
+     ;:(mu4e-sent-folder "/Gmail/sent")
+     (user-mail-address "john@insane.se")
+     (smtpmail-smtp-user "john@insane.se")
+     (smtpmail-local-domain "gmail.com")
+     (smtpmail-default-smtp-server "smtp.gmail.com")
+     (smtpmail-smtp-server "smtp.gmail.com")
+     (smtpmail-smtp-service 587)
+     )
+     ("Karma"
+     ;;(mu4e-sent-folder "/Gmail/sent")
+     (user-mail-address "john@karma.life")
+     (smtpmail-smtp-user "john@karma.life")
+     (smtpmail-local-domain "gmail.com")
+     (smtpmail-default-smtp-server "smtp.gmail.com")
+     (smtpmail-smtp-server "smtp.gmail.com")
+     (smtpmail-smtp-service 587)
+     )
+    ))
+
+(defun my-mu4e-set-account ()
+  "Set the account for composing a message.
+   This function is taken from:
+     https://www.djcbsoftware.nl/code/mu/mu4e/Multiple-accounts.html"
+  (let* ((account
+    (if mu4e-compose-parent-message
+        (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
+    (string-match "/\\(.*?\\)/" maildir)
+    (match-string 1 maildir))
+      (completing-read (format "Compose with account: (%s) "
+             (mapconcat #'(lambda (var) (car var))
+            my-mu4e-account-alist "/"))
+           (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
+           nil t nil nil (caar my-mu4e-account-alist))))
+   (account-vars (cdr (assoc account my-mu4e-account-alist))))
+    (if account-vars
+  (mapc #'(lambda (var)
+      (set (car var) (cadr var)))
+        account-vars)
+      (error "No email account found"))))
+(add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account)
+#+END_SRC
+
 
 
 ** Other configuration
