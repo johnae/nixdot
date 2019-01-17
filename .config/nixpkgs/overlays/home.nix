@@ -8,6 +8,8 @@ self: super: {
           swayidle
           swaylock
           dotfiles
+          mu
+          isync
           my-emacs
           latest.firefox-nightly-bin
           signal-desktop
@@ -37,6 +39,7 @@ self: super: {
           imagemagick
           slack
           notify-desktop
+          libnotify
 
           ii
           direnv
