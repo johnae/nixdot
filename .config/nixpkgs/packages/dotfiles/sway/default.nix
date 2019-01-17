@@ -321,8 +321,6 @@ let
 
     exec --no-startup-id ${gnome3.gnome_settings_daemon}/libexec/gsd-xsettings
 
-    exec echo "UPDATESTARTUPTTY" | ${gnupg}/bin/gpg-connect-agent > /dev/null 2>&1
-
     exec ${emacs-server}/bin/emacs-server --force
 
     ######### Bar
