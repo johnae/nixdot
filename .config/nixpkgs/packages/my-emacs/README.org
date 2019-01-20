@@ -863,8 +863,7 @@ Mu4e alert. For notifications on new mail.
        " AND flag:unread"
        " AND NOT flag:trashed"
        " AND NOT flag:list"
-       " AND NOT maildir:\"/karma-gmail/[Gmail]/All Mail\""
-       " AND NOT maildir:\"/insane-gmail/[Gmail]/All Mail\""))
+       " AND NOT maildir:/All.Mail/"))
 )
 #+END_SRC
 
@@ -881,23 +880,23 @@ Sending email.
 (setq mu4e-bookmarks
   `( ,(make-mu4e-bookmark
        :name  "Unread messages"
-       :query "flag:unread AND NOT flag:trashed"
+       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/All.Mail/"
        :key ?u)
      ,(make-mu4e-bookmark
        :name "Today's messages"
-       :query "date:today..now AND (\"maildir:/insane-gmail/inbox\" OR \"maildir:/karma-gmail/inbox\")"
+       :query "date:today..now AND maildir:/inbox/"
        :key ?t)
      ,(make-mu4e-bookmark
        :name "Today's mail"
-       :query "date:today..now AND (\"maildir:/insane-gmail/inbox\" OR \"maildir:/karma-gmail/inbox\") AND NOT flag:list"
+       :query "date:today..now AND maildir:/inbox/ AND NOT flag:list"
        :key ?m)
      ,(make-mu4e-bookmark
        :name "Last 7 days"
-       :query "date:7d..now AND (\"maildir:/insane-gmail/inbox\" OR \"maildir:/karma-gmail/inbox\")"
+       :query "date:7d..now AND maildir:/inbox/"
        :key ?w)
      ,(make-mu4e-bookmark
        :name "Flagged in INBOX"
-       :query "maildir:\"/INBOX\" and flag:flagged"
+       :query "flag:flagged AND maildir:/inbox/"
        :key ?f))
 )
 
