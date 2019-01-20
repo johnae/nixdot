@@ -11,6 +11,8 @@ self: super: {
           mu
           isync
           my-emacs
+          pandoc
+          w3m
           latest.firefox-nightly-bin
           signal-desktop
           awscli
