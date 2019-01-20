@@ -149,6 +149,8 @@ normally use, this isn't a problem.
 
 #+BEGIN_SRC elisp :tangle default.el
 ;; so TAB works in a terminal too
+(setq evil-want-keybinding nil)
+;; see https://github.com/emacs-evil/evil-collection/issues/60
 (setq evil-want-C-i-jump nil)
 #+END_SRC
 
@@ -817,13 +819,33 @@ Mu + Mu4e = email :-). (This is added to the load path as it comes with mu).
 (use-package mu4e
   :ensure nil
   :config
-  (setq mail-user-agent 'mu4e-user-agent)
-  (setq mu4e-maildir "~/.mail")
-  (setq mu4e-sent-messages-behavior 'delete)
-  (setq mu4e-get-mail-command "mbsync -a")
-  (setq mu4e-update-interval 120)
-  (setq mu4e-view-fields '(:from :to :cc :subject :flags :date :maildir :mailing-list :tags :attachments :signature :decryption))
+  (setq mail-user-agent 'mu4e-user-agent
+        mu4e-maildir "~/.mail"
+        mu4e-sent-messages-behavior 'delete
+        mu4e-headers-skip-duplicates t
+        mu4e-compose-dont-reply-to-self t
+        mu4e-compose-crypto-reply-policy 'sign-and-encrypt
+        mu4e-enable-async-operations t
+        mu4e-view-prefer-html nil
+        mu4e-hide-index-messages t
+        mu4e-change-filenames-when-moving t
+        mu4e-split-view 'vertical
+        mu4e-view-show-addresses t
+        org-mu4e-convert-to-html t
+        mu4e-headers-leave-behavior 'apply
+        mu4e-headers-include-related t
+        ;;mu4e-html2text-command 'mu4e-shr2text
+        mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
+        mu4e-get-mail-command "mbsync -a"
+        mu4e-update-interval 300
+        mu4e-view-fields '(:from :to :cc :subject :flags :date :maildir :mailing-list :tags :attachments :signature :decryption))
+  (add-hook 'mu4e-mark-execute-pre-hook
+      (lambda (mark msg)
+        (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
+        ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
+        ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
 )
+
 #+END_SRC
 
 Mu4e alert. For notifications on new mail.
@@ -833,7 +855,16 @@ Mu4e alert. For notifications on new mail.
     :after mu4e
     :hook ((after-init . mu4e-alert-enable-mode-line-display)
            (after-init . mu4e-alert-enable-notifications))
-    :config (mu4e-alert-set-default-style 'libnotify))
+    :config
+    (mu4e-alert-set-default-style 'libnotify)
+    (setq mu4e-alert-interesting-mail-query
+      (concat
+       "flag:unread"
+       " AND NOT flag:trashed"
+       " AND NOT flag:list"
+       " AND NOT maildir:\"/karma-gmail/[Gmail]/All Mail\""
+       " AND NOT maildir:\"/insane-gmail/[Gmail]/All Mail\""))
+)
 #+END_SRC
 
 
@@ -846,16 +877,44 @@ Sending email.
   (setq mml-secure-insert-signature "always")
 )
 
+(setq mu4e-bookmarks
+  `( ,(make-mu4e-bookmark
+       :name  "Unread messages"
+       :query "flag:unread AND NOT flag:trashed"
+       :key ?u)
+     ,(make-mu4e-bookmark
+       :name "Today's messages"
+       :query "date:today..now AND (\"maildir:/insane-gmail/inbox\" OR \"maildir:/karma-gmail/inbox\")"
+       :key ?t)
+     ,(make-mu4e-bookmark
+       :name "Today's mail"
+       :query "date:today..now AND (\"maildir:/insane-gmail/inbox\" OR \"maildir:/karma-gmail/inbox\") AND NOT flag:list"
+       :key ?m)
+     ,(make-mu4e-bookmark
+       :name "Last 7 days"
+       :query "date:7d..now AND (\"maildir:/insane-gmail/inbox\" OR \"maildir:/karma-gmail/inbox\")"
+       :key ?w)
+     ,(make-mu4e-bookmark
+       :name "Flagged in INBOX"
+       :query "maildir:\"/INBOX\" and flag:flagged"
+       :key ?f))
+)
+
 (setq user-mail-address "john@insane.se"
       user-full-name "John Axel Eriksson"
       send-mail-function 'smtpmail-send-it
       smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-user "john@insane.se"
       smtpmail-smtp-server "smtp.gmail.com"
       smtpmail-smtp-service 587
+      mu4e-sent-folder "/insane-gmail/[Gmail]/Sent Mail"
+      mu4e-drafts-folder "/insane-gmail/[Gmail]/Drafts"
+      mu4e-trash-folder "/insane-gmail/[Gmail]/Trash"
+      mu4e-refile-folder "/insane-gmail/[Gmail]/All Mail"
 )
 
 (defvar my-mu4e-account-alist
-  '(("Insane"
+  '(("insane-gmail"
      ;:(mu4e-sent-folder "/Gmail/sent")
      (user-mail-address "john@insane.se")
      (smtpmail-smtp-user "john@insane.se")
@@ -863,8 +922,12 @@ Sending email.
      (smtpmail-default-smtp-server "smtp.gmail.com")
      (smtpmail-smtp-server "smtp.gmail.com")
      (smtpmail-smtp-service 587)
+     (mu4e-sent-folder "/insane-gmail/[Gmail]/Sent Mail")
+     (mu4e-drafts-folder "/insane-gmail/[Gmail]/Drafts")
+     (mu4e-trash-folder "/insane-gmail/[Gmail]/Trash")
+     (mu4e-refile-folder "/insane-gmail/[Gmail]/All Mail")
      )
-     ("Karma"
+     ("karma-gmail"
      ;;(mu4e-sent-folder "/Gmail/sent")
      (user-mail-address "john@karma.life")
      (smtpmail-smtp-user "john@karma.life")
@@ -872,8 +935,12 @@ Sending email.
      (smtpmail-default-smtp-server "smtp.gmail.com")
      (smtpmail-smtp-server "smtp.gmail.com")
      (smtpmail-smtp-service 587)
-     )
+     (mu4e-sent-folder "/karma-gmail/[Gmail]/Sent Mail")
+     (mu4e-drafts-folder "/karma-gmail/[Gmail]/Drafts")
+     (mu4e-trash-folder "/karma-gmail/[Gmail]/Trash")
+     (mu4e-refile-folder "/karma-gmail/[Gmail]/All Mail")
     ))
+)
 
 (defun my-mu4e-set-account ()
   "Set the account for composing a message.

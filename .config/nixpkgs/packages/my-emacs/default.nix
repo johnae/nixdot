@@ -160,6 +160,7 @@ in
     spaceline
     spaceline-all-the-icons
     zerodark-theme
+    eink-theme
 
     # Delimiters
     smartparens

@@ -22,33 +22,17 @@
           maildirstore = "${imapaccount.imapaccount}-local";
           subfolders = "Verbatim";
           path = "~/.mail/${imapaccount.imapaccount}/";
-          inbox = "${path}Inbox";
+          inbox = "${path}inbox";
         };
         channels = [
           {
-            channel = "sync-${imapaccount.imapaccount}-default";
-            master = ":${imapstore.imapstore}:\"INBOX\"";
-            slave = ":${maildirstore.maildirstore}:INBOX";
-            patterns = "* ![Gmail]*";
-            sync = "All";
+            channel = imapaccount.imapaccount;
+            master = ":${imapstore.imapstore}:";
+            slave = ":${maildirstore.maildirstore}:";
+            patterns = "* ![Gmail]/Spam";
+            create = "Both";
             expunge = "Both";
-          }
-          {
-            channel = "sync-${imapaccount.imapaccount}-sent";
-            master = ":${imapstore.imapstore}:\"[Gmail]/Sent Mail\"";
-            slave = ":${maildirstore.maildirstore}:sent";
-            patterns = "* ![Gmail]*";
-            create = "Slave";
-            sync = "All";
-            expunge = "Both";
-          }
-          {
-            channel = "sync-${imapaccount.imapaccount}-trash";
-            master = ":${imapstore.imapstore}:\"[Gmail]/Trash\"";
-            slave = ":${maildirstore.maildirstore}:trash";
-            patterns = "* ![Gmail]*";
-            create = "Slave";
-            sync = "All";
+            syncstate = "*";
           }
         ];
         groups = [
@@ -77,33 +61,17 @@
           maildirstore = "${imapaccount.imapaccount}-local";
           subfolders = "Verbatim";
           path = "~/.mail/${imapaccount.imapaccount}/";
-          inbox = "${path}Inbox";
+          inbox = "${path}inbox";
         };
         channels = [
           {
-            channel = "sync-${imapaccount.imapaccount}-default";
-            master = ":${imapstore.imapstore}:\"INBOX\"";
-            slave = ":${maildirstore.maildirstore}:INBOX";
-            patterns = "* ![Gmail]*";
-            sync = "All";
+            channel = imapaccount.imapaccount;
+            master = ":${imapstore.imapstore}:";
+            slave = ":${maildirstore.maildirstore}:";
+            patterns = "* ![Gmail]/Spam";
+            create = "Both";
             expunge = "Both";
-          }
-          {
-            channel = "sync-${imapaccount.imapaccount}-sent";
-            master = ":${imapstore.imapstore}:\"[Gmail]/Sent Mail\"";
-            slave = ":${maildirstore.maildirstore}:sent";
-            patterns = "* ![Gmail]*";
-            create = "Slave";
-            sync = "All";
-            expunge = "Both";
-          }
-          {
-            channel = "sync-${imapaccount.imapaccount}-trash";
-            master = ":${imapstore.imapstore}:\"[Gmail]/Trash\"";
-            slave = ":${maildirstore.maildirstore}:trash";
-            patterns = "* ![Gmail]*";
-            create = "Slave";
-            sync = "All";
+            syncstate = "*";
           }
         ];
         groups = [
