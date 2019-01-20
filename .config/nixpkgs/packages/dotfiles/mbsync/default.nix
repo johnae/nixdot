@@ -21,6 +21,7 @@ let
     SSLType ${x.imapaccount.ssltype}
     CertificateFile ${x.imapaccount.certificatefile}
     PipelineDepth ${toString x.imapaccount.pipelinedepth}
+    Timeout 60
 
     IMAPStore ${x.imapstore.imapstore}
     Account ${x.imapstore.account}
