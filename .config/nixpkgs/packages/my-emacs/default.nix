@@ -1,4 +1,4 @@
-{ pkgs, fetchFromGitHub, git, mu, writeText, ... }:
+{ pkgs, fetchFromGitHub, glibc, pandoc, isync, git, mu, writeText, ... }:
 
 let
 
@@ -6,6 +6,13 @@ let
     buildInputs = with pkgs; [ emacs ];
   } ''
      install -D ${./README.org} $out/share/emacs/site-lisp/README.org
+     substituteInPlace "$out/share/emacs/site-lisp/README.org" \
+                       --subst-var-by MUSE_LOAD_PATH \
+                       "${mu}/share/emacs/site-lisp/mu4e" \
+                       --subst-var-by MBSYNC \
+                       "${isync}/bin/mbsync" \
+                       --subst-var-by PANDOC \
+                       "${pandoc}/bin/pandoc"
      cd $out/share/emacs/site-lisp
      emacs --batch --quick -l ob-tangle --eval "(org-babel-tangle-file \"README.org\")"
   '';

@@ -60,7 +60,7 @@ Initialize [[https://github.com/jwiegley/use-package][use-package]].
 Add path to mu4e to load-path.
 
 #+BEGIN_SRC elisp :tangle default.el
-(add-to-list 'load-path "~/.nix-profile/share/emacs/site-lisp/mu4e")
+(add-to-list 'load-path "@MUSE_LOAD_PATH@")
 #+END_SRC
 
 
@@ -68,7 +68,7 @@ Setup auth sources to use pass gpg files.
 
 #+BEGIN_SRC elisp :tangle default.el
 (setq auth-sources
-     '((:source "~/.password-store/emacs/auth/authinfo.gpg")))
+    '((:source "~/.password-store/emacs/auth/authinfo.gpg")))
 #+END_SRC
 
 
@@ -808,12 +808,16 @@ Highlight the part of a line that goes beyond 80 chars
   (global-column-enforce-mode t))
 #+END_SRC
 
+
+Alerts. Using for example libnotify on Linux.
+
 #+BEGIN_SRC elisp :tangle default.el
 (use-package alert
   :custom (alert-default-style 'libnotify))
 #+END_SRC
 
-Mu + Mu4e = email :-). (This is added to the load path as it comes with mu).
+
+The awesome Mu4e email client. (This is added to the load path as it comes with mu).
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package mu4e
@@ -835,10 +839,15 @@ Mu + Mu4e = email :-). (This is added to the load path as it comes with mu).
         mu4e-headers-leave-behavior 'apply
         mu4e-headers-include-related t
         ;;mu4e-html2text-command 'mu4e-shr2text
-        mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
-        mu4e-get-mail-command "mbsync -a"
+        mu4e-html2text-command "@PANDOC@ -f html -t plain"
+        ;;mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
+        mu4e-get-mail-command "@MBSYNC@ -a"
         mu4e-update-interval 300
         mu4e-view-fields '(:from :to :cc :subject :flags :date :maildir :mailing-list :tags :attachments :signature :decryption))
+
+  (add-to-list 'mu4e-view-actions
+      '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
   (add-hook 'mu4e-mark-execute-pre-hook
       (lambda (mark msg)
         (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
@@ -860,10 +869,10 @@ Mu4e alert. For notifications on new mail.
     (setq mu4e-alert-interesting-mail-query
       (concat
        "date:today..now"
-       " AND flag:unread"
-       " AND NOT flag:trashed"
-       " AND NOT flag:list"
-       " AND NOT maildir:/All.Mail/"))
+       " and flag:unread"
+       " and not flag:trashed"
+       " and not flag:list"
+       " and not maildir:/all.mail/"))
 )
 #+END_SRC
 
@@ -880,23 +889,39 @@ Sending email.
 (setq mu4e-bookmarks
   `( ,(make-mu4e-bookmark
        :name  "Unread messages"
-       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/All.Mail/"
+       :query (concat "flag:unread"
+                      " AND NOT flag:trashed"
+                      " AND NOT maildir:/All.Mail/"
+                      " AND NOT flag:list")
        :key ?u)
      ,(make-mu4e-bookmark
        :name "Today's messages"
-       :query "date:today..now AND maildir:/inbox/"
+       :query (concat "date:today..now"
+                      " AND maildir:/inbox/"
+                      " AND NOT flag:list")
        :key ?t)
      ,(make-mu4e-bookmark
-       :name "Today's mail"
-       :query "date:today..now AND maildir:/inbox/ AND NOT flag:list"
+       :name "Today's lists"
+       :query (concat "date:today..now"
+                      " AND maildir:/inbox/"
+                      " AND flag:list")
        :key ?m)
      ,(make-mu4e-bookmark
        :name "Last 7 days"
-       :query "date:7d..now AND maildir:/inbox/"
+       :query (concat "date:7d..now"
+                      " AND maildir:/inbox/"
+                      " AND NOT flag:list")
        :key ?w)
      ,(make-mu4e-bookmark
+       :name "Last 7 days of lists"
+       :query (concat "date:7d..now"
+                      " AND maildir:/inbox/"
+                      " AND flag:list")
+       :key ?l)
+     ,(make-mu4e-bookmark
        :name "Flagged in INBOX"
-       :query "flag:flagged AND maildir:/inbox/"
+       :query (concat "flag:flagged"
+                      " AND maildir:/inbox/")
        :key ?f))
 )
 
