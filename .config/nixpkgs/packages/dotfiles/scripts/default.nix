@@ -6,7 +6,7 @@
  ps, jq, fire, sway, rofi, evolution,
  fd, fzf, skim, bashInteractive,
  pass, wpa_supplicant,
- gnupg, gawk, gnused,
+ gnupg, gawk, gnused, openssl,
  gnugrep, findutils, coreutils,
  alacritty, libnotify,
  maim, slop, killall,
@@ -17,6 +17,15 @@
 let
   emacsclient = "${my-emacs}/bin/emacsclient";
   emacs = "${my-emacs}/bin/emacs";
+
+  random-name = writeStrictShellScriptBin "random-name" ''
+    NAME=''${1:-}
+    if [ -z "$NAME" ]; then
+      echo "Please provide a base name as the only argument"
+      exit 1
+    fi
+    echo "$NAME-$(openssl rand 4 -hex)"
+  '';
 
   emacs-server = writeStrictShellScriptBin "emacs-server" ''
     if [ -e /run/user/1337/emacs1337/server ]; then
@@ -88,7 +97,7 @@ let
   '';
 
   browse = writeStrictShellScriptBin "browse" ''
-    exec ${browser} -P default
+    exec ${browser} -P default "$@"
   '';
 
   slacks = writeStrictShellScriptBin "slacks" ''
@@ -442,7 +451,7 @@ in
               sk-sk sk-run sk-window sk-passmenu
               browse slacks spotifyweb
               rename-workspace screenshot
-              start-sway random-background
+              start-sway random-background random-name
               add-wifi-network update-wifi-networks;
     };
   }
