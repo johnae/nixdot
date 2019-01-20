@@ -859,7 +859,8 @@ Mu4e alert. For notifications on new mail.
     (mu4e-alert-set-default-style 'libnotify)
     (setq mu4e-alert-interesting-mail-query
       (concat
-       "flag:unread"
+       "date:today..now"
+       " AND flag:unread"
        " AND NOT flag:trashed"
        " AND NOT flag:list"
        " AND NOT maildir:\"/karma-gmail/[Gmail]/All Mail\""
