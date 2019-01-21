@@ -825,7 +825,10 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
   :config
   (setq mail-user-agent 'mu4e-user-agent
         mu4e-maildir "~/.mail"
+        ;;mu4e-compose-format-flowed t
         mu4e-sent-messages-behavior 'delete
+        mu4e-headers-date-format "%Y-%m-%d"
+        mu4e-headers-time-format "%H:%M"
         mu4e-headers-skip-duplicates t
         mu4e-compose-dont-reply-to-self t
         mu4e-compose-crypto-reply-policy 'sign-and-encrypt
@@ -926,6 +929,8 @@ Sending email.
 )
 
 (setq user-mail-address "john@insane.se"
+      mu4e-user-mail-address-list '("john@insane.se" "john@.karma.life" "john@karma.ly")
+      message-kill-buffers-on-exit t
       user-full-name "John Axel Eriksson"
       send-mail-function 'smtpmail-send-it
       smtpmail-default-smtp-server "smtp.gmail.com"

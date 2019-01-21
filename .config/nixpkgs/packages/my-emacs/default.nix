@@ -253,7 +253,10 @@ in
     company-ghci  # provide completions from inferior ghci
 
     # Org
-    org org-ref evil-org org-bullets
+    org
+    org-ref
+    evil-org
+    org-bullets
     org-tree-slide # presentations
 
     # Rust
