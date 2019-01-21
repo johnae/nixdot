@@ -179,14 +179,12 @@ in
     # Evil
     avy
     evil
-    evil-org ## or syndicate?
+    evil-org
     evil-magit
     evil-indent-textobject
     evil-nerd-commenter
     evil-surround
-    #evil-mu4e
     evil-collection
-    ## evil-cleverparens ## use lispyville / lispy instead?
 
     alert
     mu4e-alert
@@ -255,7 +253,6 @@ in
     # Org
     org
     org-ref
-    evil-org
     org-bullets
     org-tree-slide # presentations
 

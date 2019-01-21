@@ -820,6 +820,22 @@ Alerts. Using for example libnotify on Linux.
 The awesome Mu4e email client. (This is added to the load path as it comes with mu).
 
 #+BEGIN_SRC elisp :tangle default.el
+
+(setq uninteresting-mail-query
+      (concat
+       "from:\"store-news@amazon.com\""
+       " OR from:\"kooperativa@marknad.coop.se\""
+       " OR from:\"hello@mail.blinkist.com\""
+       " OR from:\"hello@stackshare.io\""
+       " OR from:\"noreply@codetriage.com\""
+       " OR from:\"noreply@langley.eu\""
+       " OR from:\"notifications-noreply@linkedin.com\""
+       " OR from:\"newblack@newblack.se\""
+       " OR from:\"digest-noreply@quora.com\""
+       " OR flag:trashed"
+       " OR flag:list"
+       " OR maildir:/all.mail/"))
+
 (use-package mu4e
   :ensure nil
   :config
@@ -842,7 +858,7 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
         mu4e-headers-leave-behavior 'apply
         mu4e-headers-include-related t
         ;;mu4e-html2text-command 'mu4e-shr2text
-        mu4e-html2text-command "@PANDOC@ -f html -t plain"
+        mu4e-html2text-command "iconv -c -t utf-8 | @PANDOC@ -f html -t org"
         ;;mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
         mu4e-get-mail-command "@MBSYNC@ -a"
         mu4e-update-interval 300
@@ -865,17 +881,16 @@ Mu4e alert. For notifications on new mail.
 #+BEGIN_SRC elisp :tangle default.el
 (use-package mu4e-alert
     :after mu4e
-    :hook ((after-init . mu4e-alert-enable-mode-line-display)
-           (after-init . mu4e-alert-enable-notifications))
+    :init
+    (mu4e-alert-enable-mode-line-display)
+    (mu4e-alert-enable-notifications)
     :config
     (mu4e-alert-set-default-style 'libnotify)
     (setq mu4e-alert-interesting-mail-query
       (concat
        "date:today..now"
-       " and flag:unread"
-       " and not flag:trashed"
-       " and not flag:list"
-       " and not maildir:/all.mail/"))
+       " AND flag:unread"
+       " AND NOT (" uninteresting-mail-query ") "))
 )
 #+END_SRC
 
@@ -901,7 +916,7 @@ Sending email.
        :name "Today's messages"
        :query (concat "date:today..now"
                       " AND maildir:/inbox/"
-                      " AND NOT flag:list")
+                      " AND NOT (" uninteresting-mail-query ")")
        :key ?t)
      ,(make-mu4e-bookmark
        :name "Today's lists"
@@ -913,7 +928,7 @@ Sending email.
        :name "Last 7 days"
        :query (concat "date:7d..now"
                       " AND maildir:/inbox/"
-                      " AND NOT flag:list")
+                      " AND NOT (" uninteresting-mail-query ")")
        :key ?w)
      ,(make-mu4e-bookmark
        :name "Last 7 days of lists"
