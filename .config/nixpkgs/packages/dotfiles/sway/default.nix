@@ -54,13 +54,16 @@ let
   '';
 
   swayidle-helper = writeStrictShellScriptBin "swayidle-helper" ''
-    exec ${swayidle}/bin/swayidle -w \
+    ## because I believe swaylock has to be in PATH for it to actually work properly
+    ## so then everything might as well go in there
+    export PATH=${swayidle}/bin:${swaylock}/bin:${sway}/bin:${should-idle}/bin''${PATH:+:}$PATH
+    exec swayidle -w \
       timeout ${swaylockTimeout} \
-       '${should-idle}/bin/should-idle && ${swaylock}/bin/swaylock -f ${swaylockArgs}' \
+       'should-idle && swaylock -f ${swaylockArgs}' \
       timeout ${swaylockSleepTimeout} \
-       '${should-idle}/bin/should-idle && ${sway}/bin/swaymsg "output * dpms off"' \
-      resume '${sway}/bin/swaymsg "output * dpms on"' \
-      before-sleep '${swaylock}/bin/swaylock -f ${swaylockArgs}'
+       'should-idle && swaymsg "output * dpms off"' \
+      resume 'swaymsg "output * dpms on"' \
+      before-sleep 'swaylock -f ${swaylockArgs}'
   '';
 
   notification-daemon = writeStrictShellScriptBin "notification-daemon" ''
