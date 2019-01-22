@@ -213,7 +213,7 @@ let
         exit
     fi
 
-    exec terminal -t "fzf-window" -e "$cmd $*"
+    exec ${terminal}/bin/terminal -t "fzf-window" -e "$cmd $*"
   '';
 
   sk-window = writeStrictShellScriptBin "sk-window" ''
@@ -235,7 +235,7 @@ let
         exit
     fi
 
-    exec terminal -t "sk-window" -e "$cmd $*"
+    exec ${terminal}/bin/terminal -t "sk-window" -e "$cmd $*"
   '';
 
   sk-passmenu = writeStrictShellScriptBin "sk-passmenu" ''
@@ -434,8 +434,8 @@ let
   '';
 
   mail = writeStrictShellScriptBin "mail" ''
-    export GTK_THEME=${settings.gtk-light-theme}
-    exec ${evolution}/bin/evolution
+    export TERMINAL_CONFIG=
+    exec ${terminal}/bin/terminal -e "${edi}/bin/edi -e '(mu4e)'"
   '';
 
 in
