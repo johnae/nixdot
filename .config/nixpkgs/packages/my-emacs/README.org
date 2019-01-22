@@ -823,15 +823,7 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
 
 (setq uninteresting-mail-query
       (concat
-       "from:\"store-news@amazon.com\""
-       " OR from:\"kooperativa@marknad.coop.se\""
-       " OR from:\"hello@mail.blinkist.com\""
-       " OR from:\"hello@stackshare.io\""
-       " OR from:\"noreply@codetriage.com\""
-       " OR from:\"noreply@langley.eu\""
-       " OR from:\"notifications-noreply@linkedin.com\""
-       " OR from:\"newblack@newblack.se\""
-       " OR from:\"digest-noreply@quora.com\""
+       "from:/\\(hello|kooperativa|info-sas|.*no.?reply|store-news|newblack|newsletter|.*campaign.*\\)@/"
        " OR flag:trashed"
        " OR flag:list"
        " OR maildir:/all.mail/"))
