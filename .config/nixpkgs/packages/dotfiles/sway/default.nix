@@ -324,8 +324,6 @@ let
 
     exec --no-startup-id ${gnome3.gnome_settings_daemon}/libexec/gsd-xsettings
 
-    exec ${emacs-server}/bin/emacs-server --force
-
     ######### Bar
     bar {
 
