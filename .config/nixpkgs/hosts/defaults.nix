@@ -9,7 +9,9 @@
           imapaccount = "karma-gmail";
           host = "imap.gmail.com";
           user = "john@karma.life";
-          passcmd = "${pkgs.gnupg}/bin/gpg2 -q --for-your-eyes-only --no-tty -d ~/.password-store/web/gmail.com/mbsync-john@karma.life.gpg";
+          passcmd = "${pkgs.gnupg}/bin/gpg2 -q --for-your-eyes-only --no-tty -d " +
+                    "~/.password-store/emacs/auth/authinfo.gpg | " +
+                    "${pkgs.gawk}/bin/awk '/machine imap.gmail.com login ${user}/ {print $NF}'";
           ssltype = "IMAPS";
           certificatefile = "/etc/ssl/certs/ca-certificates.crt";
           pipelinedepth = 50;
@@ -48,7 +50,9 @@
           imapaccount = "insane-gmail";
           host = "imap.gmail.com";
           user = "john@insane.se";
-          passcmd = "${pkgs.gnupg}/bin/gpg2 -q --for-your-eyes-only --no-tty -d ~/.password-store/web/gmail.com/mbsync-john@insane.se.gpg";
+          passcmd = "${pkgs.gnupg}/bin/gpg2 -q --for-your-eyes-only --no-tty -d " +
+                    "~/.password-store/emacs/auth/authinfo.gpg | " +
+                    "${pkgs.gawk}/bin/awk '/machine imap.gmail.com login ${user}/ {print $NF}'";
           ssltype = "IMAPS";
           certificatefile = "/etc/ssl/certs/ca-certificates.crt";
           pipelinedepth = 50;
