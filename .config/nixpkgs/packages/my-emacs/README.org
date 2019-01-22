@@ -849,7 +849,7 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
         mu4e-view-prefer-html nil
         mu4e-hide-index-messages t
         mu4e-change-filenames-when-moving t
-        mu4e-split-view 'vertical
+        mu4e-split-view 'horizontal
         mu4e-view-show-addresses t
         org-mu4e-convert-to-html t
         mu4e-headers-leave-behavior 'apply
