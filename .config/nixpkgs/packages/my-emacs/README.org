@@ -90,13 +90,18 @@ The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
         org-enforce-todo-dependencies t
         org-startup-with-beamer-mode t
         org-export-coding-system 'utf-8
+        org-agenda-sorting-strategy
+         (quote
+          ((agenda deadline-up priority-down)
+           (todo priority-down category-keep)
+           (tags priority-down category-keep)
+           (search category-keep)))
         org-todo-keywords
-        '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELED")))
-  (setq org-capture-templates
-        '(("a" "My TODO task format." entry
-           (file "~/Sync/org/todos.org")
-           "* TODO %?
-        SCHEDULED: %t")))
+         '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELED"))
+        org-capture-templates
+         '(("a" "My TODO task format." entry
+          (file "~/Sync/org/todos.org")
+           "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n")))
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -823,7 +828,7 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
 
 (setq uninteresting-mail-query
       (concat
-       "from:/\\(hello|kooperativa|info-sas|.*no.?reply|store-news|newblack|newsletter|.*campaign.*\\)@/"
+       "from:/\\(hello|kooperativa|info-sas|.*no.?reply|store-news|newblack|stockholm\.soder|newsletter|.*campaign.*\\)@/"
        " OR flag:trashed"
        " OR flag:list"
        " OR maildir:/all.mail/"))
@@ -850,7 +855,7 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
         mu4e-headers-leave-behavior 'apply
         mu4e-headers-include-related t
         ;;mu4e-html2text-command 'mu4e-shr2text
-        mu4e-html2text-command "iconv -c -t utf-8 | @PANDOC@ -f html -t org"
+        mu4e-html2text-command "iconv -c -t utf-8 | @PANDOC@ -f html -t plain"
         ;;mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
         mu4e-get-mail-command "@MBSYNC@ -a"
         mu4e-update-interval 300
