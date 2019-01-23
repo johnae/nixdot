@@ -87,6 +87,7 @@ The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
         org-ellipsis " ↘"
         org-agenda-files '("~/Sync/org/")
         org-directory '("~/Sync/org/")
+        org-table-use-standard-references t
         org-enforce-todo-dependencies t
         org-startup-with-beamer-mode t
         org-export-coding-system 'utf-8
@@ -103,6 +104,7 @@ The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
           (file "~/Sync/org/todos.org")
            "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n")))
   :config
+  (org-table-fedit-toggle-ref-type)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((R . t)
