@@ -31,10 +31,11 @@
             channel = imapaccount.imapaccount;
             master = ":${imapstore.imapstore}:";
             slave = ":${maildirstore.maildirstore}:";
-            patterns = "* ![Gmail]/Spam";
+            patterns = "* ![Gmail]* \"[Gmail]/Sent Mail\" \"[Gmail]/All Mail\" \"[Gmail]/Trash\"";
             create = "Both";
             expunge = "Both";
             syncstate = "*";
+            copyarrivaldate = "yes";
           }
         ];
         groups = [
@@ -72,10 +73,11 @@
             channel = imapaccount.imapaccount;
             master = ":${imapstore.imapstore}:";
             slave = ":${maildirstore.maildirstore}:";
-            patterns = "* ![Gmail]/Spam";
+            patterns = "* ![Gmail]* \"[Gmail]/Sent Mail\" \"[Gmail]/All Mail\" \"[Gmail]/Trash\"";
             create = "Both";
             expunge = "Both";
             syncstate = "*";
+            copyarrivaldate = "yes";
           }
         ];
         groups = [
