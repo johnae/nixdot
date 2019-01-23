@@ -1,27 +1,29 @@
 { stdenv, fetchFromGitHub, meson, ninja, pkgconfig, git
 , asciidoc, libxslt, docbook_xsl, scdoc
 , wayland, wayland-protocols, libxkbcommon
-, pango, cairo, pam, gdk_pixbuf
+, cairo, pam, gdk_pixbuf
 , buildDocs ? true
 }:
 
 stdenv.mkDerivation rec {
   name = "swaylock-${version}";
-  version = "f0353900aed11f72f2f100cca1fcb60d34fc1c06";
+  version = "3d94a60924758ba0b7487b5b9c79b3ef7668c989";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "swaylock";
     rev = version;
-    sha256 = "1igvkp3ga5y79n7rh293s3i86fm12i1hyjpl9ml2nclqwz04kwcg";
+    sha256 = "17c11jdfa5mj84nw2j36ikrh6hj1p06mck6gvpj468n4gl08h6jk";
   };
 
   nativeBuildInputs = [
     meson ninja pkgconfig git
   ] ++ stdenv.lib.optional buildDocs [ scdoc asciidoc libxslt docbook_xsl ];
   buildInputs = [
-    wayland wayland-protocols pango cairo pam gdk_pixbuf libxkbcommon
+    wayland wayland-protocols cairo pam gdk_pixbuf libxkbcommon
   ];
+
+  mesonFlags = [ "-Dauto_features=enabled" ];
 
   enableParallelBuilding = true;
 
