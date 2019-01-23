@@ -830,10 +830,11 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
 
 (setq uninteresting-mail-query
       (concat
-       "from:/\\(hello|kooperativa|info-sas|.*no.?reply|store-news|newblack|stockholm\.soder|newsletter|.*campaign.*\\)@/"
+       "from:/\\(hello|kooperativa|usafis|stadiummember|info-sas|.*no.?reply|store-news|newblack|stockholm\.soder|newsletter|.*campaign.*\\)@/"
        " OR flag:trashed"
        " OR flag:list"
-       " OR maildir:/all.mail/"))
+       " OR maildir:/Trash/"
+       " OR maildir:/All.Mail/"))
 
 (use-package mu4e
   :ensure nil
