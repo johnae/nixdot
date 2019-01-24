@@ -884,6 +884,20 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
         org-mu4e-convert-to-html t
         mu4e-headers-leave-behavior 'apply
         mu4e-headers-include-related t
+
+        mu4e-use-fancy-chars t
+        mu4e-headers-unread-mark    '("u" . " ")
+        mu4e-headers-new-mark       '("N" . " ")
+        mu4e-headers-draft-mark     '("D" . "⚒ ")
+        mu4e-headers-passed-mark    '("P" . "❯ ")
+        mu4e-headers-replied-mark   '("R" . "❮ ")
+        mu4e-headers-seen-mark      '("S" . "✔ ")
+        mu4e-headers-attach-mark    '("" . "⚓")
+        mu4e-headers-flagged-mark   '("F" . "✚ ")
+        mu4e-headers-trashed-mark   '("T" . " ")
+        mu4e-headers-encrypted-mark '("x" . "  ")
+        mu4e-headers-signed-mark    '("s" . " ")
+
         ;;mu4e-html2text-command 'mu4e-shr2text
         mu4e-html2text-command "iconv -c -t utf-8 | @PANDOC@ -f html -t plain"
         ;;mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
