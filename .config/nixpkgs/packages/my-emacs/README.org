@@ -87,7 +87,6 @@ The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
         org-ellipsis " ↘"
         org-agenda-files '("~/Sync/org/")
         org-directory '("~/Sync/org/")
-        org-table-use-standard-references t
         org-enforce-todo-dependencies t
         org-startup-with-beamer-mode t
         org-export-coding-system 'utf-8
@@ -104,7 +103,6 @@ The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
           (file "~/Sync/org/todos.org")
            "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n")))
   :config
-  (org-table-fedit-toggle-ref-type)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((R . t)
@@ -147,6 +145,18 @@ Presentation minor mode for org-mode see [[https://github.com/takaxp/org-tree-sl
   :config
   (define-key org-tree-slide-mode-map (kbd "<f9>") 'org-tree-slide-move-previous-tree)
   (define-key org-tree-slide-mode-map (kbd "<f10>") 'org-tree-slide-move-next-tree)
+  )
+#+END_SRC
+
+#+RESULTS:
+
+
+Notifications for org TODO:s. See [[https://github.com/akhramov/org-wild-notifier.el][org-wild-notifier]]
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package org-wild-notifier
+  :config
+  (org-wild-notifier-mode)
   )
 #+END_SRC
 
@@ -235,6 +245,23 @@ Evil keybindings for magit. Woohoo.
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package evil-magit)
+#+END_SRC
+
+
+Polymode allows several major modes in one buffer.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package polymode)
+
+(use-package poly-org
+  :config
+  (add-hook 'org-mode-hook 'poly-org-mode)
+)
+
+(use-package poly-markdown
+  :config
+  (add-hook 'markdown-mode-hook 'poly-markdown-mode)
+)
 #+END_SRC
 
 
