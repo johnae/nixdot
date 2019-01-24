@@ -42,7 +42,7 @@ let
     color15 = #eceff4
 
     [options]
-    font = Office Code Pro D 14
+    font = Office Code Pro D, FontAwesome, 14
     scrollback_lines = 20000
   '';
 
@@ -82,7 +82,7 @@ let
     color15 = #eceff4
 
     [options]
-    font = Office Code Pro D 28
+    font = Office Code Pro D, FontAwesome, 28
     scrollback_lines = 20000
   '';
 
