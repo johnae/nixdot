@@ -31,6 +31,12 @@ during initialization.
     (garbage-collect)
     (setq gc-cons-threshold (car (get 'gc-cons-threshold 'standard-value)))
     (setq file-name-handler-alist file-name-handler-alist-actual)) t)
+
+;; Default to using bash as shell
+(setq shell-file-name "bash")
+
+;; Yeah it's dangerous. I like living on the edge.
+(setq org-confirm-babel-evaluate nil)
 #+END_SRC
 
 
@@ -83,6 +89,7 @@ The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
   :init
   (setq org-log-done 'time
         org-log-reschedule 'time
+        org-crypt-key "0x45FEBADDA16B8E55"
         org-src-fontify-natively t
         org-ellipsis " ↘"
         org-agenda-files '("~/Sync/org/")
