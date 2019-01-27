@@ -2,13 +2,13 @@
 
 stdenv.mkDerivation rec {
   name = "wl-clipboard-${version}";
-  version = "1d99c3d5720a012d5a034535f703f6b290408ebf";
+  version = "46f21d2ef1547c1c6becd12ec863cdb8b7e51691";
 
   src = fetchFromGitHub {
     owner = "bugaevc";
     repo = "wl-clipboard";
     rev = version;
-    sha256 = "1zy5a1pwx0s1ywlh3g9g3n1j6idrq2ayxb8zl1y8yri50krsvp45";
+    sha256 = "0vqwfr0q8xr0pp05hmffjrz4kjbc1a4cdd4v97lbkhh21wbaa9wb";
   };
 
   preConfigure = ''
@@ -24,8 +24,6 @@ stdenv.mkDerivation rec {
   ];
 
   enableParallelBuilding = true;
-
-  #cmakeFlags = "-DVERSION=${version} -DLD_LIBRARY_PATH=/run/opengl-driver/lib:/run/opengl-driver-32/lib";
 
   meta = with stdenv.lib; {
     description = "Hacky clipboard manager for Wayland";
