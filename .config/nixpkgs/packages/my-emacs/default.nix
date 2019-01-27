@@ -15,6 +15,7 @@ let
                        "${pandoc}/bin/pandoc"
      cd $out/share/emacs/site-lisp
      emacs --batch --quick -l ob-tangle --eval "(org-babel-tangle-file \"README.org\")"
+     emacs -batch -f batch-byte-compile **/*.el
   '';
 
   emacsPackages =
@@ -159,6 +160,8 @@ in
 
     jl-encrypt
 
+    #benchmark-init
+
     # Themes
     diminish
     all-the-icons
@@ -268,7 +271,8 @@ in
     rust-mode cargo flycheck-rust racer
 
     # Nix
-    nix-buffer nixos-options company-nixos-options nix-sandbox
+    # nix-buffer nixos-options company-nixos-options nix-sandbox
+    nixos-options company-nixos-options
 
     # config file
     emacsConfig

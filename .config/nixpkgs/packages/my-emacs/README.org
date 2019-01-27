@@ -7,7 +7,7 @@ the nix package manager) it is together with nix expressions this is meant to ha
 should (and does) work nicely as a nix overlay.
 
 
-** Early init
+* Early init
 
 First off, some tricks to speed up emacs initialization. Upping the gc threshold means we should
 be able to avoid garbage collection (several times) during initialization.
@@ -40,7 +40,7 @@ during initialization.
 #+END_SRC
 
 
-** Initialization of packages
+* Initialization of packages
 
 Now we disable all package archives so that we can completely rely on the nix expressions
 for package installation.
@@ -58,8 +58,15 @@ Initialize [[https://github.com/jwiegley/use-package][use-package]].
 (eval-and-compile
   (require 'package)
   (package-initialize)
-  (require 'use-package)
-  (setq use-package-always-ensure t))
+  (require 'use-package))
+#+END_SRC
+
+#+BEGIN_SRC elisp :tangle default.el
+;;(use-package benchmark-init
+;;  :ensure t
+;;  :config
+;;  ;; To disable collection of benchmark data after init is done.
+;;  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 #+END_SRC
 
 
@@ -78,12 +85,13 @@ Setup auth sources to use pass gpg files.
 #+END_SRC
 
 
-** Packages
+* Packages
 
 The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package org
+  :defer t
   :bind (:map org-mode-map
               ("C-c e" . org-edit-src-code))
   :init
@@ -149,6 +157,7 @@ Presentation minor mode for org-mode see [[https://github.com/takaxp/org-tree-sl
 #+BEGIN_SRC elisp :tangle default.el
 ;; show org-mode bullets as utf8 characters
 (use-package org-tree-slide
+  :defer t
   :config
   (define-key org-tree-slide-mode-map (kbd "<f9>") 'org-tree-slide-move-previous-tree)
   (define-key org-tree-slide-mode-map (kbd "<f10>") 'org-tree-slide-move-next-tree)
@@ -208,7 +217,6 @@ C-c i (multiple lines by selecting a region). A reimplementation of the vim vers
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package evil-nerd-commenter
-  :ensure t
   :config
   (evilnc-default-hotkeys))
 #+END_SRC
@@ -219,7 +227,6 @@ See: https://github.com/emacs-evil/evil-surround
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package evil-surround
-  :ensure t
   :config
   (global-evil-surround-mode 1))
 #+END_SRC
@@ -251,7 +258,9 @@ Evil keybindings for many things. Woohoo.
 Evil keybindings for magit. Woohoo.
 
 #+BEGIN_SRC elisp :tangle default.el
-(use-package evil-magit)
+(use-package evil-magit
+  :defer t
+  )
 #+END_SRC
 
 
@@ -404,7 +413,7 @@ Elvish mode. See elvish: https://github.com/elves/elvish
 Elixir mode.
 
 #+BEGIN_SRC elisp :tangle default.el
-(use-package alchemist)
+;;(use-package alchemist)
 #+END_SRC
 
 
@@ -416,29 +425,12 @@ For editing nix expressions.
 #+END_SRC
 
 
-Allows integrating nix with emacs - project specific. See: [[https://github.com/shlevy/nix-buffer][https://github.com/shlevy/nix-buffer]].
-Disabled as I believe direnv will do everything I need.
-
-#+BEGIN_SRC elisp :tangle default.el
-;; supports using a dir-locals.nix (kind of like a default.nix)
-;; (use-package nix-buffer
-;;   :commands nix-buffer
-;;   :preface
-;;   (defun turn-on-nix-buffer ()
-;;     (when (and (not noninteractive)
-;;           (not (eq (aref (buffer-name) 0) ?\s))
-;;           (not (file-remote-p default-directory)))
-;;       (nix-buffer)))
-;;   :hook (after-change-major-mode . turn-on-nix-buffer)
-;;   )
-#+END_SRC
-
-
 [[https://magit.vc/][Magit]] is possibly the most awesome git integration of any editor out there. It's awesome anyway.
 
 #+BEGIN_SRC elisp :tangle default.el
 ;; the awesome git emacs interface
 (use-package magit
+  :defer t
   :config
   (setq magit-repository-directories
         '( "~/Development" ))
@@ -524,12 +516,11 @@ Some simple modes for a few languages.
 (use-package yaml-mode
   :mode "\\.cf$")
 
-(use-package ensime)
-(use-package scala-mode)
-(use-package sbt-mode)
+;;(use-package ensime)
+;;(use-package scala-mode)
+;;(use-package sbt-mode)
 
 (use-package js2-mode
-  :ensure t
   :config
   (setq js2-strict-missing-semi-warning nil)
   (setq js2-missing-semi-one-line-override t)
@@ -567,7 +558,6 @@ Intero is an awesome haskell environment for emacs. It's disabled now because it
 
 #+BEGIN_SRC elisp :tangle default.el
 ;; (use-package intero
-;;   :ensure t
 ;;   :config
 ;;   (add-hook 'haskell-mode-hook 'intero-mode))
 #+END_SRC
@@ -578,7 +568,6 @@ TypeScript mode.
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package tide
-  :ensure t
   :bind (("C-c C-j" . tide-jump-to-definition)
          ("C-c C-d" . tide-documentation-at-point))
   :after (typescript-mode company flycheck)
@@ -592,7 +581,6 @@ Prettier for js/typescript etc code formatting.
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package prettier-js
-  :ensure t
   :config
   (add-hook 'js2-mode-hook 'prettier-js-mode)
   (add-hook 'typescript-mode-hook 'prettier-js-mode))
@@ -632,7 +620,6 @@ etags, gtags, files, keywords and a few others.
         company-dabbrev-ignore-case nil
         company-dabbrev-downcase nil)
   :config
-  (add-to-list 'company-backends 'company-nixos-options)
   (global-company-mode))
 #+END_SRC
 
@@ -651,7 +638,12 @@ See: [[https://github.com/expez/company-quickhelp][https://github.com/expez/comp
 Show documentation popups for nixos configuration options.
 
 #+BEGIN_SRC elisp :tangle default.el
-(use-package company-nixos-options)
+(use-package company-nixos-options
+  :defer t
+  :init
+  (with-eval-after-load 'company
+    (add-to-list 'company-backends 'company-nixos-options))
+  )
 #+END_SRC
 
 
@@ -660,7 +652,6 @@ This allows me to toggle between snake case, camel case etc.
 #+BEGIN_SRC elisp :tangle default.el
 ;; Cycle between snake case, camel case, etc.
 (use-package string-inflection
-  :ensure t
   :config
   (global-set-key (kbd "C-c i") 'string-inflection-cycle)
   (global-set-key (kbd "C-c C") 'string-inflection-camelcase)        ;; Force to CamelCase
@@ -871,7 +862,6 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
        " OR maildir:/All.Mail/"))
 
 (use-package mu4e
-  :ensure nil
   :config
   (setq mail-user-agent 'mu4e-user-agent
         mu4e-maildir "~/.mail"
@@ -947,7 +937,6 @@ Sending email.
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package jl-encrypt
-  :ensure nil
   :config
   (setq mml-secure-insert-signature "always")
 )
@@ -1066,8 +1055,7 @@ Allows memoization of expensive functions.
 #+END_SRC
 
 
-
-** Other configuration
+* Other configuration
 
 This will return a secret from the password store.
 
