@@ -176,6 +176,8 @@ in
 
     highlight-numbers
 
+    memoize
+
     # Evil
     avy
     evil

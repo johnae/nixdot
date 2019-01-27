@@ -1059,8 +1059,26 @@ Sending email.
 #+END_SRC
 
 
+Allows memoization of expensive functions.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package memoize)
+#+END_SRC
+
+
 
 ** Other configuration
+
+This will return a secret from the password store.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defmemoize my/secret (storepath)
+ "Return the contents in gnupg encrypted STOREPATH argument."
+  (replace-regexp-in-string "\n\\'" ""
+   (shell-command-to-string
+    (concat "gpg --decrypt "
+            "~/.password-store/" storepath ".gpg 2>/dev/null"))))
+#+END_SRC
 
 Define a function to set the telephone line theme. This is so that when using emacsclient we
 can just call this rather than duplicate code. So we need to be able to set the theme more
