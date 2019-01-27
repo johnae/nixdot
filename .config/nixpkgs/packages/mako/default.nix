@@ -4,13 +4,13 @@
 
 stdenv.mkDerivation rec {
   name = "mako-${version}";
-  version = "ce1978865935dbff1b3bf3065ff607a4178fe57b";
+  version = "b30c786bdf8b90807e45ec0f52b292ee147ae1ff";
 
   src = fetchFromGitHub {
     owner = "emersion";
     repo = "mako";
     rev = version;
-    sha256 = "0cw8gs3si4v4684qfsnvpr8sv45h70k6syz3yk9ns05dm7r0fnzq";
+    sha256 = "1dw75cdvn34kmwdgzm228zvm0apd10rw1hx1k9xbmhihzf7jg76y";
   };
 
   nativeBuildInputs = [
