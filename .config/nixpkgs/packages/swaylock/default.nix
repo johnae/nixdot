@@ -7,13 +7,13 @@
 
 stdenv.mkDerivation rec {
   name = "swaylock-${version}";
-  version = "3d94a60924758ba0b7487b5b9c79b3ef7668c989";
+  version = "368f53e4f15ecac51c01e6d1a45c43d31d4bca20";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "swaylock";
     rev = version;
-    sha256 = "17c11jdfa5mj84nw2j36ikrh6hj1p06mck6gvpj468n4gl08h6jk";
+    sha256 = "00x5yw8cp21dkjz6cv279jc6k970ixrbz39c7cm55liydbslqykh";
   };
 
   nativeBuildInputs = [
