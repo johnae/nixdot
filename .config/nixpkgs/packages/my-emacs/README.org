@@ -1261,9 +1261,35 @@ Some other general settings.
 (setq-default indent-tabs-mode nil)
 (setq tabify nil)
 
+;; Short cut to get a new eshell
+(defun eshell-new()
+  "Open a new instance of eshell."
+  (interactive)
+  (eshell 'N))
+
 ;; Highlight trailing whitespace.
 (setq-default show-trailing-whitespace t)
 (set-face-background 'trailing-whitespace "yellow")
+;; But not in shell modes
+(add-hook 'eshell-mode-hook (
+ lambda ()
+        (setq show-trailing-whitespace nil)
+        (setenv "PAGER" "cat")
+        (setenv "EDITOR" "emacsclient")
+        ))
+(add-hook 'shell-mode-hook (
+ lambda ()
+        (setq show-trailing-whitespace nil)
+        (setenv "PAGER" "cat")
+        (setenv "EDITOR" "emacsclient")
+        ))
+
+(add-hook 'term-mode-hook (
+ lambda ()
+        (setq show-trailing-whitespace nil)
+        (setenv "PAGER" "cat")
+        (setenv "EDITOR" "emacsclient")
+        ))
 
 (setq temporary-file-directory "~/.emacs.d/tmp/")
 (unless (file-exists-p "~/.emacs.d/tmp")
