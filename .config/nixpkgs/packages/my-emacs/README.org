@@ -322,7 +322,10 @@ See: [[https://github.com/abo-abo/swiper][https://github.com/abo-abo/swiper]]
 (use-package ivy
   :config
   (setq ivy-use-virtual-buffers t
-        ivy-count-format "%d/%d "))
+        ivy-count-format "%d/%d ")
+;;  (add-hook 'eshell-mode-hook '(lambda ()
+;;    (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)))
+)
 #+END_SRC
 
 
