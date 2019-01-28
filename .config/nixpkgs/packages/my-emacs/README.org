@@ -208,6 +208,8 @@ So [[https://github.com/emacs-evil/evil][evil]] is vim for emacs. A better vim b
   (define-key evil-normal-state-map (kbd ", w") 'whitespace-cleanup)
   (define-key evil-normal-state-map (kbd ", b") 'backward-page)
   (define-key evil-normal-state-map (kbd ", f") 'forward-page)
+  (define-key evil-normal-state-map (kbd ", +") 'enlarge-window)
+  (define-key evil-normal-state-map (kbd ", -") 'shrink-window)
   (define-key evil-normal-state-map (kbd ", <RET>") 'projectile-ag))
 #+END_SRC
 
