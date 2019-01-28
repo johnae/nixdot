@@ -5,7 +5,7 @@
  my-emacs, termite, wl-clipboard,
  ps, jq, fire, sway, rofi, evolution,
  fd, fzf, skim, bashInteractive,
- pass, wpa_supplicant,
+ pass, wpa_supplicant, cloud-sql-proxy,
  gnupg, gawk, gnused, openssl,
  gnugrep, findutils, coreutils,
  alacritty, libnotify,
@@ -50,6 +50,16 @@ let
   ed = writeStrictShellScriptBin "ed" ''
     ${emacs-server}/bin/emacs-server
     exec ${emacsclient} -c -s /run/user/1337/emacs1337/server "$@" >/dev/null 2>&1
+  '';
+
+  csp = writeStrictShellScriptBin "csp" ''
+    CLOUD_SQL_INSTANCES=''${CLOUD_SQL_INSTANCES:-}
+    if [ -z "$CLOUD_SQL_INSTANCES" ]; then
+      echo "Please set CLOUD_SQL_INSTANCES env var"
+      exit 1
+    fi
+    exec ${cloud-sql-proxy}/bin/cloud_sql_proxy \
+                   -instances="$CLOUD_SQL_INSTANCES"
   '';
 
   fzf-fzf = writeStrictShellScriptBin "fzf-fzf" ''
@@ -445,7 +455,7 @@ in
       inherit edit edi ed
               emacs-server mail
               fzf-fzf project-select
-              terminal launch
+              terminal launch csp
               fzf-passmenu rofi-passmenu
               fzf-run fzf-window
               sk-sk sk-run sk-window sk-passmenu
