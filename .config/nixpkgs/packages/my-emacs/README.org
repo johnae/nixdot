@@ -640,12 +640,12 @@ See: [[https://github.com/expez/company-quickhelp][https://github.com/expez/comp
 Show documentation popups for nixos configuration options.
 
 #+BEGIN_SRC elisp :tangle default.el
-(use-package company-nixos-options
-  :defer t
-  :init
-  (with-eval-after-load 'company
-    (add-to-list 'company-backends 'company-nixos-options))
-  )
+;;(use-package company-nixos-options
+;;  :defer t
+;;  :init
+;;  (with-eval-after-load 'company
+;;    (add-to-list 'company-backends 'company-nixos-options))
+;;  )
 #+END_SRC
 
 
