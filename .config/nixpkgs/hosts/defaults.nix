@@ -121,6 +121,13 @@
 
   ssh = {
     hosts = {
+      "*" = {
+        ControlMaster = "auto";
+        ControlPath = "~/.ssh/master-%r@%h-%p";
+        #ControlPersist = "600";
+        ForwardAgent = "yes";
+        ServerAliveInterval = "60";
+      };
       "*.compute.amazonaws.com" = {
         StrictHostKeyChecking = "no";
         UserKnownHostsFile = "/dev/null";
