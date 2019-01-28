@@ -839,7 +839,8 @@ Highlight the part of a line that goes beyond 80 chars
 #+BEGIN_SRC elisp :tangle default.el
 (use-package column-enforce-mode
   :config
-  (global-column-enforce-mode t))
+  (setq column-enforce-comments nil)
+  (add-hook 'prog-mode-hook 'column-enforce-mode))
 #+END_SRC
 
 
