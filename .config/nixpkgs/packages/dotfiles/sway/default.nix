@@ -135,8 +135,8 @@ let
     # start a terminal
     bindsym ${mod}+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal
 
-    # start a light bg terminal
-    # bindsym ${mod}+Shift+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal-light
+    # start an emacs shell
+    bindsym ${mod}+Shift+Return exec ${termite}/bin/termite -t eshell -e "${edi}/bin/edi -e '(eshell-new)'"
 
     # start a light + large font terminal
     # bindsym ${mod}+Control+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal-large
