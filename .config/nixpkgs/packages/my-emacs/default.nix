@@ -206,6 +206,9 @@ in
 
     # Helpers
     direnv
+    kubernetes-tramp
+    docker-tramp
+    counsel-tramp
 
     # Language support
     moonscript
