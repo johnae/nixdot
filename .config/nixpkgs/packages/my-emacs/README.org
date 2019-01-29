@@ -323,8 +323,10 @@ See: [[https://github.com/abo-abo/swiper][https://github.com/abo-abo/swiper]]
   :config
   (setq ivy-use-virtual-buffers t
         ivy-count-format "%d/%d ")
-;;  (add-hook 'eshell-mode-hook '(lambda ()
-;;    (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point)))
+  (add-hook 'eshell-mode-hook '(lambda ()
+    (define-key eshell-mode-map "\t" 'completion-at-point)))
+  (add-hook 'shell-mode-hook '(lambda ()
+    (define-key shell-mode-map "\t" 'completion-at-point)))
 )
 #+END_SRC
 
@@ -567,6 +569,12 @@ Intero is an awesome haskell environment for emacs. It's disabled now because it
 ;;   (add-hook 'haskell-mode-hook 'intero-mode))
 #+END_SRC
 
+
+Racket mode.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package racket-mode)
+#+END_SRC
 
 
 TypeScript mode.
@@ -1270,13 +1278,31 @@ Some other general settings.
 ;; Highlight trailing whitespace.
 (setq-default show-trailing-whitespace t)
 (set-face-background 'trailing-whitespace "yellow")
+
 ;; But not in shell modes
+(setq eshell-where-to-jump 'begin
+      eshell-review-quick-commands nil
+      eshell-smart-space-goes-to-end t
+      eshell-glob-case-insensitive t
+      eshell-scroll-to-bottom-on-input 'this
+      eshell-buffer-shorthand t
+      eshell-history-size 1024
+      eshell-cmpl-ignore-case t)
+(require 'eshell)
+(require 'em-term)
+(require 'em-smart)
+(with-eval-after-load 'em-term
+  (dolist (p '("fzf" "spook" "git" "home" "htop" "mpsyt" "mpv" "mutt" "ncdu" "newsbeuter" "pinentry-curses"))
+    (add-to-list 'eshell-visual-commands p)))
 (add-hook 'eshell-mode-hook (
  lambda ()
         (setq show-trailing-whitespace nil)
         (setenv "PAGER" "cat")
         (setenv "EDITOR" "emacsclient")
+        (eshell-smart-initialize)
         ))
+
+;;;;
 (add-hook 'shell-mode-hook (
  lambda ()
         (setq show-trailing-whitespace nil)

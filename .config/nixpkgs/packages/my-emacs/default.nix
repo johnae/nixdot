@@ -241,6 +241,8 @@ in
 
     string-inflection
 
+    racket-mode
+
     markdown-mode
     yaml-mode
     web-mode
