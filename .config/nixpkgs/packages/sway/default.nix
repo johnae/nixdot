@@ -9,13 +9,13 @@
 
 stdenv.mkDerivation rec {
   name = "sway-${version}";
-  version = "7c27d73b02a1958f323a7c30f46c99414cd6f6bf";
+  version = "f49ad5977ea390078e8d4d6b633f895bfa0909c4";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "sway";
     rev = version;
-    sha256 = "0h88vyd8qfnzd66g2jqc2hp277kjpafkwqalarvbp0d8m37yclxz";
+    sha256 = "0lrp46jn7a836az6d4mb712yp00jw66bd00b4km6jr3y7n398771";
   };
 
   nativeBuildInputs = [
