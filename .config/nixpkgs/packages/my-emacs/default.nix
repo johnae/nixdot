@@ -242,6 +242,7 @@ in
     string-inflection
 
     racket-mode
+    esh-autosuggest
 
     markdown-mode
     yaml-mode

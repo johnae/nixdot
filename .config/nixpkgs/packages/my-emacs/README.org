@@ -200,14 +200,17 @@ So [[https://github.com/emacs-evil/evil][evil]] is vim for emacs. A better vim b
   (define-key evil-normal-state-map (kbd ", p") 'counsel-projectile-find-file)
   (define-key evil-normal-state-map (kbd ", f") 'counsel-find-file)
   (define-key evil-normal-state-map (kbd ", s") 'swiper)
+  (define-key evil-normal-state-map (kbd ", e") 'jae/eshell-here)
   (define-key evil-normal-state-map (kbd ", a") 'counsel-projectile-rg)
   (define-key evil-normal-state-map (kbd ", <up>") 'projectile-switch-project)
   (define-key evil-normal-state-map (kbd "P") 'counsel-yank-pop)
   (define-key evil-normal-state-map (kbd ", <down>") 'split-window-vertically)
   (define-key evil-normal-state-map (kbd ", g") 'magit-status)
   (define-key evil-normal-state-map (kbd ", w") 'whitespace-cleanup)
-  (define-key evil-normal-state-map (kbd ", b") 'backward-page)
-  (define-key evil-normal-state-map (kbd ", f") 'forward-page)
+  (define-key evil-normal-state-map (kbd ", b") 'previous-buffer)
+  (define-key evil-normal-state-map (kbd ", f") 'next-buffer)
+  (define-key evil-normal-state-map (kbd ", B") 'backward-page)
+  (define-key evil-normal-state-map (kbd ", F") 'forward-page)
   (define-key evil-normal-state-map (kbd ", +") 'enlarge-window)
   (define-key evil-normal-state-map (kbd ", -") 'shrink-window)
   (define-key evil-normal-state-map (kbd ", <RET>") 'projectile-ag))
@@ -260,9 +263,7 @@ Evil keybindings for many things. Woohoo.
 Evil keybindings for magit. Woohoo.
 
 #+BEGIN_SRC elisp :tangle default.el
-(use-package evil-magit
-  :defer t
-  )
+(use-package evil-magit)
 #+END_SRC
 
 
@@ -321,13 +322,13 @@ See: [[https://github.com/abo-abo/swiper][https://github.com/abo-abo/swiper]]
 ;; completions
 (use-package ivy
   :config
+  (ivy-mode 1)
   (setq ivy-use-virtual-buffers t
         ivy-count-format "%d/%d ")
   (add-hook 'eshell-mode-hook '(lambda ()
     (define-key eshell-mode-map "\t" 'completion-at-point)))
   (add-hook 'shell-mode-hook '(lambda ()
-    (define-key shell-mode-map "\t" 'completion-at-point)))
-)
+    (define-key shell-mode-map "\t" 'completion-at-point))))
 #+END_SRC
 
 
@@ -437,7 +438,6 @@ For editing nix expressions.
 #+BEGIN_SRC elisp :tangle default.el
 ;; the awesome git emacs interface
 (use-package magit
-  :defer t
   :config
   (setq magit-repository-directories
         '( "~/Development" ))
@@ -1268,18 +1268,25 @@ Some other general settings.
 (setq-default tab-width 2)
 (setq-default indent-tabs-mode nil)
 (setq tabify nil)
+;; Highlight trailing whitespace.
+(setq-default show-trailing-whitespace t)
+(set-face-background 'trailing-whitespace "yellow")
+#+END_SRC
 
-;; Short cut to get a new eshell
+
+Eshell settings and tweaks.
+
+#+BEGIN_SRC elisp :tangle default.el
+
+(use-package esh-autosuggest
+  :hook (eshell-mode . esh-autosuggest-mode)
+  :ensure t)
+
 (defun eshell-new()
   "Open a new instance of eshell."
   (interactive)
   (eshell 'N))
 
-;; Highlight trailing whitespace.
-(setq-default show-trailing-whitespace t)
-(set-face-background 'trailing-whitespace "yellow")
-
-;; But not in shell modes
 (setq eshell-where-to-jump 'begin
       eshell-review-quick-commands nil
       eshell-smart-space-goes-to-end t
@@ -1288,21 +1295,221 @@ Some other general settings.
       eshell-buffer-shorthand t
       eshell-history-size 1024
       eshell-cmpl-ignore-case t)
+
 (require 'eshell)
+(with-eval-after-load 'eshell
+  (require 'f)
+  (defun jae/eshell-here ()
+    "Opens up a new shell in the directory associated with the
+current buffer's file."
+    (interactive)
+    (let* ((height (/ (window-total-height) 3))
+           (name (format "*eshell: %s*"
+                         (f-filename default-directory))))
+      ;;(split-window-vertically (- height))
+      ;;(other-window 1)
+      (let ((buf (get-buffer name)))
+        (if buf
+            (switch-to-buffer buf)
+          (eshell 'new)
+          (rename-buffer name 'unique)))
+      (insert (concat "ls"))
+      (eshell-send-input)))
+
+  (require 'dash)
+  (require 's)
+
+  (defmacro with-face (STR &rest PROPS)
+    "Return STR propertized with PROPS."
+    `(propertize ,STR 'face (list ,@PROPS)))
+
+  (defmacro esh-section (NAME ICON FORM &rest PROPS)
+    "Build eshell section NAME with ICON prepended to evaled FORM with PROPS."
+    `(setq ,NAME
+           (lambda () (when ,FORM
+                   (-> ,ICON
+                      (concat esh-section-delim ,FORM)
+                      (with-face ,@PROPS))))))
+
+  (defun esh-acc (acc x)
+    "Accumulator for evaluating and concatenating esh-sections."
+    (--if-let (funcall x)
+        (if (s-blank? acc)
+            it
+          (concat acc esh-sep it))
+      acc))
+
+  (defun shell-command-to-string-nows (cmd)
+    "Return shell command output without trailing newline and whitespace."
+    (replace-regexp-in-string "\n\\'" ""
+      (replace-regexp-in-string "\\(\\`[[:space:]\n]*\\|[[:space:]\n]*\\'\\)" ""
+        (shell-command-to-string cmd)
+        )
+      )
+    )
+
+
+  (defun is-inside-git-tree ()
+    "Returns true if inside git work tree"
+    (string= (shell-command-to-string-nows "git rev-parse --is-inside-work-tree 2>/dev/null")
+                 "true"
+                 ))
+
+  (defun git-unpushed-commits ()
+    "Returns number of local commits not pushed."
+    (if (is-inside-git-tree)
+        (let ((
+               changes (shell-command-to-string-nows "git log @{u}.. --oneline 2> /dev/null | wc -l")
+               ))
+          (if (string= changes "0")
+              nil
+            changes
+            )
+          )
+      nil
+      )
+    )
+
+  (defun git-changes ()
+    "Returns number of changes or nil."
+    (if (is-inside-git-tree)
+        (let ((
+               diffs (shell-command-to-string-nows "git diff-index HEAD | wc -l")
+               ))
+          (if (string= diffs "0")
+              nil
+            diffs
+            )
+          )
+      nil
+      )
+    )
+
+  (defun k8s-context ()
+    "Return k8s context or nil"
+    (let ((
+           k8s-ctx (shell-command-to-string-nows
+                    "kubectl config current-context 2>/dev/null")
+                   ))
+      (if (string= k8s-ctx "")
+          nil
+        k8s-ctx
+        )
+      )
+    )
+
+  ;; Insert at prompt only on eshell
+  (add-hook 'eshell-mode-hook
+        (lambda ()
+          (define-key
+            evil-normal-state-local-map
+            (kbd ", k") (lambda ()
+                        (interactive)
+                        (pick-kubectx)
+                        )
+            )
+          (define-key
+            evil-normal-state-local-map
+            (kbd ", x") (lambda ()
+                        (interactive)
+                        (go-to-project)
+                        )
+            )
+          )
+        )
+
+  (defun select-k8s-context (x)
+    (shell-command (concat "kubectx " x))
+    )
+
+  (defun pick-kubectx ()
+    "Select k8s context"
+    (interactive)
+    (setenv "KUBECTX_IGNORE_FZF" "y")
+    (ivy-read "kubectx" (split-string (shell-command-to-string "kubectx") "\n" t)
+              :action '(1
+                       ("o" select-k8s-context)
+                       )
+              )
+    )
+
+  (defun go-to-project ()
+    "Go to project"
+    (interactive)
+    (counsel-projectile-switch-project
+     'counsel-projectile-switch-project-action-run-eshell)
+    )
+
+  (defun esh-prompt-func ()
+    "Build `eshell-prompt-function'"
+    (concat esh-header
+            (-reduce-from 'esh-acc "" eshell-funcs)
+            "\n"
+            eshell-prompt-string))
+
+  (esh-section esh-dir
+               "\xf07c"  ;  (fontawesome folder)
+               (abbreviate-file-name (eshell/pwd))
+               '(:foreground "gold" :bold ultra-bold :underline t))
+
+    (esh-section esh-git
+               "\xf126"  ;  (git icon)
+               (magit-get-current-branch)
+               '(:foreground "pink"))
+
+    (esh-section esh-git-changes
+               "\xf071"  ;  (warn icon)
+               (git-changes)
+               '(:foreground "red"))
+
+    (esh-section esh-git-unpushed-commits
+               "\xf714"  ;  (skull icon)
+               (git-unpushed-commits)
+               '(:foreground "red"))
+
+    (esh-section esh-k8s
+               "\xf6ff"  ;  (some icon)
+               (k8s-context)
+               '(:foreground "forest green"))
+
+  ;; Separator between esh-sections
+  (setq esh-sep "  ")
+
+  ;; Separator between an esh-section icon and form
+  (setq esh-section-delim " ")
+
+  ;; Eshell prompt header
+  (setq esh-header "\n ")
+
+  ;; Eshell prompt regexp and string. Unless you are varying the prompt by eg.
+  ;; your login, these can be the same.
+  (setq eshell-prompt-regexp " ")
+  (setq eshell-prompt-string " ")
+
+  ;; Choose which eshell-funcs to enable
+  (setq eshell-funcs (list esh-dir esh-git
+                           esh-git-changes
+                           esh-git-unpushed-commits
+                           esh-k8s))
+
+  ;; Enable the new eshell prompt
+  (setq eshell-prompt-function 'esh-prompt-func)
+
+)
+
 (require 'em-term)
-(require 'em-smart)
 (with-eval-after-load 'em-term
-  (dolist (p '("fzf" "spook" "git" "home" "htop" "mpsyt" "mpv" "mutt" "ncdu" "newsbeuter" "pinentry-curses"))
+  (dolist (p '("fzf" "spook" "htop" "pinentry-curses"))
     (add-to-list 'eshell-visual-commands p)))
+  (dolist (p '("git" ("log" "diff" "show") "home" ("log" "diff" "show"))
+    (add-to-list 'eshell-visual-subcommands p)))
 (add-hook 'eshell-mode-hook (
  lambda ()
         (setq show-trailing-whitespace nil)
         (setenv "PAGER" "cat")
         (setenv "EDITOR" "emacsclient")
-        (eshell-smart-initialize)
         ))
 
-;;;;
 (add-hook 'shell-mode-hook (
  lambda ()
         (setq show-trailing-whitespace nil)
