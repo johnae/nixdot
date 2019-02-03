@@ -1297,6 +1297,12 @@ Eshell settings and tweaks.
       eshell-cmpl-ignore-case t)
 
 (require 'eshell)
+(require 'em-tramp)
+(setq password-cache t)
+(setq password-cache-expiry 3600)
+(with-eval-after-load 'esh-module
+  (delq 'eshell-banner eshell-modules-list)
+  (push 'eshell-tramp eshell-modules-list))
 (setq eshell-modify-global-environment t)
 (add-hook 'post-command-hook '(lambda ()
    (if (string= (expand-file-name default-directory) (concat (getenv "HOME") "/"))
@@ -1484,7 +1490,7 @@ current buffer's file."
                '(:foreground "red"))
 
     (esh-section esh-k8s
-               "\xf6ff"  ;  (some icon)
+               "\xf1b3"  ;  (cubes icon)
                (k8s-context)
                '(:foreground "forest green"))
 
