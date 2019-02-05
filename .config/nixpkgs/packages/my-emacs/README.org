@@ -413,7 +413,9 @@ HashiCorps terraform.
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package terraform-mode
-  :mode "\\.tf$")
+  :mode "\\.tf$"
+  :config
+  (terraform-format-on-save-mode))
 #+END_SRC
 
 
@@ -488,7 +490,9 @@ and ofc
 #+BEGIN_SRC elisp :tangle default.el
 (use-package direnv
   :config
-  (direnv-mode))
+  (direnv-mode)
+  (add-to-list 'direnv-non-file-modes 'eshell-mode)
+)
 #+END_SRC
 
 
@@ -1227,6 +1231,9 @@ This is a nice font :-).
 
 #+BEGIN_SRC elisp :tangle default.el
 (add-to-list 'default-frame-alist '(font . "Office Code Pro D-14"))
+;;(add-to-list 'default-frame-alist '(font . "FontAwesome-14"))
+;;(add-to-list 'default-frame-alist '(font . "Font Awesome 5 Brands-14"))
+;;(add-to-list 'default-frame-alist '(font . "Font Awesome 5 Free-14"))
 (set-face-attribute 'default t :font "Office Code Pro D-14")
 #+END_SRC
 
@@ -1285,9 +1292,22 @@ Eshell settings and tweaks.
 
 #+BEGIN_SRC elisp :tangle default.el
 
+(use-package fish-completion
+  :config
+  (global-fish-completion-mode)
+)
+
 (use-package esh-autosuggest
   :hook (eshell-mode . esh-autosuggest-mode)
   :ensure t)
+
+(defun eshell/clear ()
+  "Really clear the eshell buffer"
+  (interactive)
+  (let ((input (eshell-get-old-input)))
+    (eshell/clear-scrollback)
+    ;;(eshell-emit-prompt)
+    (insert input)))
 
 (defun eshell-new()
   "Open a new instance of eshell."
@@ -1325,9 +1345,9 @@ Eshell settings and tweaks.
    (setq eshell-path-env (getenv "PATH"))
   )
 )
-(add-to-list 'direnv-non-file-modes 'eshell-mode)
 (with-eval-after-load 'eshell
   (require 'f)
+
   (defun jae/eshell-here ()
     "Opens up a new shell in the directory associated with the
 current buffer's file."

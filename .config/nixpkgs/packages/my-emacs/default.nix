@@ -243,6 +243,7 @@ in
 
     racket-mode
     esh-autosuggest
+    fish-completion # fish completion in eshell
 
     markdown-mode
     yaml-mode
