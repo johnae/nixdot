@@ -291,10 +291,10 @@ let
       "Decrypt error" "Error decrypting password file, is your gpg card inserted?"
     else
       if [ -z "$passonly" ]; then
-        ${coreutils}/bin/echo -n "$login" | ${wl-clipboard}/bin/wl-copy -of
-        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy -of
+        ${coreutils}/bin/echo -n "$login" | ${wl-clipboard}/bin/wl-copy -onf
+        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy -onf
       else
-        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy
+        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy -onf
       fi
     fi
 
