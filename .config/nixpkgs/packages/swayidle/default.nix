@@ -6,13 +6,13 @@
 
 stdenv.mkDerivation rec {
   name = "swayidle-${version}";
-  version = "d18c7cbb5deb0f0d6a9758d0fc820bcdf9bf9cda";
+  version = "85a680178d1b310788272edd8fb6bf86304cf721";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "swayidle";
     rev = version;
-    sha256 = "0b65flajwn2i6k2kdxxgw25w7ikzzmm595f4j5x1wac1rb0yah9w";
+    sha256 = "1xca5zb82zzac7410lwsxfb16kjxy3x94pqqgkkfrqjp2va44cag";
   };
 
   nativeBuildInputs = [
