@@ -1301,8 +1301,21 @@ Eshell settings and tweaks.
   :hook (eshell-mode . esh-autosuggest-mode)
   :ensure t)
 
+(setq eshell-buffer-maximum-lines 1200)
+(defun eos/truncate-eshell-buffers ()
+  "Truncates all eshell buffers."
+  (interactive)
+  (save-current-buffer
+    (dolist (buffer (buffer-list t))
+      (set-buffer buffer)
+      (when (eq major-mode 'eshell-mode)
+        (eshell-truncate-buffer)))))
+;; After idling for 5 seconds, truncates all eshell-buffers
+(setq eos/eshell-truncate-timer
+      (run-with-idle-timer 5 t #'eos/truncate-eshell-buffers))
+
 (defun eshell/clear ()
-  "Really clear the eshell buffer"
+  "Really clear the eshell buffer."
   (interactive)
   (let ((input (eshell-get-old-input)))
     (eshell/clear-scrollback)
