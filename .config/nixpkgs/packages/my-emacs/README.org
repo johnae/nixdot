@@ -1477,6 +1477,13 @@ current buffer's file."
                         (go-to-project)
                         )
             )
+          (define-key
+            evil-normal-state-local-map
+            (kbd ", w") (lambda ()
+                         (interactive)
+                         (pick-gcp-project)
+                         )
+            )
           )
         )
 
@@ -1488,10 +1495,24 @@ current buffer's file."
     "Select k8s context"
     (interactive)
     (setenv "KUBECTX_IGNORE_FZF" "y")
-    (ivy-read "kubectx" (split-string (shell-command-to-string "kubectx") "\n" t)
+    (ivy-read "Select kubernetes context: " (split-string (shell-command-to-string "kubectx") "\n" t)
               :action '(1
                        ("o" select-k8s-context)
                        )
+              )
+    )
+
+  (defun select-gcp-project (x)
+    (shell-command (concat "gcloud config set project " x))
+    )
+
+  (defun pick-gcp-project ()
+    "Select GCP proejct"
+    (interactive)
+    (ivy-read "Select GCP Project: " (split-string (shell-command-to-string "gcloud projects list | tail -n +2 | awk '{print $1}'") "\n" t)
+              :action '(1
+                        ("o" select-gcp-project)
+                        )
               )
     )
 
