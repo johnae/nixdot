@@ -1195,13 +1195,9 @@ Define some keybindings I like for moving between splits/windows.
 
 #+BEGIN_SRC elisp :tangle default.el
 (global-set-key (kbd "C-<up>") 'windmove-up)
-(global-set-key (kbd "C-k") 'windmove-up)
 (global-set-key (kbd "C-<down>") 'windmove-down)
-(global-set-key (kbd "C-j") 'windmove-down)
 (global-set-key (kbd "C-<left>") 'windmove-left)
-(global-set-key (kbd "C-h") 'windmove-left)
 (global-set-key (kbd "C-<right>") 'windmove-right)
-(global-set-key (kbd "C-l") 'windmove-right)
 #+END_SRC
 
 
@@ -1410,9 +1406,8 @@ current buffer's file."
       )
     )
 
-
   (defun is-inside-git-tree ()
-    "Returns true if inside git work tree"
+    "Returns true if inside git work tree."
     (string= (shell-command-to-string-nows "git rev-parse --is-inside-work-tree 2>/dev/null")
                  "true"
                  ))
@@ -1460,26 +1455,55 @@ current buffer's file."
       )
     )
 
-  ;; Insert at prompt only on eshell
-  (add-hook 'eshell-mode-hook
+  (defun current-gcloud-project ()
+    "Returns the current gcloud project."
+    (let ((
+           gcloud-project (
+              shell-command-to-string-nows
+                 "cat ~/.config/gcloud/configurations/config_default | grep 'project =' | awk '{print $NF}'")
+                          ))
+      (if (string= gcloud-project "")
+          nil
+        gcloud-project
+        )
+      )
+    )
+
+  (add-hook 'eshell-first-time-mode-hook
         (lambda ()
           (define-key
-            evil-normal-state-local-map
-            (kbd ", k") (lambda ()
+            eshell-mode-map
+            (kbd "C-<up>") 'windmove-up
+          )
+          (define-key
+            eshell-mode-map
+            (kbd "C-<down>") 'windmove-down
+          )
+          (define-key
+            eshell-mode-map
+            (kbd "C-<left>") 'windmove-left
+          )
+          (define-key
+            eshell-mode-map
+            (kbd "C-<right>") 'windmove-right
+          )
+          (define-key
+            eshell-mode-map
+            (kbd "C-c k") (lambda ()
                         (interactive)
                         (pick-kubectx)
                         )
             )
           (define-key
-            evil-normal-state-local-map
-            (kbd ", x") (lambda ()
+            eshell-mode-map
+            (kbd "C-c g") (lambda ()
                         (interactive)
                         (go-to-project)
                         )
             )
           (define-key
-            evil-normal-state-local-map
-            (kbd ", w") (lambda ()
+            eshell-mode-map
+            (kbd "C-c w") (lambda ()
                          (interactive)
                          (pick-gcp-project)
                          )
@@ -1555,6 +1579,11 @@ current buffer's file."
                (k8s-context)
                '(:foreground "forest green"))
 
+    (esh-section esh-gcp
+               "\xf1a0"  ;  (google icon)
+               (current-gcloud-project)
+               '(:foreground "dark green"))
+
   ;; Separator between esh-sections
   (setq esh-sep "  ")
 
@@ -1573,7 +1602,7 @@ current buffer's file."
   (setq eshell-funcs (list esh-dir esh-git
                            esh-git-changes
                            esh-git-unpushed-commits
-                           esh-k8s))
+                           esh-k8s esh-gcp))
 
   ;; Enable the new eshell prompt
   (setq eshell-prompt-function 'esh-prompt-func)
