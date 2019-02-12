@@ -414,8 +414,14 @@ HashiCorps terraform.
 #+BEGIN_SRC elisp :tangle default.el
 (use-package terraform-mode
   :mode "\\.tf$"
-  :config
-  (terraform-format-on-save-mode))
+  :init
+  (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
+
+
+(use-package company-terraform
+  :after company
+  :init
+  (company-terraform-init))
 #+END_SRC
 
 
@@ -1575,7 +1581,7 @@ current buffer's file."
                '(:foreground "red"))
 
     (esh-section esh-k8s
-               "\xf1b3"  ;  (cubes icon)
+               "\xf1b3 "  ;  (cubes icon)
                (k8s-context)
                '(:foreground "forest green"))
 

@@ -219,6 +219,7 @@ in
     groovy-mode
     alchemist # elixir
     terraform-mode
+    company-terraform
     elvish-mode
 
     company-quickhelp
