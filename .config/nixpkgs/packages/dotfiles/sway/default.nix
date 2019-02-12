@@ -127,7 +127,7 @@ let
     ######## Key bindings
 
     # lock the screen
-    bindsym Control+${mod}+l exec ${swaylock}/bin/swaylock ${swaylockArgs}
+    bindsym Control+${mod}+l exec ${swaylock}/bin/swaylock -f ${swaylockArgs}
 
     # take a screenshot (stored in ~/Pictures/screenshots as a png)
     # bindsym ${mod}+x exec ${screenshot}/bin/screenshot
