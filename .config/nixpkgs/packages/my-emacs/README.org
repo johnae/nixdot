@@ -201,6 +201,7 @@ So [[https://github.com/emacs-evil/evil][evil]] is vim for emacs. A better vim b
   (define-key evil-normal-state-map (kbd ", f") 'counsel-find-file)
   (define-key evil-normal-state-map (kbd ", s") 'swiper)
   (define-key evil-normal-state-map (kbd ", e") 'jae/eshell-here)
+  (define-key evil-normal-state-map (kbd ", n") 'jae/eshell-new)
   (define-key evil-normal-state-map (kbd ", a") 'counsel-projectile-rg)
   (define-key evil-normal-state-map (kbd ", <up>") 'projectile-switch-project)
   (define-key evil-normal-state-map (kbd "P") 'counsel-yank-pop)
@@ -1324,7 +1325,7 @@ Eshell settings and tweaks.
     ;;(eshell-emit-prompt)
     (insert input)))
 
-(defun eshell-new()
+(defun jae/eshell-new()
   "Open a new instance of eshell."
   (interactive)
   (eshell 'N))

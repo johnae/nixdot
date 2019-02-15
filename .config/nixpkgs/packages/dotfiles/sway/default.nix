@@ -136,7 +136,7 @@ let
     bindsym ${mod}+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal
 
     # start an emacs shell
-    bindsym ${mod}+Shift+Return exec ${termite}/bin/termite -t eshell -e "${edi}/bin/edi -e '(eshell-new)'"
+    bindsym ${mod}+Shift+Return exec ${termite}/bin/termite -t eshell -e "${edi}/bin/edi -e '(jae/eshell-new)'"
 
     # start a light + large font terminal
     # bindsym ${mod}+Control+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal-large
