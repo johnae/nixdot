@@ -1496,6 +1496,14 @@ current buffer's file."
           )
           (define-key
             eshell-mode-map
+            (kbd "C-l") 'eshell/clear
+          )
+          (define-key
+            eshell-mode-map
+            (kbd "C-u") 'kill-whole-line
+          )
+          (define-key
+            eshell-mode-map
             (kbd "C-c k") (lambda ()
                         (interactive)
                         (pick-kubectx)
@@ -1598,12 +1606,12 @@ current buffer's file."
   (setq esh-section-delim " ")
 
   ;; Eshell prompt header
-  (setq esh-header "\n ")
+  (setq esh-header "\n")
 
   ;; Eshell prompt regexp and string. Unless you are varying the prompt by eg.
   ;; your login, these can be the same.
-  (setq eshell-prompt-regexp " ")
-  (setq eshell-prompt-string " ")
+  (setq eshell-prompt-regexp "")
+  (setq eshell-prompt-string "")
 
   ;; Choose which eshell-funcs to enable
   (setq eshell-funcs (list esh-dir esh-git
