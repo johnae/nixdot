@@ -45,11 +45,14 @@ let
        echo 'Done'
      end
 
+     echo "UPDATESTARTUPTTY" | gpg-connect-agent > /dev/null 2>&1
+
+     # emacs socket
+     set -x EMACS_SERVER_FILE /run/user/1337/emacs1337/server
+
      if test "$DISPLAY" = ""; and test (tty) = /dev/tty1; and test "$XDG_SESSION_TYPE" = ""
         exec start-sway
      end
-
-     echo "UPDATESTARTUPTTY" | gpg-connect-agent > /dev/null 2>&1
 
      if test "$TERM" = "dumb"
         function fish_title; end
@@ -68,9 +71,6 @@ let
 
      # remove greeting
      set fish_greeting
-
-     # emacs socket
-     set -x EMACS_SERVER_FILE /run/user/1337/emacs1337/server
 
      # aliases (in fish these are actually translated to functions)
      ## manage home
