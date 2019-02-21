@@ -1110,6 +1110,19 @@ Allows memoization of expensive functions.
 
 * Other configuration
 
+This is the opposite of fill-paragraph.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defun unfill-paragraph (&optional region)
+  "Take a multi-line paragraph and an optional REGION and make it into a single line of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max))
+        ;; This would override `fill-column' if it's an integer.
+        (emacs-lisp-docstring-fill-column t))
+    (fill-paragraph nil region)))
+(global-set-key (kbd "M-Q") 'unfill-paragraph)
+#+END_SRC
+
 This will return a secret from the password store.
 
 #+BEGIN_SRC elisp :tangle default.el
