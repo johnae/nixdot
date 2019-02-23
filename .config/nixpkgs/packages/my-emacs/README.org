@@ -902,7 +902,10 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
   (setq mail-user-agent 'mu4e-user-agent
         mu4e-maildir "~/.mail"
         ;;mu4e-compose-format-flowed t
-        mu4e-sent-messages-behavior 'delete
+        mu4e-sent-messages-behavior (lambda ()
+          (if (not(string= (message-sendmail-envelope-from) "john@insane.se"))
+              'delete
+            'sent))
         mu4e-headers-date-format "%Y-%m-%d"
         mu4e-headers-time-format "%H:%M"
         mu4e-headers-skip-duplicates t
@@ -1054,10 +1057,22 @@ Sending email.
      (mu4e-trash-folder "/insane-mail/Trash")
      (mu4e-refile-folder "/insane-mail/Archive")
      )
-     ("karma-gmail"
+    ("insane-gmail" ;; dummy
+     ;:(mu4e-sent-folder "/Gmail/sent")
+     (user-mail-address "john@insane.se")
+     (smtpmail-smtp-user "john@insane.se")
+     (smtpmail-local-domain "insane.se")
+     (smtpmail-default-smtp-server "mail.insane.se")
+     (smtpmail-smtp-server "mail.insane.se")
+     (smtpmail-smtp-service 587)
+     (mu4e-sent-folder "/insane-gmail/[Gmail]/Sent Mail")
+     (mu4e-drafts-folder "/insane-gmail/[Gmail]/Drafts")
+     (mu4e-trash-folder "/insane-gmail/[Gmail]/Trash")
+     (mu4e-refile-folder "/insane-gmail/[Gmail]/All Mail")
+     )
+    ("karma-gmail"
      ;;(mu4e-sent-folder "/Gmail/sent")
      (user-mail-address "john@karma.life")
-     (smtpmail-smtp-user "john@karma.life")
      (smtpmail-local-domain "gmail.com")
      (smtpmail-default-smtp-server "smtp.gmail.com")
      (smtpmail-smtp-server "smtp.gmail.com")
