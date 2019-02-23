@@ -625,6 +625,16 @@ Mode for elm. Disabled atm.
 #+END_SRC
 
 
+Mode for jsonnet.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package jsonnet-mode
+  :init
+  :mode "\\.jsonnet\\'\\|\\.libsonnet'"
+)
+#+END_SRC
+
+
 Mode for groovy.
 
 #+BEGIN_SRC elisp :tangle default.el

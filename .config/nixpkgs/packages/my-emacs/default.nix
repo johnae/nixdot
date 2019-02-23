@@ -225,6 +225,7 @@ in
     terraform-mode
     company-terraform
     elvish-mode
+    jsonnet-mode
 
     company-quickhelp
     column-enforce-mode
