@@ -888,9 +888,13 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
 (setq uninteresting-mail-query
       (concat
        "from:/\\(hello|kooperativa|usafis|stadiummember|info-sas|.*no.?reply|store-news|newblack|stockholm\.soder|newsletter|.*campaign.*\\)@/"
+       " OR from:notifications@github.com"
        " OR flag:trashed"
        " OR flag:list"
        " OR maildir:/Trash/"
+       " OR maildir:/Lists/"
+       " OR maildir:/Commercial/"
+       " OR maildir:/Junk/"
        " OR maildir:/All.Mail/"))
 
 (use-package mu4e
@@ -979,6 +983,9 @@ Sending email.
        :query (concat "flag:unread"
                       " AND NOT flag:trashed"
                       " AND NOT maildir:/All.Mail/"
+                      " AND NOT maildir:/Junk/"
+                      " AND NOT maildir:/Lists/"
+                      " AND NOT maildir:/Commercial/"
                       " AND NOT flag:list")
        :key ?u)
      ,(make-mu4e-bookmark
@@ -990,8 +997,8 @@ Sending email.
      ,(make-mu4e-bookmark
        :name "Today's lists"
        :query (concat "date:today..now"
-                      " AND maildir:/inbox/"
-                      " AND flag:list")
+                      " AND maildir:/Lists/"
+                      " OR (maildir:/inbox/ AND flag:list)")
        :key ?m)
      ,(make-mu4e-bookmark
        :name "Last 7 days"
@@ -1002,8 +1009,8 @@ Sending email.
      ,(make-mu4e-bookmark
        :name "Last 7 days of lists"
        :query (concat "date:7d..now"
-                      " AND maildir:/inbox/"
-                      " AND flag:list")
+                      " AND maildir:/Lists/"
+                      " OR (maildir:/inbox/ AND flag:list)")
        :key ?l)
      ,(make-mu4e-bookmark
        :name "Flagged in INBOX"
@@ -1017,29 +1024,29 @@ Sending email.
       message-kill-buffers-on-exit t
       user-full-name "John Axel Eriksson"
       send-mail-function 'smtpmail-send-it
-      smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-default-smtp-server "mail.insane.se"
       smtpmail-smtp-user "john@insane.se"
-      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-server "mail.insane.se"
       smtpmail-smtp-service 587
-      mu4e-sent-folder "/insane-gmail/[Gmail]/Sent Mail"
-      mu4e-drafts-folder "/insane-gmail/[Gmail]/Drafts"
-      mu4e-trash-folder "/insane-gmail/[Gmail]/Trash"
-      mu4e-refile-folder "/insane-gmail/[Gmail]/All Mail"
+      mu4e-sent-folder "/insane-mail/Sent"
+      mu4e-drafts-folder "/insane-mail/Drafts"
+      mu4e-trash-folder "/insane-mail/Trash"
+      mu4e-refile-folder "/insane-mail/Archive"
 )
 
 (defvar my-mu4e-account-alist
-  '(("insane-gmail"
+  '(("insane-mail"
      ;:(mu4e-sent-folder "/Gmail/sent")
      (user-mail-address "john@insane.se")
      (smtpmail-smtp-user "john@insane.se")
-     (smtpmail-local-domain "gmail.com")
-     (smtpmail-default-smtp-server "smtp.gmail.com")
-     (smtpmail-smtp-server "smtp.gmail.com")
+     (smtpmail-local-domain "insane.se")
+     (smtpmail-default-smtp-server "mail.insane.se")
+     (smtpmail-smtp-server "mail.insane.se")
      (smtpmail-smtp-service 587)
-     (mu4e-sent-folder "/insane-gmail/[Gmail]/Sent Mail")
-     (mu4e-drafts-folder "/insane-gmail/[Gmail]/Drafts")
-     (mu4e-trash-folder "/insane-gmail/[Gmail]/Trash")
-     (mu4e-refile-folder "/insane-gmail/[Gmail]/All Mail")
+     (mu4e-sent-folder "/insane-mail/Sent")
+     (mu4e-drafts-folder "/insane-mail/Drafts")
+     (mu4e-trash-folder "/insane-mail/Trash")
+     (mu4e-refile-folder "/insane-mail/Archive")
      )
      ("karma-gmail"
      ;;(mu4e-sent-folder "/Gmail/sent")

@@ -48,12 +48,12 @@
 
       rec {
         imapaccount = rec {
-          imapaccount = "insane-gmail";
-          host = "imap.gmail.com";
+          imapaccount = "insane-mail";
+          host = "mail.insane.se";
           user = "john@insane.se";
           passcmd = "${pkgs.gnupg}/bin/gpg2 -q --for-your-eyes-only --no-tty -d " +
                     "~/.password-store/emacs/auth/authinfo.gpg | " +
-                    "${pkgs.gawk}/bin/awk '/machine imap.gmail.com login ${user}/ {print $NF}'";
+                    "${pkgs.gawk}/bin/awk '/machine mail.insane.se login ${user} port 993/ {print $NF}'";
           ssltype = "IMAPS";
           certificatefile = "/etc/ssl/certs/ca-certificates.crt";
           pipelinedepth = 50;
@@ -73,7 +73,7 @@
             channel = imapaccount.imapaccount;
             master = ":${imapstore.imapstore}:";
             slave = ":${maildirstore.maildirstore}:";
-            patterns = "* ![Gmail]* \"[Gmail]/Sent Mail\" \"[Gmail]/All Mail\" \"[Gmail]/Trash\"";
+            patterns = "*";
             create = "Both";
             expunge = "Both";
             syncstate = "*";
