@@ -935,7 +935,7 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
         mu4e-html2text-command "iconv -c -t utf-8 | @PANDOC@ -f html -t plain"
         ;;mu4e-html2text-command "w3m -dump -T text/html -cols 72 -o display_link_number=true -o auto_image=false -o display_image=false -o ignore_null_img_alt=true"
         mu4e-get-mail-command "@MBSYNC@ -a"
-        mu4e-update-interval 300
+        mu4e-update-interval 1200 ;; we are using imapnotify so not super important
         mu4e-view-fields '(:from :to :cc :subject :flags :date :maildir :mailing-list :tags :attachments :signature :decryption))
 
   (add-to-list 'mu4e-view-actions
@@ -947,6 +947,11 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
         ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
         ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
 )
+
+(use-package org-mu4e
+  :after mu4e
+  :config
+  (setq org-mu4e-link-query-in-headers-mode nil))
 
 #+END_SRC
 
@@ -960,6 +965,7 @@ Mu4e alert. For notifications on new mail.
     (mu4e-alert-enable-notifications)
     :config
     (mu4e-alert-set-default-style 'libnotify)
+    (setq mu4e-alert-email-notification-types '(subjects))
     (setq mu4e-alert-interesting-mail-query
       (concat
        "date:today..now"
@@ -1112,6 +1118,33 @@ Allows memoization of expensive functions.
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package memoize)
+#+END_SRC
+
+
+Manage external processes from within emacs.
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package prodigy
+  :ensure t
+  :init
+  (prodigy-define-tag
+   :name 'email
+   :ready-message "Watching for new email using imap idle. Ctrl-C to shutdown.")
+  (prodigy-define-service
+    :name "imapnotify-karma"
+    :command "@IMAPNOTIFY@"
+    :args (list "-c" (expand-file-name ".config/imapnotify.karma-gmail.js" (getenv "HOME")))
+    :tags '(email)
+    :kill-signal 'sigkill)
+  (prodigy-define-service
+    :name "imapnotify-insane"
+    :command "@IMAPNOTIFY@"
+    :args (list "-c" (expand-file-name ".config/imapnotify.insane-mail.js" (getenv "HOME")))
+    :tags '(email)
+    :kill-signal 'sigkill)
+  (prodigy-start-service (prodigy-find-service "imapnotify-karma"))
+  (prodigy-start-service (prodigy-find-service "imapnotify-insane"))
+)
 #+END_SRC
 
 

@@ -47,6 +47,10 @@ let
     exec ${emacsclient} -t -s /run/user/1337/emacs1337/server "$@"
   '';
 
+  emacs-run = writeStrictShellScriptBin "emacs-run" ''
+    exec ${emacsclient} -s /run/user/1337/emacs1337/server "$@"
+  '';
+
   ed = writeStrictShellScriptBin "ed" ''
     ${emacs-server}/bin/emacs-server
     exec ${emacsclient} -c -s /run/user/1337/emacs1337/server "$@" >/dev/null 2>&1
@@ -452,7 +456,7 @@ in
 
   {
     paths = {
-      inherit edit edi ed
+      inherit edit edi ed emacs-run
               emacs-server mail
               fzf-fzf project-select
               terminal launch csp

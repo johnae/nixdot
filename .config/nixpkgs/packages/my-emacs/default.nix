@@ -1,4 +1,4 @@
-{ pkgs, fetchFromGitHub, glibc, pandoc, isync, git, mu, writeText, ... }:
+{ pkgs, fetchFromGitHub, glibc, pandoc, isync, imapnotify, git, mu, writeText, ... }:
 
 let
 
@@ -12,7 +12,9 @@ let
                        --subst-var-by MBSYNC \
                        "${isync}/bin/mbsync" \
                        --subst-var-by PANDOC \
-                       "${pandoc}/bin/pandoc"
+                       "${pandoc}/bin/pandoc" \
+                       --subst-var-by IMAPNOTIFY \
+                       "${imapnotify}/bin/imapnotify"
      cd $out/share/emacs/site-lisp
      emacs --batch --quick -l ob-tangle --eval "(org-babel-tangle-file \"README.org\")"
      emacs -batch -f batch-byte-compile **/*.el
@@ -159,6 +161,8 @@ in
     company-prescient
 
     jl-encrypt
+
+    prodigy # manage external services
 
     #benchmark-init
 

@@ -34,12 +34,14 @@ let
   xresourcesDot = pkgs.callPackage ./xresources { inherit libdot settings; };
   tmuxDot = pkgs.callPackage ./tmux { inherit libdot settings; };
   mbsyncDot = pkgs.callPackage ./mbsync { inherit libdot settings; };
+  imapnotifyDot = with scripts; pkgs.callPackage ./imapnotify { inherit libdot settings emacs-run; };
 
   dotfiles = [ gnupgDot fishDot swaydot
                alacrittyDot sshDot gitDot
                pulseDot gsimplecalDot tmuxDot
                mimeappsDot yubicoDot termiteDot
                direnvDot xresourcesDot mbsyncDot
+               imapnotifyDot
              ];
 
   home = builtins.getEnv "HOME";
