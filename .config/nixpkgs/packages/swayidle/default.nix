@@ -1,6 +1,6 @@
 { stdenv, fetchFromGitHub, meson, ninja, pkgconfig, git
 , asciidoc, libxslt, docbook_xsl, scdoc
-, wayland, wayland-protocols
+, wayland, wayland-protocols, systemd
 , buildDocs ? true
 }:
 
@@ -19,8 +19,10 @@ stdenv.mkDerivation rec {
     meson ninja pkgconfig git
   ] ++ stdenv.lib.optional buildDocs [ scdoc asciidoc libxslt docbook_xsl ];
   buildInputs = [
-    wayland wayland-protocols
+    wayland wayland-protocols systemd
   ];
+
+  mesonFlags = [ "-Dauto_features=enabled" ];
 
   enableParallelBuilding = true;
 
