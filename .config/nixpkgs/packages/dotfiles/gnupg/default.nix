@@ -38,8 +38,8 @@ let
 
   gpgAgentConfig = writeText "gpg-agent.conf" ''
     enable-ssh-support
-    default-cache-ttl 600
-    max-cache-ttl 7200
+    default-cache-ttl 1800
+    max-cache-ttl 10800
     pinentry-program ${pinentry_gnome}/bin/pinentry-gnome3
   '';
 
