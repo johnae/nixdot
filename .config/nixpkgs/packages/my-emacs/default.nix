@@ -164,6 +164,8 @@ in
 
     prodigy # manage external services
 
+    visual-fill-column
+
     #benchmark-init
 
     # Themes

@@ -657,6 +657,8 @@ etags, gtags, files, keywords and a few others.
   :diminish (company-mode . "")
   :init
   (setq company-idle-delay 0
+        company-echo-delay 0
+        ;company-begin-commands '(self-insert-command)
         company-minimum-prefix-length 2
         company-dabbrev-ignore-case nil
         company-dabbrev-downcase nil)
@@ -718,18 +720,28 @@ This allows me to toggle between snake case, camel case etc.
 Go mode and other go stuff.
 
 #+BEGIN_SRC elisp :tangle default.el
-(use-package go-mode)
+(use-package go-mode
+  :config
+  (setq gofmt-command "goimports")
+)
+(add-hook 'before-save-hook 'gofmt-before-save)
 
 (use-package go-guru
   :config
   (go-guru-hl-identifier-mode))
 
 (use-package company-go
+  :after company
   :config
-  (setq gofmt-command "goimports")
-  (add-to-list 'company-backends 'company-go)
-  (add-hook 'before-save-hook 'gofmt-before-save)
-  )
+  (setq company-go-gocode-args '(
+                                 ;;"-source"
+                                 "-ignore-case"
+                                 "-builtin"
+                                 "-fallback-to-source"
+                                 "-unimported-packages"
+                                 ))
+)
+(add-to-list 'company-backends 'company-go)
 
 (use-package flycheck-gometalinter
   :after flycheck
@@ -902,7 +914,6 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
        " OR flag:trashed"
        " OR flag:list"
        " OR maildir:/Trash/"
-       " OR maildir:/Lists/"
        " OR maildir:/Commercial/"
        " OR maildir:/Junk/"
        " OR maildir:/All.Mail/"))
@@ -959,6 +970,18 @@ The awesome Mu4e email client. (This is added to the load path as it comes with 
         (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
         ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
         ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
+
+  (add-hook 'mu4e-view-mode-hook
+            (lambda ()
+              (setq mu4e-view-show-images t)))
+
+  (add-hook 'mu4e-compose-mode-hook
+            (lambda ()
+              (set-fill-column 72)
+              (auto-fill-mode 0)
+              (visual-fill-column-mode)
+              (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+              (visual-line-mode)))
 )
 
 (use-package org-mu4e
@@ -988,6 +1011,14 @@ Mu4e alert. For notifications on new mail.
 #+END_SRC
 
 
+Visual-fill-column. Helps with composing emails.
+
+#+BEGIN_SRC elisp :tange default.el
+(use-package visual-fill-column
+  :ensure t)
+#+END_SRC
+
+
 Sending email.
 
 #+BEGIN_SRC elisp :tangle default.el
@@ -1003,7 +1034,6 @@ Sending email.
                       " AND NOT flag:trashed"
                       " AND NOT maildir:/All.Mail/"
                       " AND NOT maildir:/Junk/"
-                      " AND NOT maildir:/Lists/"
                       " AND NOT maildir:/Commercial/"
                       " AND NOT flag:list")
        :key ?u)
@@ -1016,8 +1046,7 @@ Sending email.
      ,(make-mu4e-bookmark
        :name "Today's lists"
        :query (concat "date:today..now"
-                      " AND maildir:/Lists/"
-                      " OR (maildir:/inbox/ AND flag:list)")
+                      " AND flag:list")
        :key ?m)
      ,(make-mu4e-bookmark
        :name "Last 7 days"
@@ -1028,8 +1057,7 @@ Sending email.
      ,(make-mu4e-bookmark
        :name "Last 7 days of lists"
        :query (concat "date:7d..now"
-                      " AND maildir:/Lists/"
-                      " OR (maildir:/inbox/ AND flag:list)")
+                      " AND flag:list")
        :key ?l)
      ,(make-mu4e-bookmark
        :name "Flagged in INBOX"
