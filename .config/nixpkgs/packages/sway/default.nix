@@ -1,37 +1,40 @@
-{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig
-, asciidoc, libxslt, docbook_xsl, scdoc
-, wayland, wayland-protocols, xwayland, libxkbcommon
-, pcre, json_c, dbus_libs, pango, cairo, libinput
-, libcap, pam, gdk_pixbuf, libpthreadstubs, libevdev
-, libXdmcp, wlroots, git, systemd, wrapGAppsHook
+{ stdenv, fetchFromGitHub
+, meson, ninja
+, pkgconfig, scdoc
+, wayland, wayland-protocols, libxkbcommon
+, pcre, json_c, dbus, pango, cairo, libinput
+, libcap, pam, gdk_pixbuf, libevdev, wlroots
 , buildDocs ? true
 }:
 
 stdenv.mkDerivation rec {
   name = "sway-${version}";
-  version = "6728db28a21d46faf44a6584259c35eed01bce1d";
+  version = "23f075e71d985754effde5372f4242ddb09cbbc0";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "sway";
     rev = version;
-    sha256 = "11s907wsa5928cbxi57nbcrxj05falfhmac1afr3kqsy92ajanp9";
+    sha256 = "0la66c5xk5110rhwa9c09br4spy2zcjh8r1zk26fklrj5w3f4v7y";
   };
 
   nativeBuildInputs = [
-    meson ninja pkgconfig git wrapGAppsHook
-  ] ++ stdenv.lib.optional buildDocs [ scdoc asciidoc libxslt docbook_xsl ];
+    pkgconfig meson ninja
+  ] ++ stdenv.lib.optional buildDocs scdoc;
+
   buildInputs = [
-    wayland wayland-protocols xwayland libxkbcommon pcre json_c dbus_libs
-    pango cairo libinput libcap pam gdk_pixbuf libpthreadstubs
-    libXdmcp wlroots systemd libevdev
+    wayland wayland-protocols libxkbcommon pcre json_c dbus
+    pango cairo libinput libcap pam gdk_pixbuf
+    wlroots libevdev
   ];
 
-  mesonFlags = [
-    "-Dsway-version=${version}"
-    "-Dauto_features=enabled"
-    "-Denable-tray=true"
-  ];
+  postPatch = ''
+    sed -iE "s/version: '1.0',/version: '${version}',/" meson.build
+  '';
+
+   mesonFlags = [
+   "-Dxwayland=enabled" "-Dgdk-pixbuf=enabled" "-Dtray=enabled"
+   ] ++ stdenv.lib.optional buildDocs "-Dman-pages=enabled";
 
   enableParallelBuilding = true;
 

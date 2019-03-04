@@ -1,41 +1,71 @@
-{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig, udev, systemd
-, wayland, libGL, wayland-protocols, xwayland, libinput, libxkbcommon, pixman
-, xcbutilwm, libX11, libcap, xcbutilimage, xcbutilerrors, libdrm, mesa_noglu
+{ stdenv, fetchFromGitHub, fetchpatch, meson, ninja, pkgconfig
+, wayland, libGL, wayland-protocols, libinput, libxkbcommon, pixman
+, xcbutilwm, libX11, libcap, xcbutilimage, xcbutilerrors, mesa_noglu
+, libpng, ffmpeg_4
 }:
 
 stdenv.mkDerivation rec {
   name = "wlroots";
+  version = "6a60dafe596e3eed680f6176466d7855222d1395";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "wlroots";
-    rev = "b46e097fe224de657167506cb5289074d5f2056f";
-    sha256 = "1624gasx8k0yy649d65ih4hs290szyxzd3bl0kg1l6njnhlxnr6b";
+    rev = version;
+    sha256 = "0yk2623ad0gq93130dh13zv4my7ra1j0dfwvgkaa6zjy96fnnksv";
   };
 
   # $out for the library and $bin for rootston
-  outputs = [ "out" "bin" ];
+  outputs = [ "out" "bin" "examples" ];
 
   nativeBuildInputs = [ meson ninja pkgconfig ];
 
-  mesonFlags = [ "-Dauto_features=enabled" ];
-
-  buildInputs = [
-    wayland libGL wayland-protocols xwayland libinput libxkbcommon pixman
-    xcbutilwm libX11 libcap xcbutilimage xcbutilerrors mesa_noglu libdrm
-    libcap systemd
+   mesonFlags = [
+    "-Dlibcap=enabled" "-Dlogind=enabled" "-Dxwayland=enabled" "-Dx11-backend=enabled"
+    "-Dxcb-icccm=enabled" "-Dxcb-errors=enabled"
   ];
 
-  # Install rootston (the reference compositor) to $bin
+  buildInputs = [
+    wayland libGL wayland-protocols libinput libxkbcommon pixman
+    xcbutilwm libX11 libcap xcbutilimage xcbutilerrors mesa_noglu
+    libpng ffmpeg_4
+  ];
+
+  #postPatch = ''
+  #  sed -iE "s/version: '[0-9]\.[0-9]\.[0-9]'/version: '${version}.0'/" meson.build
+  #'';
+
   postInstall = ''
-    mkdir -p $bin/bin
-    cp rootston/rootston $bin/bin/
-    mkdir $bin/lib
-    cp libwlroots* $bin/lib/
-    patchelf --set-rpath "$bin/lib:${stdenv.lib.makeLibraryPath buildInputs}" \
-        $bin/bin/rootston
-    mkdir $bin/etc
-    cp ../rootston/rootston.ini.example $bin/etc/rootston.ini
+    for output in "$bin" "$examples"; do
+      mkdir -p $output/lib
+      cp -P libwlroots* $output/lib/
+    done
+  '';
+
+  postFixup = ''
+    # Install rootston (the reference compositor) to $bin and $examples (this
+    # has to be done after the fixup phase to prevent broken binaries):
+    for output in "$bin" "$examples"; do
+      mkdir -p $output/bin
+      cp rootston/rootston $output/bin/
+      patchelf \
+        --set-rpath "$(patchelf --print-rpath $output/bin/rootston | sed s,$out,$output,g)" \
+        $output/bin/rootston
+      mkdir $output/etc
+      cp ../rootston/rootston.ini.example $output/etc/rootston.ini
+    done
+    # Install ALL example programs to $examples:
+    # screencopy dmabuf-capture input-inhibitor layer-shell idle-inhibit idle
+    # screenshot output-layout multi-pointer rotation tablet touch pointer
+    # simple
+    mkdir -p $examples/bin
+    cd ./examples
+    for binary in $(find . -executable -type f -printf '%P\n' | grep -vE '\.so'); do
+      cp "$binary" "$examples/bin/wlroots-$binary"
+      patchelf \
+        --set-rpath "$(patchelf --print-rpath $output/bin/rootston | sed s,$out,$examples,g)" \
+        "$examples/bin/wlroots-$binary"
+    done
   '';
 
   meta = with stdenv.lib; {
