@@ -294,6 +294,12 @@ let
     }
     bindsym ${mod}+r mode "resize"
 
+    # disable basically all keybindings within this mode (useful for vnc etc)
+    mode "disabled keybindings" {
+         bindsym Escape mode "default"
+    }
+    bindsym ${mod}+x mode "disabled keybindings"
+
     # system eg. suspend, hibernate, logout, reboot, poweroff
     mode "(p)oweroff, (s)uspend, (h)ibernate, (r)eboot, (l)ogout" {
             # These bindings trigger as soon as you enter the system mode
@@ -323,7 +329,7 @@ let
     exec ${persway}/bin/persway
 
     exec --no-startup-id ${gnome3.gnome_settings_daemon}/libexec/gsd-xsettings
-    
+
     exec --no-startup-id ${emacs-server}/bin/emacs-server
 
     ######### Bar
