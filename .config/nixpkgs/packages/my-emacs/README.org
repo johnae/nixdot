@@ -455,6 +455,7 @@ For editing nix expressions.
 ;; the awesome git emacs interface
 (use-package magit
   :config
+  (setq magit-auto-revert-mode nil)
   (setq magit-repository-directories
         '( "~/Development" ))
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
