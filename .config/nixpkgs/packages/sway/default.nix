@@ -9,13 +9,13 @@
 
 stdenv.mkDerivation rec {
   name = "sway-${version}";
-  version = "c02d2a01289581fd3c32a22e1a498ffad736281d";
+  version = "acdb4ed7a32a7cefd4ac37190ba65d33d752bee0";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "sway";
     rev = version;
-    sha256 = "1m17y0r254l409njmin44slg75fs0na21ply9y3pi9wk14h0fm07";
+    sha256 = "092dmsv9dd85p6sbqk7z7w357yc36hpa2val3z61z0ibjizygljg";
   };
 
   nativeBuildInputs = [
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     wayland wayland-protocols libxkbcommon pcre json_c dbus
     pango cairo libinput libcap pam gdk_pixbuf
-    wlroots libevdev
+    wlroots libevdev scdoc
   ];
 
   postPatch = ''
