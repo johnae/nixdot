@@ -423,6 +423,11 @@ let
   '';
 
   random-background = writeStrictShellScriptBin "random-background" ''
+    if [ ! -d "$HOME"/Pictures/backgrounds ] ||
+       [ "$(${findutils}/bin/find "$HOME"/Pictures/backgrounds/ -type f | wc -l)" = "0" ]; then
+       echo "$HOME"/Pictures/default-background.png
+       exit
+    fi
     ${findutils}/bin/find "$HOME/Pictures/backgrounds" -type f | \
          ${coreutils}/bin/sort -R | ${coreutils}/bin/head -1
   '';
