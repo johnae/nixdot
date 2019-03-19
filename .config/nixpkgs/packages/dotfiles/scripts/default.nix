@@ -12,6 +12,7 @@
  maim, slop, killall,
  openssh, kubectl,
  browser, settings,
+ nix-prefetch-github,
  ...}:
 
 let
@@ -452,6 +453,40 @@ let
     exec ${terminal}/bin/terminal -e "${edi}/bin/edi -e '(mu4e)'"
   '';
 
+  update-user-nixpkgs = writeStrictShellScriptBin "update-user-nixpkgs" ''
+    echo Updating packages with metadata in ~/.config/nixpkgs/packages...
+    for pkg in ~/.config/nixpkgs/packages/*; do
+        if [ -d "$pkg" ] && [ -e "$pkg"/metadata.json ]; then
+            rm -f "$pkg"/metadata.tmp.json
+            # shellcheck disable=SC2046
+            set $(${jq}/bin/jq -r '.owner + " " + .repo' < "$pkg"/metadata.json)
+
+            ${nix-prefetch-github}/bin/nix-prefetch-github --rev master "$1" "$2" > \
+                   "$pkg"/metadata.tmp.json
+
+            if [ ! -s "$pkg"/metadata.tmp.json ]; then
+                echo "ERROR: $pkg/metadata.tmp.json is empty"
+                exit 1
+            fi
+
+            if ! ${jq}/bin/jq < "$pkg"/metadata.tmp.json > /dev/null; then
+                echo "ERROR: $pkg/metadata.tmp.json is not valid json"
+                cat "$pkg"/metadata.tmp.json
+                exit 1
+            fi
+        fi
+    done
+
+    echo Moving temporary json output into place...
+    for pkg in ~/.config/nixpkgs/packages/*; do
+        if [ -d "$pkg" ] && [ -e "$pkg"/metadata.tmp.json ]; then
+            mv "$pkg"/metadata.tmp.json "$pkg"/metadata.json
+        fi
+    done
+
+    echo DONE
+  '';
+
 in
 
   {
@@ -466,6 +501,7 @@ in
               browse slacks spotifyweb
               rename-workspace screenshot
               start-sway random-background random-name
-              add-wifi-network update-wifi-networks;
+              add-wifi-network update-wifi-networks
+              update-user-nixpkgs;
     };
   }
