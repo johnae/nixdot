@@ -249,6 +249,10 @@ in
 
     string-inflection
 
+    lsp-mode
+    lsp-ui
+    company-lsp
+
     racket-mode
     esh-autosuggest
     fish-completion # fish completion in eshell

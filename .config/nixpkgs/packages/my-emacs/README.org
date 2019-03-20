@@ -136,6 +136,7 @@ The famous [[https://orgmode.org/][org mode]]. Default settings I use and stuff.
      (groovy . t)
 ;;(kotlin . t)
 ;;(typescript . t)
+     (calc . t)
      (C . t)))
   (add-hook 'org-mode-hook 'auto-revert-mode))
 #+END_SRC
@@ -560,12 +561,23 @@ Some simple modes for a few languages.
   (add-hook 'rust-mode-hook 'cargo-minor-mode)
 )
 
-(use-package racer
-  :config
-  (add-hook 'rust-mode-hook 'racer-mode)
-  (add-hook 'racer-mode-hook 'company-mode)
-)
+#+END_SRC
 
+
+#+BEGIN_SRC elisp :tangle default.el
+(use-package lsp-mode
+  :defer 5
+)
+(add-hook 'prog-mode-hook #'lsp)
+
+(use-package lsp-ui
+  :after lsp-mode)
+
+(use-package company-lsp
+  :after lsp-mode
+  :config
+  (push 'company-lsp company-backends)
+)
 #+END_SRC
 
 
@@ -593,19 +605,6 @@ Racket mode.
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package racket-mode)
-#+END_SRC
-
-
-TypeScript mode.
-
-#+BEGIN_SRC elisp :tangle default.el
-(use-package tide
-  :bind (("C-c C-j" . tide-jump-to-definition)
-         ("C-c C-d" . tide-documentation-at-point))
-  :after (typescript-mode company flycheck)
-  :hook  ((typescript-mode . tide-restart-server)
-         (typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)))
 #+END_SRC
 
 
@@ -730,19 +729,6 @@ Go mode and other go stuff.
 (use-package go-guru
   :config
   (go-guru-hl-identifier-mode))
-
-(use-package company-go
-  :after company
-  :config
-  (setq company-go-gocode-args '(
-                                 ;;"-source"
-                                 "-ignore-case"
-                                 "-builtin"
-                                 "-fallback-to-source"
-                                 "-unimported-packages"
-                                 ))
-)
-(add-to-list 'company-backends 'company-go)
 
 (use-package flycheck-gometalinter
   :after flycheck
