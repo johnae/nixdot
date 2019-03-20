@@ -7,8 +7,10 @@ self: super: {
           sway
           swayidle
           swaylock
+          waybar
           dotfiles
           mu
+          alacritty
           isync
           my-emacs
           pandoc

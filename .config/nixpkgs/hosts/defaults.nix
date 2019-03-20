@@ -152,6 +152,7 @@
 
   alacritty = {
     font = "Office Code Pro D";
+    #, "Font Awesome 5 Brands", "Font Awesome 5 Free" ] '';
     fontSize = "14.0";
     largeFontSize = "28.0";
     backgroundOpacity = "0.95";
@@ -202,11 +203,22 @@
     rofiColorWindow = "#004b46";
   };
 
+  waybar = rec {
+    default = {
+      border = "none";
+      border-radius = "0";
+      font-family = "Roboto, 'Font Awesome 5 Free', 'Font Awesome 5 Brands', Arial, sans-serif";
+      font-weight  = "900"; ## because reasons - font awesome doesn't display otherwise
+      font-size = "13px";
+      min-height = "0";
+    };
+  };
+
   sway = rec {
     mod = "Mod4";
 
     fontSize = "10";
-    font = "pango:Roboto, FontAwesome, Bold ${fontSize}";
+    font = "pango:Roboto, FontAwesome, Font Awesome 5 Brands, Font Awesome 5 Free, Bold ${fontSize}";
 
     makoConfig = {
       font = "Roboto";
@@ -218,7 +230,9 @@
       width = "500";
     };
 
-    swaylockArgs = "-e -i ~/Pictures/backgrounds/mountain-moon.jpg -s fill --font Roboto --inside-color 00000066 --inside-clear-color 00660099 --inside-ver-color 00006699 --inside-wrong-color 66000099 --key-hl-color FFFFFF99 --ring-color GGGGGGBB --ring-wrong-color FF6666BB --ring-ver-color 6666FFBB --text-color FFFFFFFF --text-clear-color FFFFFFFF --text-wrong-color FFFFFFFF --text-ver-color FFFFFFFF";
+    swaylockBackground = "~/Pictures/lockscreen.jpg";
+
+    swaylockArgs = "-e -i ${swaylockBackground} -s fill --font Roboto --inside-color 00000066 --inside-clear-color 00660099 --inside-ver-color 00006699 --inside-wrong-color 66000099 --key-hl-color FFFFFF99 --ring-color GGGGGGBB --ring-wrong-color FF6666BB --ring-ver-color 6666FFBB --text-color FFFFFFFF --text-clear-color FFFFFFFF --text-wrong-color FFFFFFFF --text-ver-color FFFFFFFF";
 
     swaylockTimeout = "300";
     swaylockSleepTimeout = "310";

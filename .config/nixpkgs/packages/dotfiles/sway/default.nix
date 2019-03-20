@@ -7,10 +7,10 @@
   rofi, xorg, mako, persway, random-background,
   pulseaudioFull, coreutils, playerctl,
   spook, nix, edi, edit, emacs-server, gnome3,
-  terminal, termite, fzf-window, fzf-run,
+  terminal, termite, alacritty, fzf-window, fzf-run,
   fzf-passmenu, sk-window, sk-run, sk-passmenu,
-  launch, rename-workspace,
-  screenshot, settings, browse, rofi-passmenu,
+  launch, rename-workspace, killall, procps,
+  screenshot, settings, browse, rofi-passmenu, waybar,
   ...
 }:
 
@@ -77,20 +77,26 @@ let
                           --markup 1
   '';
 
+  #swayBarStatusCmd = writeStrictShellScriptBin "swaybar-status" ''
+  #  exec ${nixShellPath} --command "${spookPath} \
+  #       -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" \
+  #       ~/Development/moonbar/shell.nix
+  #'';
   swayBarStatusCmd = writeStrictShellScriptBin "swaybar-status" ''
-    exec ${nixShellPath} --command "${spookPath} \
-         -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" \
-         ~/Development/moonbar/shell.nix
+    ${killall}/bin/killall -q waybar || true
+    while ${procps}/bin/pgrep -x waybar >/dev/null; do sleep 1; done
+    exec ${waybar}/bin/waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css
   '';
 
   config = writeSwayConfig "sway-config" ''
     ######## Settings etc
     font ${font}
 
-    for_window [class="fzf-window"] floating enable, resize set width 100ppt height 100ppt
-    for_window [title="fzf-window"] floating enable, resize set width 100ppt height 100ppt
-    for_window [class="sk-window"] floating enable, resize set width 100ppt height 100ppt
-    for_window [title="sk-window"] floating enable, resize set width 100ppt height 100ppt
+    for_window [class="fzf-window"] floating enable, resize set width 100ppt height 120ppt
+    for_window [title="fzf-window"] floating enable, resize set width 100ppt height 120ppt
+    for_window [class="sk-window"] floating enable, resize set width 100ppt height 120ppt
+    for_window [title="sk-window"] floating enable, resize set width 100ppt height 120ppt
+    for_window [app_id="sk-window"] floating enable, resize set width 100ppt height 120ppt
     for_window [class="input-window"] floating enable
     for_window [class="gcr-prompter"] floating enable
     no_focus [window_role="browser"]
@@ -102,7 +108,7 @@ let
     focus_follows_mouse yes
     focus_on_window_activation smart
     popup_during_fullscreen smart
-    mouse_warping container
+    #mouse_warping container
 
     output * bg `${random-background}/bin/random-background` fill
 
@@ -136,7 +142,7 @@ let
     bindsym ${mod}+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal
 
     # start an emacs shell
-    bindsym ${mod}+Shift+Return exec ${termite}/bin/termite -t eshell -e "${edi}/bin/edi -e '(jae/eshell-new)'"
+    bindsym ${mod}+Shift+Return exec ${termite}/bin/termite -t eshell -e ${edi}/bin/edi -e '(jae/eshell-new)'
 
     # start a light + large font terminal
     # bindsym ${mod}+Control+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal-large
@@ -332,24 +338,26 @@ let
 
     exec --no-startup-id ${emacs-server}/bin/emacs-server
 
+    exec_always ${swayBarStatusCmd}/bin/swaybar-status
+
     ######### Bar
-    bar {
+    #bar {
 
-      colors {
-          # Whole color settings
-          background ${barInactiveWorkspaceColorBackground}
-          statusline ${barStatuslineColor}
-          separator ${barSeparatorColor}
+    #  colors {
+    #      # Whole color settings
+    #      background ${barInactiveWorkspaceColorBackground}
+    #      statusline ${barStatuslineColor}
+    #      separator ${barSeparatorColor}
 
-          focused_workspace ${barFocusedWorkspaceColorBorder} ${barFocusedWorkspaceColorBackground} ${barFocusedWorkspaceColorText}
-          active_workspace ${barActiveWorkspaceColorBorder} ${barActiveWorkspaceColorBackground} ${barActiveWorkspaceColorText}
-          inactive_workspace ${barInactiveWorkspaceColorBorder} ${barInactiveWorkspaceColorBackground} ${barInactiveWorkspaceColorText}
-          urgent_workspace ${barUrgentWorkspaceColorBorder} ${barUrgentWorkspaceColorBackground} ${barUrgentWorkspaceColorText}
-      }
+    #      focused_workspace ${barFocusedWorkspaceColorBorder} ${barFocusedWorkspaceColorBackground} ${barFocusedWorkspaceColorText}
+    #      active_workspace ${barActiveWorkspaceColorBorder} ${barActiveWorkspaceColorBackground} ${barActiveWorkspaceColorText}
+    #      inactive_workspace ${barInactiveWorkspaceColorBorder} ${barInactiveWorkspaceColorBackground} ${barInactiveWorkspaceColorText}
+    #      urgent_workspace ${barUrgentWorkspaceColorBorder} ${barUrgentWorkspaceColorBackground} ${barUrgentWorkspaceColorText}
+    #  }
 
-      # tray_output primary
-      status_command ${swayBarStatusCmd}/bin/swaybar-status
-    }
+    #  # tray_output primary
+    #  status_command ${swayBarStatusCmd}/bin/swaybar-status
+    #}
 
   '';
 

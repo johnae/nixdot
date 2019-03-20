@@ -10,7 +10,7 @@
  gnugrep, findutils, coreutils,
  alacritty, libnotify,
  maim, slop, killall,
- openssh, kubectl,
+ openssh, kubectl, diffutils,
  browser, settings,
  nix-prefetch-github,
  ...}:
@@ -136,9 +136,7 @@ let
       ${termite}/bin/termite --config "$CONFIG" "$@"
     else
       CONFIG=$HOME/.config/alacritty/alacritty$TERMINAL_CONFIG.yml
-      ${if builtins.hasAttr "WINIT_HIDPI_FACTOR" settings then
-      "export WINIT_HIDPI_FACTOR=${settings.WINIT_HIDPI_FACTOR}"
-      else ""}
+      # shellcheck disable=SC2068
       ${alacritty}/bin/alacritty --config-file "$CONFIG" "$@"
     fi
   '';
@@ -238,6 +236,7 @@ let
       exit 1
     fi
     shift
+    #_TERMEMU=
     export _TERMEMU=termite
     export TERMINAL_CONFIG=-launcher
     if ${ps}/bin/ps aux | ${gnugrep}/bin/grep '\-t sk-window' | \
@@ -250,7 +249,10 @@ let
         exit
     fi
 
-    exec ${terminal}/bin/terminal -t "sk-window" -e "$cmd $*"
+    if [ "$_TERMEMU" = "termite" ]; then
+      exec ${terminal}/bin/terminal -t "sk-window" -e "$cmd" "$@"
+    fi
+    exec ${terminal}/bin/terminal --class "sk-window" -e "$cmd" "$@"
   '';
 
   sk-passmenu = writeStrictShellScriptBin "sk-passmenu" ''
@@ -460,14 +462,30 @@ let
 
   update-user-nixpkgs = writeStrictShellScriptBin "update-user-nixpkgs" ''
     echo Updating packages with metadata in ~/.config/nixpkgs/packages...
+
+    update_commands="$(mktemp -d /tmp/package-update-commands.XXXXXX)"
+    at_exit() {
+        rm -rf "$update_commands"
+    }
+    sig_at_exit() {
+        trap "" EXIT
+        at_exit
+    }
+    trap at_exit EXIT
+    trap sig_at_exit INT QUIT TERM
+
     for pkg in ~/.config/nixpkgs/packages/*; do
         if [ -d "$pkg" ] && [ -e "$pkg"/metadata.json ]; then
             rm -f "$pkg"/metadata.tmp.json
             # shellcheck disable=SC2046
             set $(${jq}/bin/jq -r '.owner + " " + .repo' < "$pkg"/metadata.json)
 
-            ${nix-prefetch-github}/bin/nix-prefetch-github --rev master "$1" "$2" > \
-                   "$pkg"/metadata.tmp.json
+            cmdfile="$update_commands"/"$(basename "$pkg")".sh
+            cat<<EOF>"$cmdfile"
+            #!${bashInteractive}/bin/bash
+            echo Prefetching "$1/$2" master branch...
+            ${nix-prefetch-github}/bin/nix-prefetch-github --rev master "$1" "$2" > "$pkg"/metadata.tmp.json
+            echo Completed prefetching "$1/$2"
 
             if [ ! -s "$pkg"/metadata.tmp.json ]; then
                 echo "ERROR: $pkg/metadata.tmp.json is empty"
@@ -479,13 +497,22 @@ let
                 cat "$pkg"/metadata.tmp.json
                 exit 1
             fi
+    EOF
+            chmod +x "$cmdfile"
         fi
     done
+
+    ${findutils}/bin/find "$update_commands" -type f | \
+      ${findutils}/bin/xargs -I{} -n1 -P3 ${bashInteractive}/bin/bash {}
 
     echo Moving temporary json output into place...
     for pkg in ~/.config/nixpkgs/packages/*; do
         if [ -d "$pkg" ] && [ -e "$pkg"/metadata.tmp.json ]; then
-            mv "$pkg"/metadata.tmp.json "$pkg"/metadata.json
+           if ! ${diffutils}/bin/diff "$pkg"/metadata.json "$pkg"/metadata.tmp.json > /dev/null; then
+             echo Package "$(basename "$pkg")" was updated
+             mv "$pkg"/metadata.tmp.json "$pkg"/metadata.json
+           fi
+           rm -f "$pkg"/metadata.tmp.json
         fi
     done
 
