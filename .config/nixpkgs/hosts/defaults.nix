@@ -218,7 +218,7 @@
     mod = "Mod4";
 
     fontSize = "10";
-    font = "pango:Roboto, FontAwesome, Font Awesome 5 Brands, Font Awesome 5 Free, Bold ${fontSize}";
+    font = "pango:Roboto, 'Font Awesome 5 Free', 'Font Awesome 5 Brands', Arial, sans-serif, Bold ${fontSize}";
 
     makoConfig = {
       font = "Roboto";
@@ -258,24 +258,28 @@
     selectedColor = "#9999FF";
     indicatorColor = "#00ff00";
 
-    barStatuslineColor = "#ffffff";
-    barSeparatorColor = "#666666";
+    bar = rec {
+      height = "25";
+      bgColor = "#222244CD";
+      statuslineColor = "#ffffff";
+      separatorColor = "#666666";
 
-    barFocusedWorkspaceColorBorder = bgColor;
-    barFocusedWorkspaceColorBackground = bgColor;
-    barFocusedWorkspaceColorText = textColor;
+      focusedWorkspaceColorBorder = bgColor;
+      focusedWorkspaceColorBackground = bgColor;
+      focusedWorkspaceColorText = "#fdf6e3";
 
-    barActiveWorkspaceColorBorder = "#333333DD";
-    barActiveWorkspaceColorBackground = "#5f676aDD";
-    barActiveWorkspaceColorText = textColor;
+      activeWorkspaceColorBorder = bgColor;
+      activeWorkspaceColorBackground = bgColor;
+      activeWorkspaceColorText = "#e8e375";
 
-    barInactiveWorkspaceColorBorder = "#000000DD";
-    barInactiveWorkspaceColorBackground = barInactiveWorkspaceColorBorder;
-    barInactiveWorkspaceColorText = inactiveTextColor;
+      inactiveWorkspaceColorBorder = bgColor;
+      inactiveWorkspaceColorBackground = bgColor;
+      inactiveWorkspaceColorText = "#aaaaaa";
 
-    barUrgentWorkspaceColorBorder = urgentBgColor;
-    barUrgentWorkspaceColorBackground = urgentBgColor;
-    barUrgentWorkspaceColorText = textColor;
+      urgentWorkspaceColorBorder = bgColor;
+      urgentWorkspaceColorBackground = bgColor;
+      urgentWorkspaceColorText = "#e8e375";
+    };
 
   };
 }

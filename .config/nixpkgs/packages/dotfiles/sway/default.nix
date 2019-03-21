@@ -77,12 +77,12 @@ let
                           --markup 1
   '';
 
-  #swayBarStatusCmd = writeStrictShellScriptBin "swaybar-status" ''
-  #  exec ${nixShellPath} --command "${spookPath} \
-  #       -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" \
-  #       ~/Development/moonbar/shell.nix
-  #'';
   swayBarStatusCmd = writeStrictShellScriptBin "swaybar-status" ''
+    exec ${nixShellPath} --command "${spookPath} \
+         -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" \
+         ~/Development/moonbar/shell.nix
+  '';
+  wayBarStatusCmd = writeStrictShellScriptBin "waybar-status" ''
     ${killall}/bin/killall -q waybar || true
     while ${procps}/bin/pgrep -x waybar >/dev/null; do sleep 1; done
     exec ${waybar}/bin/waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css
@@ -92,11 +92,11 @@ let
     ######## Settings etc
     font ${font}
 
-    for_window [class="fzf-window"] floating enable, resize set width 100ppt height 120ppt
-    for_window [title="fzf-window"] floating enable, resize set width 100ppt height 120ppt
-    for_window [class="sk-window"] floating enable, resize set width 100ppt height 120ppt
-    for_window [title="sk-window"] floating enable, resize set width 100ppt height 120ppt
-    for_window [app_id="sk-window"] floating enable, resize set width 100ppt height 120ppt
+    for_window [class="fzf-window"] floating enable, resize set width 100ppt height 150ppt
+    for_window [title="fzf-window"] floating enable, resize set width 100ppt height 150ppt
+    for_window [class="sk-window"] floating enable, resize set width 100ppt height 150ppt
+    for_window [title="sk-window"] floating enable, resize set width 100ppt height 150ppt
+    for_window [app_id="sk-window"] floating enable, resize set width 100ppt height 150ppt
     for_window [class="input-window"] floating enable
     for_window [class="gcr-prompter"] floating enable
     no_focus [window_role="browser"]
@@ -338,26 +338,27 @@ let
 
     exec --no-startup-id ${emacs-server}/bin/emacs-server
 
-    exec_always ${swayBarStatusCmd}/bin/swaybar-status
-
     ######### Bar
-    #bar {
+    bar {
+      height ${bar.height}
 
-    #  colors {
-    #      # Whole color settings
-    #      background ${barInactiveWorkspaceColorBackground}
-    #      statusline ${barStatuslineColor}
-    #      separator ${barSeparatorColor}
+      separator_symbol ""
 
-    #      focused_workspace ${barFocusedWorkspaceColorBorder} ${barFocusedWorkspaceColorBackground} ${barFocusedWorkspaceColorText}
-    #      active_workspace ${barActiveWorkspaceColorBorder} ${barActiveWorkspaceColorBackground} ${barActiveWorkspaceColorText}
-    #      inactive_workspace ${barInactiveWorkspaceColorBorder} ${barInactiveWorkspaceColorBackground} ${barInactiveWorkspaceColorText}
-    #      urgent_workspace ${barUrgentWorkspaceColorBorder} ${barUrgentWorkspaceColorBackground} ${barUrgentWorkspaceColorText}
-    #  }
+      colors {
+          # Whole color settings
+          background ${bar.bgColor}
+          statusline ${bar.statuslineColor}
+          separator ${bar.separatorColor}
 
-    #  # tray_output primary
-    #  status_command ${swayBarStatusCmd}/bin/swaybar-status
-    #}
+          focused_workspace ${bar.focusedWorkspaceColorBorder} ${bar.focusedWorkspaceColorBackground} ${bar.focusedWorkspaceColorText}
+          active_workspace ${bar.activeWorkspaceColorBorder} ${bar.activeWorkspaceColorBackground} ${bar.activeWorkspaceColorText}
+          inactive_workspace ${bar.inactiveWorkspaceColorBorder} ${bar.inactiveWorkspaceColorBackground} ${bar.inactiveWorkspaceColorText}
+          urgent_workspace ${bar.urgentWorkspaceColorBorder} ${bar.urgentWorkspaceColorBackground} ${bar.urgentWorkspaceColorText}
+      }
+
+      # tray_output primary
+      status_command ${swayBarStatusCmd}/bin/swaybar-status
+    }
 
   '';
 
