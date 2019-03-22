@@ -461,7 +461,17 @@ let
   '';
 
   update-user-nixpkgs = writeStrictShellScriptBin "update-user-nixpkgs" ''
-    echo Updating packages with metadata in ~/.config/nixpkgs/packages...
+
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    NEUTRAL='\033[0m'
+    BOLD='\033[1m'
+
+    neutral() { printf "%b" "$NEUTRAL"; }
+    start() { printf "%b" "$1"; }
+    clr() { start "$1""$2"; neutral; }
+
+    echo Updating metadata.json files in ~/.config/nixpkgs/packages...
 
     update_commands="$(mktemp -d /tmp/package-update-commands.XXXXXX)"
     at_exit() {
@@ -483,17 +493,22 @@ let
             cmdfile="$update_commands"/"$(basename "$pkg")".sh
             cat<<EOF>"$cmdfile"
             #!${bashInteractive}/bin/bash
-            echo Prefetching "$1/$2" master branch...
+
+            neutral() { printf "%b" "\$NEUTRAL"; }
+            start() { printf "%b" "\$1"; }
+            clr() { start "\$1""\$2"; neutral; }
+
+            clr "$NEUTRAL" "Prefetching $1/$2 master branch...\n"
             ${nix-prefetch-github}/bin/nix-prefetch-github --rev master "$1" "$2" > "$pkg"/metadata.tmp.json
-            echo Completed prefetching "$1/$2"
+            clr "$BOLD" "Completed prefetching $1/$2\n"
 
             if [ ! -s "$pkg"/metadata.tmp.json ]; then
-                echo "ERROR: $pkg/metadata.tmp.json is empty"
+                clr "$RED" "ERROR: $pkg/metadata.tmp.json is empty\n"
                 exit 1
             fi
 
             if ! ${jq}/bin/jq < "$pkg"/metadata.tmp.json > /dev/null; then
-                echo "ERROR: $pkg/metadata.tmp.json is not valid json"
+                clr "$RED" "ERROR: $pkg/metadata.tmp.json is not valid json\n"
                 cat "$pkg"/metadata.tmp.json
                 exit 1
             fi
@@ -505,18 +520,23 @@ let
     ${findutils}/bin/find "$update_commands" -type f | \
       ${findutils}/bin/xargs -I{} -n1 -P3 ${bashInteractive}/bin/bash {}
 
-    echo Moving temporary json output into place...
+    pkgs_updated=0
     for pkg in ~/.config/nixpkgs/packages/*; do
         if [ -d "$pkg" ] && [ -e "$pkg"/metadata.tmp.json ]; then
            if ! ${diffutils}/bin/diff "$pkg"/metadata.json "$pkg"/metadata.tmp.json > /dev/null; then
-             echo Package "$(basename "$pkg")" was updated
+             pkgs_updated=$((pkgs_updated + 1))
+             clr "$BOLD" "Package $(basename "$pkg") was updated\n"
              mv "$pkg"/metadata.tmp.json "$pkg"/metadata.json
            fi
            rm -f "$pkg"/metadata.tmp.json
         fi
     done
 
-    echo DONE
+    if [ "$pkgs_updated" -gt 0 ]; then
+      clr "$BOLD" "$pkgs_updated packages were updated\n"
+    else
+      clr "$GREEN" "No package metadata was updated\n"
+    fi
   '';
 
 in
