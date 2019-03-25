@@ -1531,7 +1531,7 @@ current buffer's file."
     "Returns number of changes or nil."
     (if (is-inside-git-tree)
         (let ((
-               diffs (shell-command-to-string-nows "git diff-index HEAD | wc -l")
+               diffs (shell-command-to-string-nows "git diff-index HEAD 2> /dev/null | wc -l")
                ))
           (if (string= diffs "0")
               nil
