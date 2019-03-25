@@ -10,7 +10,7 @@
   terminal, termite, alacritty, fzf-window, fzf-run,
   fzf-passmenu, sk-window, sk-run, sk-passmenu,
   launch, rename-workspace, killall, procps,
-  screenshot, settings, browse, rofi-passmenu, waybar,
+  screenshot, settings, browse, rofi-passmenu,
   ...
 }:
 
@@ -81,11 +81,6 @@ let
     exec ${nixShellPath} --command "${spookPath} \
          -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" \
          ~/Development/moonbar/shell.nix
-  '';
-  wayBarStatusCmd = writeStrictShellScriptBin "waybar-status" ''
-    ${killall}/bin/killall -q waybar || true
-    while ${procps}/bin/pgrep -x waybar >/dev/null; do sleep 1; done
-    exec ${waybar}/bin/waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css
   '';
 
   config = writeSwayConfig "sway-config" ''
