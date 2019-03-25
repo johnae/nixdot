@@ -1,4 +1,4 @@
-{ pkgs, fetchFromGitHub, glibc, pandoc, isync, imapnotify, git, mu, writeText, ... }:
+{ pkgs, fetchFromGitHub, glibc, pandoc, isync, imapnotify, git, wl-clipboard, mu, writeText, ... }:
 
 let
 
@@ -14,7 +14,11 @@ let
                        --subst-var-by PANDOC \
                        "${pandoc}/bin/pandoc" \
                        --subst-var-by IMAPNOTIFY \
-                       "${imapnotify}/bin/imapnotify"
+                       "${imapnotify}/bin/imapnotify" \
+                       --subst-var-by WLCOPY \
+                       "${wl-clipboard}/bin/wl-copy" \
+                       --subst-var-by WLPASTE \
+                       "${wl-clipboard}/bin/wl-paste"
      cd $out/share/emacs/site-lisp
      emacs --batch --quick -l ob-tangle --eval "(org-babel-tangle-file \"README.org\")"
      emacs -batch -f batch-byte-compile **/*.el

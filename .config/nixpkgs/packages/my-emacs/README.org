@@ -1188,6 +1188,26 @@ Manage external processes from within emacs.
 #+END_SRC
 
 
+Use wl-clipboard for interprocess copy/paste.
+
+#+BEGIN_SRC elisp :tangle default.el
+(setq wl-copy-process nil)
+(defun wl-copy (text)
+  (setq wl-copy-process (make-process :name "@WLCOPY@"
+                                      :buffer nil
+                                      :command '("@WLCOPY@" "-f" "-n")
+                                      :connection-type 'pipe))
+  (process-send-string wl-copy-process text)
+  (process-send-eof wl-copy-process))
+(defun wl-paste ()
+  (if (and wl-copy-process (process-live-p wl-copy-process))
+      nil ; should return nil if we're the current paste owner
+      (shell-command-to-string "@WLPASTE@ -n | tr -d \r")))
+(setq interprogram-cut-function 'wl-copy)
+(setq interprogram-paste-function 'wl-paste)
+#+END_SRC
+
+
 * Other configuration
 
 This is the opposite of fill-paragraph.
