@@ -1098,7 +1098,8 @@ Sending email.
     ("karma-gmail"
      ;;(mu4e-sent-folder "/Gmail/sent")
      (user-mail-address "john@karma.life")
-     (smtpmail-local-domain "gmail.com")
+     (smtpmail-smtp-user "john@karma.life")
+     (smtpmail-local-domain "karma.life")
      (smtpmail-default-smtp-server "smtp.gmail.com")
      (smtpmail-smtp-server "smtp.gmail.com")
      (smtpmail-smtp-service 587)
