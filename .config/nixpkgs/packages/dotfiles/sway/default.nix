@@ -87,11 +87,11 @@ let
     ######## Settings etc
     font ${font}
 
-    for_window [class="fzf-window"] floating enable, resize set width 100ppt height 150ppt
-    for_window [title="fzf-window"] floating enable, resize set width 100ppt height 150ppt
-    for_window [class="sk-window"] floating enable, resize set width 100ppt height 150ppt
-    for_window [title="sk-window"] floating enable, resize set width 100ppt height 150ppt
-    for_window [app_id="sk-window"] floating enable, resize set width 100ppt height 150ppt
+    for_window [class="fzf-window"] floating enable, resize set width 100ppt height 110ppt
+    for_window [title="fzf-window"] floating enable, resize set width 100ppt height 110ppt
+    for_window [class="sk-window"] floating enable, resize set width 100ppt height 110ppt
+    for_window [title="sk-window"] floating enable, resize set width 100ppt height 110ppt
+    for_window [app_id="sk-window"] floating enable, resize set width 100ppt height 110ppt
     for_window [class="input-window"] floating enable
     for_window [class="gcr-prompter"] floating enable
     no_focus [window_role="browser"]
