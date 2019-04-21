@@ -6,9 +6,9 @@ stdenv.mkDerivation rec {
   SPOOK_VERSION = version;
 
   src = fetchgit {
-    url = https://github.com/johnae/spook.git;
-    rev = "fa85bbcf58f038a9190762b0dbb2ba7edbed2ad4";
-    sha256 = "0ksa5scw9ilbhaxx6p95hgfwqbv55328yim8k40m8pfakkpmk06x";
+    url = https://github.com/johnae/spook;
+    rev = "11230f63b740afd77cee710c5dcb27161e7c50ca";
+    sha256 = "1y8rx12ivd9n703haas9wm0b0bsqy9qiyppwgwb62pp6gqijf14q";
     fetchSubmodules = true;
   };
 
