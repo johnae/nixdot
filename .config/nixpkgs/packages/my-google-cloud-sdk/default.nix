@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, makeWrapper, pkgs, ... }:
+{ stdenv, lib, fetchurl, makeWrapper, pkgs, withExtras ? true }:
 
 let
   python = pkgs.python;
@@ -6,35 +6,39 @@ let
   pp = pkgs.python2Packages;
   pythonInputs = [ pp.cffi pp.cryptography pp.pyopenssl pp.crcmod ];
   pythonPath = lib.makeSearchPath python.sitePackages pythonInputs;
-  gcloudVersion = "227.0.0";
+  gcloudVersion = "243.0.0";
 
   # see: https://console.cloud.google.com/storage/browser/cloud-sdk-release?authuser=0
   componentBaseUrl = "https://storage.googleapis.com/cloud-sdk-release/for_packagers/linux";
   appengine-go-sdk-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-app-engine-go_${gcloudVersion}.orig_amd64.tar.gz";
-    sha256 = "0if4lql2zgj8xj13wmcl82c2bkdhbl8myglfvc9svhjj4i4ib8qc";
+    sha256 = "17g50phpq6m4wnz5jf9jxavmpaqgi5vcdvpbsji7ain4190pkln3";
   };
 
   appengine-python-sdk-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-app-engine-python_${gcloudVersion}.orig.tar.gz";
-    sha256 = "1mbq6db6jnf6sb84pv59xgrcdfmc6ff0vykq4x44xqbg3mbm521s";
+    sha256 = "0smgk97srkh8m2ag24msxjxrjjfxz47gcc2r6ccxzg11vj39b41p";
   };
 
   datastore-emulator-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-datastore-emulator_${gcloudVersion}.orig.tar.gz";
-    sha256 = "1l5930y40i8c99iz3kq47s6lss0i4p1i5fsgm2cjmh0aghyq5syq";
+    sha256 = "0bfg1rd6f4p3kxa4a9jd07krclfklfgg496iy7962pqgjk34gfyr";
   };
 
   pub-sub-emulator-component = {
     url = "${componentBaseUrl}/google-cloud-sdk-pubsub-emulator_${gcloudVersion}.orig.tar.gz";
-    sha256 = "1wmb74fn2lzvbb2sf8kbkd5d2q5fxdq86qjbqkrm7kdnfq7lz50s";
+    sha256 = "0giyab4kab50w7yzyqgg6d6f7426g4igg03kn22hmrd009dxz53f";
   };
 
   baseUrl = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads";
   sources = name: system: {
     x86_64-linux = {
       url = "${baseUrl}/${name}-linux-x86_64.tar.gz";
-      sha256 = "0yxyy7snzrjvk6vbvy9j0a4d77g7b82pzskqkh0cy69via1vjs15";
+      sha256 = "0drypkgias3hklccw2l5h6dj17r8fz0l9yprvglpj0ay1qs4q3fh";
+    };
+    x86_64-darwin = {
+      url = "${baseUrl}/${name}-darwin-x86_64.tar.gz";
+      sha256 = "12h63v2klvbjm5aaqpz5n8nywp3srip84gyb56dzdpmcg61qjpcr";
     };
   }.${system};
 
@@ -43,10 +47,32 @@ in stdenv.mkDerivation rec {
   version = gcloudVersion;
 
   src = fetchurl (sources name stdenv.system);
-  appengine-go-sdk = fetchurl appengine-go-sdk-component;
-  appengine-python-sdk = fetchurl appengine-python-sdk-component;
-  pub-sub-emulator = fetchurl pub-sub-emulator-component;
-  datastore-emulator = fetchurl datastore-emulator-component;
+
+  installExtras = if withExtras then
+    let
+       appengine-go-sdk = fetchurl appengine-go-sdk-component;
+       appengine-python-sdk = fetchurl appengine-python-sdk-component;
+       pub-sub-emulator = fetchurl pub-sub-emulator-component;
+       datastore-emulator = fetchurl datastore-emulator-component;
+    in
+       ''
+         echo "Installing app engine go sdk..."
+         tar -zxf "${appengine-go-sdk}" -C "$out"
+
+         echo "Installing app engine python sdk..."
+         tar -zxf "${appengine-python-sdk}" -C "$out"
+
+         echo "Installing pub sub emulator..."
+         tar -zxf "${pub-sub-emulator}" -C "$out"
+
+         echo "Installing datastore emulator..."
+         tar -zxf "${datastore-emulator}" -C "$out"
+       ''
+  else
+    ''
+      echo "Skipping installing extras..."
+    '';
+
 
   buildInputs = [ python makeWrapper ];
 
@@ -75,17 +101,7 @@ in stdenv.mkDerivation rec {
         ln -s $programPath $binaryPath
     done
 
-    echo "Installing app engine go sdk..."
-    tar -zxf "${appengine-go-sdk}" -C "$out"
-
-    echo "Installing app engine python sdk..."
-    tar -zxf "${appengine-python-sdk}" -C "$out"
-
-    echo "Installing pub sub emulator..."
-    tar -zxf "${pub-sub-emulator}" -C "$out"
-
-    echo "Installing datastore emulator..."
-    tar -zxf "${datastore-emulator}" -C "$out"
+    ${installExtras}
 
     # disable component updater and update check
     substituteInPlace $out/google-cloud-sdk/lib/googlecloudsdk/core/config.json \
@@ -111,5 +127,6 @@ in stdenv.mkDerivation rec {
     homepage = "https://cloud.google.com/sdk/";
     maintainers = with maintainers; [ stephenmw zimbatm ];
     platforms = [ "x86_64-linux" "x86_64-darwin" ];
+    priority = 6;
   };
 }
