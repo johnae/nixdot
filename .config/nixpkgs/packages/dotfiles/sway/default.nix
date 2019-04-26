@@ -162,6 +162,9 @@ let
     # create new password input
     # bindsym ${mod}+Shift+m exec ${inputWindowPath} "read-input login | xargs -I{} new-password {}"
 
+    # new random background
+    bindsym ${mod}+b output * bg `${random-background}/bin/random-background` fill
+
     # (new empty emacs window really - starts server if not running)
     # unfortuately gui emacs on wayland is blurry if screen is scaled (eg. hidpi)
     # bindsym ${mod}+Shift+e exec ${edit}/bin/edit -e '(insane-new-empty-buffer)'
