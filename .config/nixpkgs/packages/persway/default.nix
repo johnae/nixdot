@@ -31,10 +31,10 @@ in
       description = "Small Sway IPC Daemon";
       homepage = https://github.com/johnae/persway;
       license = licenses.mit;
-      maintainers = [
+      maintainers = [{
         email = "john@insane.se";
         github = "johnae";
         name = "John Axel Eriksson";
-      ];
+      }];
     };
   }
