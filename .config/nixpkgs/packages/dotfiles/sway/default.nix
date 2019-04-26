@@ -4,7 +4,7 @@
   writeTextFile,
   writeStrictShellScriptBin,
   libdot, sway, swayidle, swaylock, udev, gnupg,
-  rofi, xorg, mako, persway, random-background,
+  rofi, xorg, mako, persway, random-background, random-unsplash-background,
   pulseaudioFull, coreutils, playerctl,
   spook, nix, edi, edit, emacs-server, gnome3,
   terminal, termite, alacritty, fzf-window, fzf-run,
@@ -162,8 +162,8 @@ let
     # create new password input
     # bindsym ${mod}+Shift+m exec ${inputWindowPath} "read-input login | xargs -I{} new-password {}"
 
-    # new random background
-    bindsym ${mod}+b output * bg `${random-background}/bin/random-background` fill
+    # new random unsplash background
+    bindsym ${mod}+b output * bg `${random-unsplash-background}/bin/random-unsplash-background` fill
 
     # (new empty emacs window really - starts server if not running)
     # unfortuately gui emacs on wayland is blurry if screen is scaled (eg. hidpi)

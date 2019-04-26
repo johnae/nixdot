@@ -9,7 +9,7 @@
  gnupg, gawk, gnused, openssl,
  gnugrep, findutils, coreutils,
  alacritty, libnotify,
- maim, slop, killall,
+ maim, slop, killall, wget,
  openssh, kubectl, diffutils,
  browser, settings,
  nix-prefetch-github,
@@ -436,6 +436,11 @@ let
          ${coreutils}/bin/sort -R | ${coreutils}/bin/head -1
   '';
 
+  random-unsplash-background = writeStrictShellScriptBin "random-unsplash-background" ''
+    ${wget}/bin/wget -O /tmp/wallpaper.jpg https://unsplash.it/3200/1800/?random 2>/dev/null
+    echo /tmp/wallpaper.jpg
+  '';
+
   start-sway = writeStrictShellScriptBin "start-sway" ''
     #export _TERMEMU=termite
     export XDG_SESSION_TYPE=wayland
@@ -555,6 +560,7 @@ in
               browse slacks spotifyweb
               rename-workspace screenshot
               start-sway random-background random-name
+              random-unsplash-background
               add-wifi-network update-wifi-networks
               update-user-nixpkgs;
     };
