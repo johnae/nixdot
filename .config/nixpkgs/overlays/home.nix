@@ -7,6 +7,7 @@ self: super: {
           sway
           swayidle
           swaylock
+          swaybg
           dotfiles
           mu
           alacritty

@@ -34,7 +34,8 @@ in
     '';
 
      mesonFlags = [
-     "-Dxwayland=enabled" "-Dgdk-pixbuf=enabled" "-Dtray=enabled"
+       "-Ddefault-wallpaper=false" "-Dxwayland=enabled"
+       "-Dgdk-pixbuf=enabled" "-Dtray=enabled"
      ] ++ stdenv.lib.optional buildDocs "-Dman-pages=enabled";
 
     enableParallelBuilding = true;
