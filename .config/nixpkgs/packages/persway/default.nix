@@ -1,22 +1,40 @@
-{ stdenv, buildGoPackage, fetchgit, fetchhg, fetchbzr, fetchsvn }:
+{ stdenv,
+  lib,
+  fetchFromGitHub,
+  rustPlatform
+}:
 
-buildGoPackage rec {
-  name = "persway-unstable-${version}";
-  version = "2018-10-08";
-  rev = "57152d09d32982c84639e8761359f9ad8f71e1b7";
+with rustPlatform;
 
-  goPackagePath = "github.com/johnae/persway";
+let
 
-  src = fetchgit {
-    inherit rev;
-    url = "https://github.com/johnae/persway";
-    sha256 = "0kkgkwfk8vnnkwl7bhxrzfkd60ymiwjgkwc477wv542rsr1h7h9d";
-  };
+  metadata = builtins.fromJSON(builtins.readFile ./metadata.json);
 
-  goDeps = ./deps.nix;
+in
 
-  meta = {
-    description = "Small ipc daemon for the sway wayland compositor";
-    homePage = "https://github.com/johnae/persway";
-  };
-}
+  buildRustPackage rec {
+    pname = metadata.repo;
+    version = metadata.rev;
+
+    src = fetchFromGitHub {
+      owner = metadata.owner;
+      repo = pname;
+      rev = "${version}";
+      sha256 = metadata.sha256;
+    };
+
+    cargoSha256 = "0zr683mqvk70mdgjh5jfvqpi6spf8s3f2w97vx63myhfy0j3slwm";
+
+    outputs = [ "out" ];
+
+    meta = with stdenv.lib; {
+      description = "Small Sway IPC Daemon";
+      homepage = https://github.com/johnae/persway;
+      license = licenses.mit;
+      maintainers = [
+        email = "john@insane.se";
+        github = "johnae";
+        name = "John Axel Eriksson";
+      ];
+    };
+  }
