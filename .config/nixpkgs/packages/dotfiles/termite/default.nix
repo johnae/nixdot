@@ -42,7 +42,7 @@ let
     color15 = #eceff4
 
     [options]
-    font = Office Code Pro D, Font Awesome 5 Brands, Font Awesome 5 Free, 14
+    font = Office Code Pro D Nerd Font, Font Awesome 5 Brands, Font Awesome 5 Free, 14
     scrollback_lines = 20000
   '';
 
