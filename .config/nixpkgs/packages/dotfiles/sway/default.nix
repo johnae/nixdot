@@ -137,7 +137,7 @@ let
     bindsym ${mod}+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal
 
     # start an emacs shell
-    bindsym ${mod}+Shift+Return exec ${termite}/bin/termite -t eshell -e ${edi}/bin/edi -e '(jae/eshell-new)'
+    bindsym ${mod}+Shift+Return exec ${alacritty}/bin/alacritty -t eshell -e ${edi}/bin/edi -e '(jae/eshell-new)'
 
     # start a light + large font terminal
     # bindsym ${mod}+Control+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal-large
@@ -168,7 +168,7 @@ let
     # (new empty emacs window really - starts server if not running)
     # unfortuately gui emacs on wayland is blurry if screen is scaled (eg. hidpi)
     # bindsym ${mod}+Shift+e exec ${edit}/bin/edit -e '(insane-new-empty-buffer)'
-    bindsym ${mod}+Shift+e exec _SET_WS_NAME=y _USE_NAME=edit ${launch}/bin/launch ${termite}/bin/termite -t edit -e "${edi}/bin/edi"
+    bindsym ${mod}+Shift+e exec _SET_WS_NAME=y _USE_NAME=edit ${launch}/bin/launch ${alacritty}/bin/alacritty -t edit -e "${edi}/bin/edi"
 
     # new browser
     bindsym ${mod}+Shift+b exec ${browse}/bin/browse

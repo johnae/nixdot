@@ -137,7 +137,7 @@ let
     else
       CONFIG=$HOME/.config/alacritty/alacritty$TERMINAL_CONFIG.yml
       # shellcheck disable=SC2068
-      ${alacritty}/bin/alacritty --config-file "$CONFIG" "$@"
+      ${alacritty}/bin/alacritty --config-file "$CONFIG" $@
     fi
   '';
 
@@ -149,6 +149,7 @@ let
       read -r cmd
     fi
     MSG=${sway}/bin/swaymsg
+    unset _TERMEMU
     if [ "$_SET_WS_NAME" = "y" ]; then
       name=$(${coreutils}/bin/echo "$cmd" | ${gawk}/bin/awk '{print $1}')
       if [ "$_USE_NAME" ]; then
@@ -236,8 +237,8 @@ let
       exit 1
     fi
     shift
-    #_TERMEMU=
-    export _TERMEMU=termite
+    _TERMEMU=
+    #export _TERMEMU=termite
     export TERMINAL_CONFIG=-launcher
     if ${ps}/bin/ps aux | ${gnugrep}/bin/grep '\-t sk-window' | \
        ${gnugrep}/bin/grep -v grep > /dev/null 2>&1; then
@@ -252,7 +253,8 @@ let
     if [ "$_TERMEMU" = "termite" ]; then
       exec ${terminal}/bin/terminal -t "sk-window" -e "$cmd" "$@"
     fi
-    exec ${terminal}/bin/terminal --class "sk-window" -e "$cmd" "$@"
+    # shellcheck disable=SC2086
+    exec ${terminal}/bin/terminal --class "sk-window" -e $cmd
   '';
 
   sk-passmenu = writeStrictShellScriptBin "sk-passmenu" ''
@@ -435,7 +437,7 @@ let
   '';
 
   start-sway = writeStrictShellScriptBin "start-sway" ''
-    export _TERMEMU=termite
+    #export _TERMEMU=termite
     export XDG_SESSION_TYPE=wayland
     export GDK_BACKEND=wayland
     export GTK_THEME="${settings.dconf."org/gnome/desktop/interface".gtk-theme}"
@@ -457,7 +459,7 @@ let
 
   mail = writeStrictShellScriptBin "mail" ''
     export TERMINAL_CONFIG=
-    exec ${terminal}/bin/terminal -e "${edi}/bin/edi -e '(mu4e)'"
+    exec ${terminal}/bin/terminal -e ${edi}/bin/edi -e '(mu4e)'
   '';
 
   update-user-nixpkgs = writeStrictShellScriptBin "update-user-nixpkgs" ''
