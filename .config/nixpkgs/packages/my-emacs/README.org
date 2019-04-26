@@ -571,7 +571,10 @@ Some simple modes for a few languages.
 (add-hook 'prog-mode-hook #'lsp)
 
 (use-package lsp-ui
-  :after lsp-mode)
+  :after lsp-mode
+  :config
+  (setq lsp-ui-doc-max-height 60)
+)
 
 (use-package company-lsp
   :after lsp-mode
