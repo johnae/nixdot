@@ -151,8 +151,7 @@
   };
 
   alacritty = {
-    font = "Office Code Pro D";
-    #, "Font Awesome 5 Brands", "Font Awesome 5 Free" ] '';
+    font = "Office Code Pro D Nerd Font";
     fontSize = "14.0";
     largeFontSize = "28.0";
     backgroundOpacity = "0.95";
