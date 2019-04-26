@@ -23,6 +23,7 @@ let
     window:
       # Window dimensions in character columns and lines
       # (changes require restart)
+
       dimensions:
         columns: 80
         lines: 24
@@ -39,6 +40,12 @@ let
 
     # When true, bold text is drawn using the bright variant of colors.
     draw_bold_text_with_bright_colors: true
+
+    scrolling:
+      history: 20000
+      multiplier: 20
+      faux_multiplier: 20
+      auto_scroll: false
 
     # Font configuration (changes require restart)
     font:
@@ -486,7 +493,7 @@ let
     font:
       # The normal (roman) font face to use.
       normal:
-        family: Roboto Mono
+        family: Roboto Mono Nerd Font
         # family: monospace # should be "Menlo" or something on macOS.
         # Style can be specified to pick a specific face.
         # style: Regular
@@ -515,7 +522,7 @@ let
     # Should display the render timer
     render_timer: false
 
-    # background_opacity: 0.85
+    background_opacity: 0.85
 
     colors:
       primary:
