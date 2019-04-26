@@ -27,6 +27,8 @@ self: super: {
           playerctl
           _1password
 
+          remmina
+
           spotify
           mpv
           vlc
