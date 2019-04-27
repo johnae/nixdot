@@ -449,7 +449,7 @@ let
   '';
 
   random-unsplash-background = writeStrictShellScriptBin "random-unsplash-background" ''
-    ${wget}/bin/wget -O /tmp/wallpaper.jpg https://unsplash.it/3200/1800/?random 2>/dev/null
+    ${wget}/bin/wget -O /tmp/wallpaper.jpg 'https://unsplash.it/3200/1800/?random' 2>/dev/null
     echo /tmp/wallpaper.jpg
   '';
 
