@@ -8,7 +8,7 @@
  pass, wpa_supplicant, cloud-sql-proxy,
  gnupg, gawk, gnused, openssl,
  gnugrep, findutils, coreutils,
- alacritty, libnotify,
+ alacritty, libnotify, hostname,
  maim, slop, killall, wget,
  openssh, kubectl, diffutils,
  browser, settings,
@@ -393,6 +393,18 @@ let
     fi
   '';
 
+  update-wireguard-keys = writeStrictShellScriptBin "update-wireguard-keys" ''
+    IFS=$'\n'
+    HN="$(${hostname}/bin/hostname)"
+    mkdir -p ~/.wireguard
+    for KEY in $(find ~/.password-store/vpn/wireguard/"$HN"/ -type f -print0 | xargs -0 -I{} basename {}); do
+      KEYNAME=$(basename "$KEY" .gpg)
+      echo "Ensure wireguard key \"$KEYNAME\" is available"
+      ${pass}/bin/pass show "vpn/wireguard/$HN/$KEYNAME" > ~/.wireguard/"$KEYNAME"
+      chmod 0600 ~/.wireguard/"$KEYNAME"
+    done
+  '';
+
   update-wifi-networks = writeStrictShellScriptBin "update-wifi-networks" ''
     IFS=$'\n'
     for NET in $(find ~/.password-store/wifi/networks/ -type f -print0 | xargs -0 -I{} basename {}); do
@@ -562,6 +574,6 @@ in
               start-sway random-background random-name
               random-unsplash-background
               add-wifi-network update-wifi-networks
-              update-user-nixpkgs;
+              update-user-nixpkgs update-wireguard-keys;
     };
   }
