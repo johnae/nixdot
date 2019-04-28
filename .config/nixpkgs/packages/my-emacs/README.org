@@ -171,10 +171,10 @@ Presentation minor mode for org-mode see [[https://github.com/takaxp/org-tree-sl
 Notifications for org TODO:s. See [[https://github.com/akhramov/org-wild-notifier.el][org-wild-notifier]]
 
 #+BEGIN_SRC elisp :tangle default.el
-(use-package org-wild-notifier
-  :config
-  (org-wild-notifier-mode)
-  )
+;;(use-package org-wild-notifier
+;;  :config
+;;  (org-wild-notifier-mode)
+;;  )
 #+END_SRC
 
 
