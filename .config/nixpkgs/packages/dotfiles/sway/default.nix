@@ -14,6 +14,7 @@
   ...
 }:
 
+
 with lib;
 with libdot;
 with settings.sway;
@@ -77,10 +78,17 @@ let
                           --markup 1
   '';
 
-  swayBarStatusCmd = writeStrictShellScriptBin "swaybar-status" ''
+  swaybar-status = writeStrictShellScriptBin "swaybar-status" ''
     exec ${nixShellPath} --command "${spookPath} \
          -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" \
          ~/Development/moonbar/shell.nix
+  '';
+
+  ## because the delay when fetching from internet seems to
+  ## stop the update from happening when using command substitution
+  sway-background = writeStrictShellScriptBin "sway-background" ''
+    BG=$(${random-unsplash-background}/bin/random-unsplash-background)
+    exec swaymsg "output * bg '$BG' fill"
   '';
 
   config = writeSwayConfig "sway-config" ''
@@ -163,7 +171,7 @@ let
     # bindsym ${mod}+Shift+m exec ${inputWindowPath} "read-input login | xargs -I{} new-password {}"
 
     # new random unsplash background
-    bindsym ${mod}+b output * bg `${random-unsplash-background}/bin/random-unsplash-background` fill
+    bindsym ${mod}+b exec ${sway-background}/bin/sway-background
 
     # (new empty emacs window really - starts server if not running)
     # unfortuately gui emacs on wayland is blurry if screen is scaled (eg. hidpi)
@@ -355,7 +363,7 @@ let
       }
 
       # tray_output primary
-      status_command ${swayBarStatusCmd}/bin/swaybar-status
+      status_command ${swaybar-status}/bin/swaybar-status
     }
 
   '';
