@@ -563,6 +563,9 @@ Some simple modes for a few languages.
 
 #+END_SRC
 
+#+BEGIN_SRC elisp :tangle default.el
+(use-package swift-mode)
+#+END_SRC
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package lsp-mode

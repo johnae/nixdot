@@ -214,6 +214,8 @@ in
     magit
     diff-hl
 
+    swift-mode
+
     # Helpers
     direnv
     kubernetes-tramp
