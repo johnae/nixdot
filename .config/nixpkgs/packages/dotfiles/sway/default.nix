@@ -91,6 +91,13 @@ let
     exec swaymsg "output * bg '$BG' fill"
   '';
 
+  rotating-background = writeStrictShellScriptBin "rotating-background" ''
+    while true; do
+      ${sway-background}/bin/sway-background
+      sleep 600
+    done
+  '';
+
   config = writeSwayConfig "sway-config" ''
     ######## Settings etc
     font ${font}
@@ -114,6 +121,7 @@ let
     #mouse_warping container
 
     output * bg `${random-background}/bin/random-background` fill
+    exec ${rotating-background}/bin/rotating-background
 
     ${toConfig sway-outputs (output-name: output-config: ''
        output ${output-name} ${output-config}'')}
