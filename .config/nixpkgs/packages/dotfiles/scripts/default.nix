@@ -448,8 +448,8 @@ let
          ${coreutils}/bin/sort -R | ${coreutils}/bin/head -1
   '';
 
-  random-unsplash-background = writeStrictShellScriptBin "random-unsplash-background" ''
-    ${wget}/bin/wget -O /tmp/wallpaper.jpg 'https://unsplash.it/3200/1800/?random' 2>/dev/null
+  random-picsum-background = writeStrictShellScriptBin "random-picsum-background" ''
+    ${wget}/bin/wget -O /tmp/wallpaper.jpg 'https://picsum.photos/3200/1800' 2>/dev/null
     echo /tmp/wallpaper.jpg
   '';
 
@@ -572,7 +572,7 @@ in
               browse slacks spotifyweb
               rename-workspace screenshot
               start-sway random-background random-name
-              random-unsplash-background
+              random-picsum-background
               add-wifi-network update-wifi-networks
               update-user-nixpkgs update-wireguard-keys;
     };

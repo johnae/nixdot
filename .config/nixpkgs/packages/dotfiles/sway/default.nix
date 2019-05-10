@@ -4,7 +4,7 @@
   writeTextFile,
   writeStrictShellScriptBin,
   libdot, sway, swayidle, swaylock, udev, gnupg,
-  rofi, xorg, mako, persway, random-background, random-unsplash-background,
+  rofi, xorg, mako, persway, random-background, random-picsum-background,
   pulseaudioFull, coreutils, playerctl,
   spook, nix, edi, edit, emacs-server, gnome3,
   terminal, termite, alacritty, fzf-window, fzf-run,
@@ -87,7 +87,7 @@ let
   ## because the delay when fetching from internet seems to
   ## stop the update from happening when using command substitution
   sway-background = writeStrictShellScriptBin "sway-background" ''
-    BG=$(${random-unsplash-background}/bin/random-unsplash-background)
+    BG=$(${random-picsum-background}/bin/random-picsum-background)
     exec swaymsg "output * bg '$BG' fill"
   '';
 
@@ -178,7 +178,7 @@ let
     # create new password input
     # bindsym ${mod}+Shift+m exec ${inputWindowPath} "read-input login | xargs -I{} new-password {}"
 
-    # new random unsplash background
+    # new random background
     bindsym ${mod}+b exec ${sway-background}/bin/sway-background
 
     # (new empty emacs window really - starts server if not running)
