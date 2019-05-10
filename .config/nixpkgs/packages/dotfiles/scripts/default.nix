@@ -112,7 +112,7 @@ let
   '';
 
   browse = writeStrictShellScriptBin "browse" ''
-    exec ${browser} -P default "$@"
+    exec ${browser} "$@"
   '';
 
   slacks = writeStrictShellScriptBin "slacks" ''
@@ -121,11 +121,11 @@ let
       echo Please provide a workspace as argument
       exit 1
     fi
-    exec ${browser} --new-instance -P slack --new-window "https://$WS.slack.com"
+    exec ${browser} --new-window "https://$WS.slack.com"
   '';
 
   spotifyweb = writeStrictShellScriptBin "spotifyweb" ''
-    exec ${browser} --new-instance -P spotify --new-window "https://open.spotify.com"
+    exec ${browser} --new-window "https://open.spotify.com"
   '';
 
   terminal = writeStrictShellScriptBin "terminal" ''
