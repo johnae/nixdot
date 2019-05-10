@@ -1064,9 +1064,9 @@ Sending email.
       message-kill-buffers-on-exit t
       user-full-name "John Axel Eriksson"
       send-mail-function 'smtpmail-send-it
-      smtpmail-default-smtp-server "mail.insane.se"
+      smtpmail-default-smtp-server "smtp.gmail.com"
       smtpmail-smtp-user "john@insane.se"
-      smtpmail-smtp-server "mail.insane.se"
+      smtpmail-smtp-server "smtp.gmail.com"
       smtpmail-smtp-service 587
       mu4e-sent-folder "/insane-mail/Sent"
       mu4e-drafts-folder "/insane-mail/Drafts"
@@ -1093,8 +1093,8 @@ Sending email.
      (user-mail-address "john@insane.se")
      (smtpmail-smtp-user "john@insane.se")
      (smtpmail-local-domain "insane.se")
-     (smtpmail-default-smtp-server "mail.insane.se")
-     (smtpmail-smtp-server "mail.insane.se")
+     (smtpmail-default-smtp-server "smtp.gmail.com")
+     (smtpmail-smtp-server "smtp.gmail.com")
      (smtpmail-smtp-service 587)
      (mu4e-sent-folder "/insane-gmail/[Gmail]/Sent Mail")
      (mu4e-drafts-folder "/insane-gmail/[Gmail]/Drafts")
@@ -1186,7 +1186,7 @@ Manage external processes from within emacs.
   (prodigy-define-service
     :name "imapnotify-insane"
     :command "@IMAPNOTIFY@"
-    :args (list "-c" (expand-file-name ".config/imapnotify.insane-mail.js" (getenv "HOME")))
+    :args (list "-c" (expand-file-name ".config/imapnotify.insane-gmail.js" (getenv "HOME")))
     :tags '(email)
     :kill-signal 'sigkill)
   (prodigy-start-service (prodigy-find-service "imapnotify-karma"))

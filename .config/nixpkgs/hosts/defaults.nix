@@ -48,6 +48,48 @@
 
       rec {
         imapaccount = rec {
+          imapaccount = "insane-gmail";
+          host = "imap.gmail.com";
+          user = "john@insane.se";
+          passcmd = "${pkgs.gnupg}/bin/gpg2 -q --for-your-eyes-only --no-tty -d " +
+                    "~/.password-store/emacs/auth/authinfo.gpg | " +
+                    "${pkgs.gawk}/bin/awk '/machine imap.gmail.com login ${user}/ {print $NF}'";
+          ssltype = "IMAPS";
+          certificatefile = "/etc/ssl/certs/ca-certificates.crt";
+          pipelinedepth = 50;
+        };
+        imapstore = {
+          imapstore = "${imapaccount.imapaccount}-remote";
+          account = imapaccount.imapaccount;
+        };
+        maildirstore = rec {
+          maildirstore = "${imapaccount.imapaccount}-local";
+          subfolders = "Verbatim";
+          path = "~/.mail/${imapaccount.imapaccount}/";
+          inbox = "${path}inbox";
+        };
+        channels = [
+          {
+            channel = imapaccount.imapaccount;
+            master = ":${imapstore.imapstore}:";
+            slave = ":${maildirstore.maildirstore}:";
+            patterns = "* ![Gmail]* \"[Gmail]/Sent Mail\" \"[Gmail]/All Mail\" \"[Gmail]/Trash\"";
+            create = "Both";
+            expunge = "Both";
+            syncstate = "*";
+            copyarrivaldate = "yes";
+          }
+        ];
+        groups = [
+          {
+            group = imapaccount.imapaccount;
+            channels = builtins.map (x: x.channel) channels;
+          }
+        ];
+      }
+
+      rec {
+        imapaccount = rec {
           imapaccount = "insane-mail";
           host = "mail.insane.se";
           user = "john@insane.se";
@@ -238,6 +280,7 @@
 
     sway-outputs = {
       eDP-1 = "pos 0 0";
+      "\"Unknown ASUS PB27U 0x0000C167\"" = "scale 1.5";
     };
 
     sway-inputs = {
