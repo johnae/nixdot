@@ -29,6 +29,7 @@ self: super: {
           _1password
 
           remmina
+          evince
 
           spotify
           mpv
