@@ -120,7 +120,7 @@ let
     popup_during_fullscreen smart
     #mouse_warping container
 
-    output * bg `${random-background}/bin/random-background` fill
+    output * bg ~/Pictures/wallpaper.jpg fill
     exec ${rotating-background}/bin/rotating-background
 
     ${toConfig sway-outputs (output-name: output-config: ''

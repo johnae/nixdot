@@ -450,7 +450,11 @@ let
 
   random-picsum-background = writeStrictShellScriptBin "random-picsum-background" ''
     ${wget}/bin/wget -O /tmp/wallpaper.jpg 'https://picsum.photos/3200/1800' 2>/dev/null
-    echo /tmp/wallpaper.jpg
+    if [ -e "$HOME"/Pictures/wallpaper.jpg ]; then
+      mv "$HOME"/Pictures/wallpaper.jpg "$HOME"/Pictures/previous-wallpaper.jpg
+    fi
+    mv /tmp/wallpaper.jpg "$HOME"/Pictures/wallpaper.jpg
+    echo "$HOME"/Pictures/wallpaper.jpg
   '';
 
   start-sway = writeStrictShellScriptBin "start-sway" ''
