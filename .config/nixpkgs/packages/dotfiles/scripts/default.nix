@@ -9,7 +9,7 @@
  , gnupg, gawk, gnused, openssl
  , gnugrep, findutils, coreutils
  , alacritty, libnotify, hostname
- , maim, slop, killall, wget
+ , maim, slop, killall, wget, procps
  , openssh, kubectl, diffutils
  , browser, chromium, settings
  , nix-prefetch-github, signal-desktop
@@ -30,7 +30,10 @@ let
   '';
 
   emacs-server = writeStrictShellScriptBin "emacs-server" ''
-    if [ -e /run/user/1337/emacs1337/server ]; then
+    FORCE=''${1:-}
+    if [ "$FORCE" == "--force" ]; then
+       ${procps}/bin/pkill -f "emacs --daemon=server"
+    elif [ -e /run/user/1337/emacs1337/server ]; then
        exit 0
     fi
     ${coreutils}/bin/rm -rf /run/user/1337/emacs1337
