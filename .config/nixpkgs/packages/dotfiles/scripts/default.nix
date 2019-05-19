@@ -1,19 +1,20 @@
 {
- stdenv, lib,
- writeScriptBin,
- writeStrictShellScriptBin,
- my-emacs, termite, wl-clipboard,
- ps, jq, fire, sway, rofi, evolution,
- fd, fzf, skim, bashInteractive,
- pass, wpa_supplicant, cloud-sql-proxy,
- gnupg, gawk, gnused, openssl,
- gnugrep, findutils, coreutils,
- alacritty, libnotify, hostname,
- maim, slop, killall, wget,
- openssh, kubectl, diffutils,
- browser, settings,
- nix-prefetch-github,
- ...}:
+   stdenv, lib
+ , writeScriptBin
+ , writeStrictShellScriptBin
+ , my-emacs, termite, wl-clipboard
+ , ps, jq, fire, sway, rofi, evolution
+ , fd, fzf, skim, bashInteractive
+ , pass, wpa_supplicant, cloud-sql-proxy
+ , gnupg, gawk, gnused, openssl
+ , gnugrep, findutils, coreutils
+ , alacritty, libnotify, hostname
+ , maim, slop, killall, wget
+ , openssh, kubectl, diffutils
+ , browser, chromium, settings
+ , nix-prefetch-github, signal-desktop
+ , ...
+}:
 
 let
   emacsclient = "${my-emacs}/bin/emacsclient";
@@ -112,20 +113,30 @@ let
   '';
 
   browse = writeStrictShellScriptBin "browse" ''
-    exec ${browser} "$@"
+    exec ${browser} -P default-nightly "$@"
   '';
 
   slacks = writeStrictShellScriptBin "slacks" ''
-    WS=''${1:-}
+    WS=''${1:-${settings.default-slackws}}
     if [ -z "$WS" ]; then
       echo Please provide a workspace as argument
       exit 1
     fi
-    exec ${browser} --new-window "https://$WS.slack.com"
+    exec ${browser} -P default-nightly --new-window "https://$WS.slack.com"
   '';
 
   spotifyweb = writeStrictShellScriptBin "spotifyweb" ''
-    exec ${browser} --new-window "https://open.spotify.com"
+    exec ${browser} -P default-nightly --new-window "https://open.spotify.com"
+  '';
+
+  browse-chromium = writeStrictShellScriptBin "browse-chromium" ''
+    export GDK_BACKEND=x11
+    exec ${chromium}/bin/chromium
+  '';
+
+  signal = writeStrictShellScriptBin "signal" ''
+    export GDK_BACKEND=x11
+    exec ${signal-desktop}/bin/signal-desktop
   '';
 
   terminal = writeStrictShellScriptBin "terminal" ''
@@ -573,7 +584,7 @@ in
               fzf-passmenu rofi-passmenu
               fzf-run fzf-window
               sk-sk sk-run sk-window sk-passmenu
-              browse slacks spotifyweb
+              browse slacks spotifyweb browse-chromium signal
               rename-workspace screenshot
               start-sway random-background random-name
               random-picsum-background

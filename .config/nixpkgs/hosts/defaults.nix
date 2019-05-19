@@ -2,6 +2,8 @@
 
 {
 
+  default-slackws = "karmalicious";
+
   mbsync = {
     accounts = [
       rec {
