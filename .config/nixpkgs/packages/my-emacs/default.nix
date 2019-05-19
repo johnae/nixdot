@@ -70,13 +70,13 @@ let
   ## use up-to-date nix-mode
   nix-mode = emacsPackages.melpaBuild {
     pname = "nix-mode";
-    version = "20190116";
+    version = "20190119";
 
     src = fetchFromGitHub {
       owner = "NixOS";
       repo = "nix-mode";
-      rev = "80a1e96c7133925797a748cf9bc097ca6483baeb";
-      sha256 = "165g8ga1yhibhabh6n689hdk525j00xw73qnsdc98pqzsc2d2ipa";
+      rev = "1e53bed4d47c526c71113569f592c82845a17784";
+      sha256 = "172s5lxlns633gbi6sq6iws269chalh5k501n3wffp5i3b2xzdyq";
     };
 
     recipe = writeText "nix-mode-recipe" ''
@@ -88,13 +88,13 @@ let
   prescientSource = fetchFromGitHub {
     owner  = "raxod502";
     repo   = "prescient.el";
-    rev    = "c395c6dee67cf269be12467b768343fb10f2399f";
-    sha256 = "0zh0g9vxgqbs48li91ar5swn9mrskmqc0kk7sbymkclkb60xcjs9";
+    rev    = "5c23565eeb1c8fe7192578cb492ffdf1108ea6ed";
+    sha256 = "0c6s6hwzkpzcwxzb656jz66jl88j0blr7zkc55lxn6brz7src55c";
   };
 
   prescient = emacsPackages.melpaBuild {
     pname   = "prescient";
-    version = "2.2.1";
+    version = "3.0.0";
     src     = prescientSource;
 
     recipe = writeText "prescient-recipe" ''
@@ -105,7 +105,7 @@ let
 
   ivy-prescient = emacsPackages.melpaBuild {
     pname   = "ivy-prescient";
-    version = "2.2.1";
+    version = "3.0.0";
     src     = prescientSource;
     packageRequires = [ prescient ];
 
@@ -117,7 +117,7 @@ let
 
   company-prescient = emacsPackages.melpaBuild {
     pname   = "company-prescient";
-    version = "2.2.1";
+    version = "3.0.0";
     src     = prescientSource;
     packageRequires = [ prescient ];
 
