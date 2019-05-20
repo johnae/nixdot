@@ -283,6 +283,7 @@
     sway-outputs = {
       eDP-1 = "pos 0 0";
       "\"Unknown ASUS PB27U 0x0000C167\"" = "scale 1.5";
+      "\"Unknown Q2790 GQMJ4HA000414\"" = "scale 1.0";
     };
 
     sway-inputs = {
