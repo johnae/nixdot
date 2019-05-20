@@ -35,6 +35,9 @@ self: super: {
           mpv
           vlc
 
+          grim
+          slurp
+
           steam
 
           wl-clipboard
