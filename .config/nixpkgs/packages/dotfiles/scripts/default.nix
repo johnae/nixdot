@@ -497,9 +497,60 @@ let
     exec ${terminal}/bin/terminal -e ${edi}/bin/edi -e '(mu4e)'
   '';
 
-  update-user-nixpkgs = writeStrictShellScriptBin "update-user-nixpkgs" ''
+  update-user-nixpkg = writeStrictShellScriptBin "update-user-nixpkg" ''
+    metadata=''${1:-} ## the metadata.json file
+    if [ -z "$metadata" ]; then
+      echo "Please give me the metadata.json"
+      exit 1
+    fi
+    dir="$(dirname "$metadata")"
 
     RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    NEUTRAL='\033[0m'
+    BOLD='\033[1m'
+
+    neutral() { printf "%b" "$NEUTRAL"; }
+    start() { printf "%b" "$1"; }
+    clr() { start "$1""$2"; neutral; }
+    retries=2
+
+    rm -f "$dir"/metadata.tmp.json
+    # shellcheck disable=SC2046
+    set $(${jq}/bin/jq -r '.owner + " " + .repo' < "$metadata")
+    ## above sets $1 and $2
+
+    while true; do
+      clr "$NEUTRAL" "Prefetching $1/$2 master branch...\n"
+      ${nix-prefetch-github}/bin/nix-prefetch-github --rev master "$1" "$2" > "$dir"/metadata.tmp.json
+      clr "$BOLD" "Completed prefetching $1/$2...\n"
+
+      if [ ! -s "$dir"/metadata.tmp.json ]; then
+          clr "$RED" "ERROR: $dir/metadata.tmp.json is empty\n"
+          if [[ "$retries" -ne "0" ]]; then
+            clr "$GREEN" "   retrying $1/$2 $retries times\n"
+            retries=$((retries - 1))
+            continue
+          else
+            clr "$RED" "FAIL: $dir/metadata.tmp.json is empty even after retrying\n"
+            exit 1
+          fi
+          exit 1
+      fi
+      break
+    done
+
+    if ! ${jq}/bin/jq < "$dir"/metadata.tmp.json > /dev/null; then
+        clr "$RED" "ERROR: $dir/metadata.tmp.json is not valid json\n"
+        cat "$dir"/metadata.tmp.json
+        exit 1
+    fi
+
+  '';
+
+  update-user-nixpkgs = writeStrictShellScriptBin "update-user-nixpkgs" ''
+
+    #RED='\033[0;31m'
     GREEN='\033[0;32m'
     NEUTRAL='\033[0m'
     BOLD='\033[1m'
@@ -510,52 +561,9 @@ let
 
     echo Updating metadata.json files in ~/.config/nixpkgs/packages...
 
-    update_commands="$(mktemp -d /tmp/package-update-commands.XXXXXX)"
-    at_exit() {
-        rm -rf "$update_commands"
-    }
-    sig_at_exit() {
-        trap "" EXIT
-        at_exit
-    }
-    trap at_exit EXIT
-    trap sig_at_exit INT QUIT TERM
-
-    for pkg in ~/.config/nixpkgs/packages/*; do
-        if [ -d "$pkg" ] && [ -e "$pkg"/metadata.json ]; then
-            rm -f "$pkg"/metadata.tmp.json
-            # shellcheck disable=SC2046
-            set $(${jq}/bin/jq -r '.owner + " " + .repo' < "$pkg"/metadata.json)
-
-            cmdfile="$update_commands"/"$(basename "$pkg")".sh
-            cat<<EOF>"$cmdfile"
-            #!${bashInteractive}/bin/bash
-
-            neutral() { printf "%b" "\$NEUTRAL"; }
-            start() { printf "%b" "\$1"; }
-            clr() { start "\$1""\$2"; neutral; }
-
-            clr "$NEUTRAL" "Prefetching $1/$2 master branch...\n"
-            ${nix-prefetch-github}/bin/nix-prefetch-github --rev master "$1" "$2" > "$pkg"/metadata.tmp.json
-            clr "$BOLD" "Completed prefetching $1/$2\n"
-
-            if [ ! -s "$pkg"/metadata.tmp.json ]; then
-                clr "$RED" "ERROR: $pkg/metadata.tmp.json is empty\n"
-                exit 1
-            fi
-
-            if ! ${jq}/bin/jq < "$pkg"/metadata.tmp.json > /dev/null; then
-                clr "$RED" "ERROR: $pkg/metadata.tmp.json is not valid json\n"
-                cat "$pkg"/metadata.tmp.json
-                exit 1
-            fi
-    EOF
-            chmod +x "$cmdfile"
-        fi
-    done
-
-    ${findutils}/bin/find "$update_commands" -type f | \
-      ${findutils}/bin/xargs -I{} -n1 -P3 ${bashInteractive}/bin/bash {}
+    #for pkg in ~/.config/nixpkgs/packages/*; do
+    ${findutils}/bin/find ~/.config/nixpkgs/packages/ -type f -name metadata.json | \
+      ${findutils}/bin/xargs -I{} -n1 -P3 ${update-user-nixpkg}/bin/update-user-nixpkg {}
 
     pkgs_updated=0
     for pkg in ~/.config/nixpkgs/packages/*; do
@@ -592,6 +600,6 @@ in
               start-sway random-background random-name
               random-picsum-background
               add-wifi-network update-wifi-networks
-              update-user-nixpkgs update-wireguard-keys;
+              update-user-nixpkg update-user-nixpkgs update-wireguard-keys;
     };
   }
