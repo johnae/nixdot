@@ -522,7 +522,14 @@ let
 
     while true; do
       clr "$NEUTRAL" "Prefetching $1/$2 master branch...\n"
-      ${nix-prefetch-github}/bin/nix-prefetch-github --rev master "$1" "$2" > "$dir"/metadata.tmp.json
+      set +e
+      if ! ${nix-prefetch-github}/bin/nix-prefetch-github --rev master "$1" "$2" > "$dir"/metadata.tmp.json; then
+        clr "$RED" "ERROR: prefetch of $1/$2 failed\n"
+        clr "$GREEN" "   retrying $1/$2 $retries times\n"
+        retries=$((retries - 1))
+        continue
+      fi
+      set -e
       clr "$BOLD" "Completed prefetching $1/$2...\n"
 
       if [ ! -s "$dir"/metadata.tmp.json ]; then
