@@ -513,7 +513,8 @@ let
     neutral() { printf "%b" "$NEUTRAL"; }
     start() { printf "%b" "$1"; }
     clr() { start "$1""$2"; neutral; }
-    retries=2
+    max_retries=2
+    retries=$max_retries
 
     rm -f "$dir"/metadata.tmp.json
     # shellcheck disable=SC2046
@@ -525,8 +526,8 @@ let
       set +e
       if ! ${nix-prefetch-github}/bin/nix-prefetch-github --rev master "$1" "$2" > "$dir"/metadata.tmp.json; then
         clr "$RED" "ERROR: prefetch of $1/$2 failed\n"
-        clr "$GREEN" "   retrying $1/$2 $retries times\n"
         retries=$((retries - 1))
+        clr "$GREEN" "   $1/$2 - retry $((max_retries - retries)) of $max_retries\n"
         continue
       fi
       set -e
@@ -535,8 +536,8 @@ let
       if [ ! -s "$dir"/metadata.tmp.json ]; then
           clr "$RED" "ERROR: $dir/metadata.tmp.json is empty\n"
           if [[ "$retries" -ne "0" ]]; then
-            clr "$GREEN" "   retrying $1/$2 $retries times\n"
             retries=$((retries - 1))
+            clr "$GREEN" "   $1/$2 - retry $((max_retries - retries)) of $max_retries\n"
             continue
           else
             clr "$RED" "FAIL: $dir/metadata.tmp.json is empty even after retrying\n"
