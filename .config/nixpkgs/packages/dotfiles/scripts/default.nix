@@ -528,7 +528,12 @@ let
         clr "$RED" "ERROR: prefetch of $1/$2 failed\n"
         retries=$((retries - 1))
         clr "$GREEN" "   $1/$2 - retry $((max_retries - retries)) of $max_retries\n"
-        continue
+        if [[ "$retries" -ne "0" ]]; then
+          continue
+        else
+          clr "$RED" "FAIL: $1/$2 failed prefetch even after retrying\n"
+          exit 1
+        fi
       fi
       set -e
       clr "$BOLD" "Completed prefetching $1/$2...\n"
