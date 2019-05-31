@@ -78,7 +78,7 @@ let
       use_thin_strokes: true
 
     # Should display the render timer
-    render_timer: false
+    debug.render_timer: false
 
     background_opacity: ${backgroundOpacity}
 
@@ -299,7 +299,7 @@ let
       use_thin_strokes: true
 
     # Should display the render timer
-    render_timer: false
+    debug.render_timer: false
 
     # background_opacity: 0.95
 
@@ -520,7 +520,7 @@ let
       use_thin_strokes: true
 
     # Should display the render timer
-    render_timer: false
+    debug.render_timer: false
 
     background_opacity: 0.85
 

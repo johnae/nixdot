@@ -16,9 +16,10 @@
   libXi,
   libXrandr,
   libGL,
-  xclip,
+  python3,
   wayland,
-  libxkbcommon
+  libxkbcommon,
+  libxcb
 }:
 
 with rustPlatform;
@@ -37,19 +38,20 @@ let
   ] ++ lib.optionals stdenv.isLinux [
     wayland
     libxkbcommon
+    libxcb
   ];
 in buildRustPackage rec {
   pname = "alacritty";
-  version = "0.3.2";
+  version = "dea7a0890a724c50bc5767039f45a2e3d071ee1c";
 
   src = fetchFromGitHub {
     owner = "jwilm";
     repo = pname;
     rev = "v${version}";
-    sha256 = "16lhxfpwysd5ngw8yq76vbzjdmfzs9plsvairf768hnl290jcpbh";
+    sha256 = "16shwcfdfba5b3hm5cb4sj26kspxbgc3dw5z1dklx847mpcvfyqv";
   };
 
-  cargoSha256 = "02q5kkr0zygpm9i2hd1sr246f18pyia1lq9dwjagqk7d2x3xlc7p";
+  cargoSha256 = "1kdzpiq2341kcfrb3vlzaf17qfkwp8imildqr13h9ls9nbm170nv";
 
   nativeBuildInputs = [
     cmake
@@ -57,16 +59,12 @@ in buildRustPackage rec {
     pkgconfig
     ncurses
     gzip
+    python3
   ];
 
   buildInputs = rpathLibs;
 
   outputs = [ "out" "terminfo" ];
-
-  postPatch = ''
-    substituteInPlace copypasta/src/x11.rs \
-      --replace Command::new\(\"xclip\"\) Command::new\(\"${xclip}/bin/xclip\"\)
-  '';
 
   postBuild = lib.optionalString stdenv.isDarwin "make app";
 
