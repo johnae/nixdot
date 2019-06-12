@@ -567,6 +567,10 @@ Some simple modes for a few languages.
 (use-package swift-mode)
 #+END_SRC
 
+
+Language Server Protocol.
+See: https://github.com/emacs-lsp/lsp-mode
+
 #+BEGIN_SRC elisp :tangle default.el
 (use-package lsp-mode
   :defer 5
