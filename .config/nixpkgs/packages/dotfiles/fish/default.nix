@@ -1,4 +1,4 @@
-{stdenv, libdot, writeText, fzf, fetchFromGitHub, ...}:
+{stdenv, libdot, writeText, skim, fetchFromGitHub, ...}:
 
 let
 
@@ -199,15 +199,15 @@ let
      end
   '';
 
-  fzfConfig = writeText "fish_user_key_bindings.fish" ''
-     source ${fzf}/share/fzf/key-bindings.fish
+  skimConfig = writeText "fish_user_key_bindings.fish" ''
+     source ${skim}/share/skim/key-bindings.fish
      function fish_user_key_bindings
-       fzf_key_bindings
+       skim_key_bindings
 
-       function fzf-jump-to-project-widget -d "Show list of projects"
-         set -q FZF_TMUX_HEIGHT; or set FZF_TMUX_HEIGHT 40%
+       function skim-jump-to-project-widget -d "Show list of projects"
+         set -q SK_TMUX_HEIGHT; or set SK_TMUX_HEIGHT 40%
          begin
-           set -lx FZF_DEFAULT_OPTS "--height $FZF_TMUX_HEIGHT $FZF_DEFAULT_OPTS --tiebreak=index --bind=ctrl-r:toggle-sort $FZF_CTRL_R_OPTS +m"
+           set -lx SK_DEFAULT_OPTS "--height $SK_TMUX_HEIGHT $SK_DEFAULT_OPTS --tiebreak=index --bind=ctrl-r:toggle-sort $SK_CTRL_R_OPTS +m"
            set -lx dir (project-select ~/Development)
            if [ "$dir" != "" ]
              cd $dir
@@ -215,9 +215,9 @@ let
          end
          commandline -f repaint
        end
-       bind \cg fzf-jump-to-project-widget
+       bind \cg skim-jump-to-project-widget
        if bind -M insert > /dev/null 2>&1
-         bind -M insert \cg fzf-jump-to-project-widget
+         bind -M insert \cg skim-jump-to-project-widget
        end
 
        function kubectx-select -d "Select kubernetes cluster"
@@ -234,7 +234,7 @@ let
 
        function gcloud-project-select -d "Select gcloud project"
          if command -sq gcloud
-           set proj (gcloud projects list | tail -n +2 | awk '{print $1}' | fzf)
+         set proj (gcloud projects list | tail -n +2 | awk '{print $1}' | "${skim}"/bin/sk)
            gcloud config set project $proj
          else
            echo Missing command gcloud
@@ -903,7 +903,7 @@ in
       ${libdot.mkdir { path = ".config/fish/functions"; }}
       ${libdot.mkdir { path = ".config/fish/completions"; }}
       ${libdot.copy { path = config; to = ".config/fish/config.fish";  }}
-      ${libdot.copy { path = fzfConfig; to = ".config/fish/functions/fish_user_key_bindings.fish";  }}
+      ${libdot.copy { path = skimConfig; to = ".config/fish/functions/fish_user_key_bindings.fish";  }}
       ${libdot.copy { path = fishGitPrompt; to = ".config/fish/functions/__fish_git_prompt.fish"; }}
       ${libdot.copy { path = "${gcloudSrc}/functions/gcloud_sdk_argcomplete.fish"; to = ".config/fish/functions/gcloud_sdk_argcomplete.fish";  }}
       ${libdot.copy { path = "${kubectlCompletions}/kubectl.fish"; to = ".config/fish/completions/kubectl.fish"; }}
