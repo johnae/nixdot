@@ -1,4 +1,4 @@
-{ pkgs, fetchFromGitHub, glibc, pandoc, isync, imapnotify, git, wl-clipboard, mu, writeText, ... }:
+{ pkgs, fetchFromGitHub, fetchgit, glibc, pandoc, isync, imapnotify, git, wl-clipboard, mu, writeText, ... }:
 
 let
 
@@ -45,9 +45,21 @@ let
       src = fetchFromEmacsWiki { inherit name sha256; };
   };
 
-  jl-encrypt = compileEmacsWikiFile {
-    name = "jl-encrypt.el";
-    sha256 = "16i3rlfp3jxlqvndn8idylhmczync3gwmy8a019v29vyr48rnnr0";
+  jl-encrypt = emacsPackages.melpaBuild {
+    pname = "jl-encrypt";
+    version = "20190618";
+
+    src = fetchgit {
+      url = "https://gitlab.com/lechten/defaultencrypt.git";
+      rev = "ba07acc8e9fd692534c39c7cdad0a19dc0d897d9";
+      sha256 = "1ln7h1syx7yi7bqvirv90mk4rvwxg4zm1wvfcvhfh64s3hqrbfgl";
+    };
+
+    recipe = writeText "jl-encrypt-recipe" ''
+      (jl-encrypt :fetcher git
+                  :url "https://gitlab.com/lechten/defaultencrypt.git"
+                  :files (:defaults))
+    '';
   };
 
   ## use a nord-theme that works with 24-bit terminals
