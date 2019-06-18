@@ -66,6 +66,7 @@ self: super: {
           pinentry_gnome
 
           fzf
+          skim
           stunnel
           ncdu
           zip
