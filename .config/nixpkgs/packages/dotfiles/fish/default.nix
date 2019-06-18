@@ -50,7 +50,7 @@ let
      # emacs socket
      set -x EMACS_SERVER_FILE /run/user/1337/emacs1337/server
 
-     if test "$DISPLAY" = ""; and test (tty) = /dev/tty1; and test "$XDG_SESSION_TYPE" = ""
+     if test "$DISPLAY" = ""; and test (tty) = /dev/tty1; and test "$XDG_SESSION_TYPE" = "tty"
         exec start-sway
      end
 
