@@ -3,7 +3,7 @@
   lib,
   writeTextFile,
   writeStrictShellScriptBin,
-  libdot, sway, swayidle, swaylock, udev, gnupg,
+  libdot, sway, swayidle, swaylock, udev, gnupg, keybase,
   rofi, xorg, mako, persway, random-background, random-picsum-background,
   pulseaudioFull, coreutils, playerctl,
   spook, nix, edi, edit, emacs-server, gnome3,
@@ -351,6 +351,9 @@ let
     exec --no-startup-id ${gnome3.gnome_settings_daemon}/libexec/gsd-xsettings
 
     exec --no-startup-id ${emacs-server}/bin/emacs-server --force
+
+    # login to keybase
+    exec --no-startup-id ${keybase}/bin/keybase login
 
     ######### Bar
     bar {
