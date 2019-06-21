@@ -45,8 +45,6 @@ let
        echo 'Done'
      end
 
-     echo "UPDATESTARTUPTTY" | gpg-connect-agent > /dev/null 2>&1
-
      # emacs socket
      set -x EMACS_SERVER_FILE /run/user/1337/emacs1337/server
 
