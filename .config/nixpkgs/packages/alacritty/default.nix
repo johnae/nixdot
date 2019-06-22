@@ -42,13 +42,13 @@ let
   ];
 in buildRustPackage rec {
   pname = "alacritty";
-  version = "3950b5cb2f56e2d9daede84f8a9489ac0252508c";
+  version = "72088dafec44764630ac676440a0ec7e525a767b";
 
   src = fetchFromGitHub {
     owner = "jwilm";
     repo = pname;
     rev = version;
-    sha256 = "0m5vwdfqk7waabd0m2qx2knkaln1s9vpdnc85q2k57xlrv3ri4j0";
+    sha256 = "0y2xh7z6ryw0a2mq2zmqbiqqd5insdh0ryk0pfkqmaa9rg1vdr58";
   };
 
   cargoSha256 = "1rxb5ljgvn881jkxm8772kf815mmp08ci7sqmn2x1jwdcrphhxr1";
