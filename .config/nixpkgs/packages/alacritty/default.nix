@@ -40,18 +40,14 @@ let
     libxkbcommon
     libxcb
   ];
+
+  metadata = builtins.fromJSON (builtins.readFile ./metadata.json);
 in buildRustPackage rec {
-  pname = "alacritty";
-  version = "72088dafec44764630ac676440a0ec7e525a767b";
+  pname = metadata.repo;
+  version = metadata.rev;
 
-  src = fetchFromGitHub {
-    owner = "jwilm";
-    repo = pname;
-    rev = version;
-    sha256 = "0y2xh7z6ryw0a2mq2zmqbiqqd5insdh0ryk0pfkqmaa9rg1vdr58";
-  };
-
-  cargoSha256 = "1rxb5ljgvn881jkxm8772kf815mmp08ci7sqmn2x1jwdcrphhxr1";
+  src = fetchFromGitHub metadata;
+  cargoSha256 = "05diigig5rf58z3ppx28w6kkhzsrc4fv0irgydgf14dmr5pcv803";
 
   nativeBuildInputs = [
     cmake
