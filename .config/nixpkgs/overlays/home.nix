@@ -43,7 +43,8 @@ self: super: {
           wl-clipboard
 
           gnome3.gedit
-          gimp-with-plugins
+          #gimp-with-plugins
+          gimp
           inkscape
           evince
           imagemagick
