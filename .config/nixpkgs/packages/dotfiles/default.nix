@@ -105,8 +105,8 @@ let
     popd
     find ${home}/.nix-profile/dotfiles/ -type f | grep -v "set-permissions.sh" | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     echo $latestVersion > $root/.dotfiles_version
-    swaymsg reload || true
-    ${pkgs.killall}/bin/killall -s HUP $(${pkgs.coreutils}/bin/basename $SHELL) 2>/dev/null || true
+    #swaymsg reload || true
+    #${pkgs.killall}/bin/killall -s HUP $(${pkgs.coreutils}/bin/basename $SHELL) 2>/dev/null || true
   '';
 
 in
