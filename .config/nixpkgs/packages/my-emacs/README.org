@@ -561,12 +561,27 @@ Some simple modes for a few languages.
   (add-hook 'rust-mode-hook 'cargo-minor-mode)
 )
 
+(defun my-reset-cargo-custom-path ()
+  "Always reevaluate cargo bin path (so direnv + nix works nicely)."
+  (setq cargo-process--custom-path-to-bin (executable-find "cargo"))
+)
+(add-hook 'post-command-hook 'my-reset-cargo-custom-path)
+
 #+END_SRC
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package swift-mode)
 #+END_SRC
 
+Fix executable-find so it uses direnvs environment.
+
+#+BEGIN_SRC elisp :tangle default.el
+(defun my-executable-find (orig-fun &rest args)
+  (direnv-update-environment default-directory)
+  (apply orig-fun args))
+
+(advice-add 'executable-find :around #'my-executable-find)
+#+END_SRC
 
 Language Server Protocol.
 See: https://github.com/emacs-lsp/lsp-mode
@@ -574,8 +589,14 @@ See: https://github.com/emacs-lsp/lsp-mode
 #+BEGIN_SRC elisp :tangle default.el
 (use-package lsp-mode
   :defer 5
-)
-(add-hook 'prog-mode-hook #'lsp)
+ )
+
+(defun my-lsp ()
+  "Ensures environment is updated before enabling lsp mode."
+  (direnv-update-environment default-directory)
+  (lsp))
+
+(add-hook 'prog-mode-hook 'my-lsp)
 
 (use-package lsp-ui
   :after lsp-mode
@@ -722,7 +743,9 @@ This allows me to toggle between snake case, camel case etc.
   (global-flycheck-mode)
   (setq flycheck-idle-change-delay 2.0)
   ;; (setq flycheck-check-syntax-automatically '(mode-enabled save))
-  (add-hook 'flycheck-before-syntax-check-hook 'direnv-update-environment)
+  ;; since we wrapped executable-find this will run direnv-update-environment before finding executable
+  (setq flycheck-executable-find
+        (lambda (cmd) (executable-find cmd)))
 )
 #+END_SRC
 
