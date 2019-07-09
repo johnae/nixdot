@@ -90,47 +90,6 @@
         ];
       }
 
-      rec {
-        imapaccount = rec {
-          imapaccount = "insane-mail";
-          host = "mail.insane.se";
-          user = "john@insane.se";
-          passcmd = "${pkgs.gnupg}/bin/gpg2 -q --for-your-eyes-only --no-tty -d " +
-                    "~/.password-store/emacs/auth/authinfo.gpg | " +
-                    "${pkgs.gawk}/bin/awk '/machine mail.insane.se login ${user} port 993/ {print $NF}'";
-          ssltype = "IMAPS";
-          certificatefile = "/etc/ssl/certs/ca-certificates.crt";
-          pipelinedepth = 50;
-        };
-        imapstore = {
-          imapstore = "${imapaccount.imapaccount}-remote";
-          account = imapaccount.imapaccount;
-        };
-        maildirstore = rec {
-          maildirstore = "${imapaccount.imapaccount}-local";
-          subfolders = "Verbatim";
-          path = "~/.mail/${imapaccount.imapaccount}/";
-          inbox = "${path}inbox";
-        };
-        channels = [
-          {
-            channel = imapaccount.imapaccount;
-            master = ":${imapstore.imapstore}:";
-            slave = ":${maildirstore.maildirstore}:";
-            patterns = "*";
-            create = "Both";
-            expunge = "Both";
-            syncstate = "*";
-            copyarrivaldate = "yes";
-          }
-        ];
-        groups = [
-          {
-            group = imapaccount.imapaccount;
-            channels = builtins.map (x: x.channel) channels;
-          }
-        ];
-      }
     ];
   };
 
