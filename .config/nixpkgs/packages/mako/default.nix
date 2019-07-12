@@ -1,5 +1,5 @@
-{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig, wayland,
-  wayland-protocols, dbus_libs, pango, cairo, git, systemd
+{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig, wayland, scdoc,
+  wayland-protocols, gdk_pixbuf, dbus_libs, pango, cairo, git, systemd
 }:
 
 let
@@ -15,10 +15,11 @@ in
     src = fetchFromGitHub metadata;
 
     nativeBuildInputs = [
-      meson ninja pkgconfig git
+      meson ninja pkgconfig git scdoc
     ];
     buildInputs = [
-      wayland wayland-protocols dbus_libs pango cairo systemd
+      wayland wayland-protocols dbus_libs
+      pango cairo systemd gdk_pixbuf
     ];
 
     meta = with stdenv.lib; {

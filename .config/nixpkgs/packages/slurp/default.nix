@@ -1,5 +1,5 @@
 { stdenv, fetchFromGitHub, meson, ninja, pkgconfig, wayland,
-  wayland-protocols, cairo, libjpeg, git, systemd
+  wayland-protocols, cairo, libjpeg, git, systemd, scdoc
 }:
 
 let
@@ -15,7 +15,7 @@ in
     src = fetchFromGitHub metadata;
 
     nativeBuildInputs = [
-      meson ninja pkgconfig git
+      meson ninja pkgconfig git scdoc
     ];
     buildInputs = [
       wayland wayland-protocols cairo libjpeg systemd
