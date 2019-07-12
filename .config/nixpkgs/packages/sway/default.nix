@@ -1,6 +1,6 @@
 { stdenv, fetchFromGitHub
 , meson, ninja
-, pkgconfig, scdoc
+, pkgconfig, scdoc, freerdp
 , wayland, wayland-protocols, libxkbcommon
 , pcre, json_c, dbus, pango, cairo, libinput
 , libcap, pam, gdk_pixbuf, libevdev, wlroots
@@ -25,7 +25,7 @@ in
 
     buildInputs = [
       wayland wayland-protocols libxkbcommon pcre json_c dbus
-      pango cairo libinput libcap pam gdk_pixbuf
+      pango cairo libinput libcap pam gdk_pixbuf freerdp
       wlroots libevdev scdoc
     ];
 
