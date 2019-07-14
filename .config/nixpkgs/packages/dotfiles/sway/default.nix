@@ -70,12 +70,17 @@ let
   notification-daemon = writeStrictShellScriptBin "notification-daemon" ''
     exec ${mako}/bin/mako --font ${makoConfig.font} \
                           --background-color "${makoConfig.backgroundColor}" \
+                          --text-color "${makoConfig.textColor}" \
                           --border-size ${makoConfig.borderSize} \
+                          --border-radius ${makoConfig.borderRadius} \
+                          --icons ${makoConfig.icons} \
+                          --icon-path ${makoConfig.iconPath} \
+                          --markup ${makoConfig.markup} \
+                          --actions ${makoConfig.actions} \
                           --default-timeout ${makoConfig.defaultTimeout} \
                           --padding ${makoConfig.padding} \
                           --height ${makoConfig.height} \
-                          --width ${makoConfig.width} \
-                          --markup 1
+                          --width ${makoConfig.width}
   '';
 
   swaybar-status = writeStrictShellScriptBin "swaybar-status" ''

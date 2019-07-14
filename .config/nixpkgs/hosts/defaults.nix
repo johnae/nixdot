@@ -225,7 +225,13 @@
     makoConfig = {
       font = "Roboto";
       backgroundColor = "#000021DD";
+      textColor = "#FFFFFFFF";
       borderSize = "0";
+      borderRadius = "15";
+      icons = "1";
+      iconPath = "${pkgs.moka-icon-theme}/share/icons/Moka";
+      markup = "1";
+      actions = "1";
       defaultTimeout = "3000"; ## ms
       padding = "20";
       height = "200";
