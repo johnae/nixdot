@@ -1,4 +1,4 @@
-{stdenv, libdot, writeText, skim, fetchFromGitHub, ...}:
+{stdenv, libdot, writeText, skim, lsd, fetchFromGitHub, ...}:
 
 let
 
@@ -74,6 +74,7 @@ let
      ## manage home
      alias home="env GIT_DIR=$HOME/.cfg GIT_WORK_TREE=$HOME git"
      alias untracked="git ls-files --others --exclude-standard"
+     alias ls="${lsd}/bin/lsd"
 
      fish_vi_key_bindings ^ /dev/null
 
