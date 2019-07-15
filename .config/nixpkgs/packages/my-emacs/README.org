@@ -1017,16 +1017,18 @@ Mu4e alert. For notifications on new mail.
 (use-package mu4e-alert
     :after mu4e
     :init
-    (mu4e-alert-enable-mode-line-display)
-    (mu4e-alert-enable-notifications)
     :config
+    (setq mu4e-alert-icon "mail-generic")
     (mu4e-alert-set-default-style 'libnotify)
+    ;;(alert-add-rule :category "mu4e-alert" :icon "mail-generic" :continue t)
     (setq mu4e-alert-email-notification-types '(subjects))
     (setq mu4e-alert-interesting-mail-query
       (concat
        "date:today..now"
        " AND flag:unread"
        " AND NOT (" uninteresting-mail-query ") "))
+    (mu4e-alert-enable-mode-line-display)
+    (mu4e-alert-enable-notifications)
 )
 #+END_SRC
 
