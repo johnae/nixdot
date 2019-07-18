@@ -236,6 +236,7 @@
       padding = "20";
       height = "200";
       width = "500";
+      layer = "overlay";
     };
 
     swaylockBackground = "~/Pictures/lockscreen.jpg";

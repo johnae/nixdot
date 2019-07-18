@@ -80,7 +80,8 @@ let
                           --default-timeout ${makoConfig.defaultTimeout} \
                           --padding ${makoConfig.padding} \
                           --height ${makoConfig.height} \
-                          --width ${makoConfig.width}
+                          --width ${makoConfig.width} \
+                          --layer ${makoConfig.layer}
   '';
 
   swaybar-status = writeStrictShellScriptBin "swaybar-status" ''
