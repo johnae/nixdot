@@ -500,6 +500,10 @@ and ofc
 (use-package direnv
   :config
   (direnv-mode)
+  ;;(add-hook 'before-hack-local-variables-hook 'direnv-update-environment)
+  ;;(add-hook 'change-major-mode-hook 'direnv-update-environment)
+  ;;(add-hook 'find-file-hook 'direnv-update-environment)
+  ;;(add-hook 'flycheck-before-syntax-check-hook 'direnv-update-environment)
   (add-to-list 'direnv-non-file-modes 'eshell-mode)
 )
 #+END_SRC
@@ -561,27 +565,12 @@ Some simple modes for a few languages.
   (add-hook 'rust-mode-hook 'cargo-minor-mode)
 )
 
-(defun my-reset-cargo-custom-path ()
-  "Always reevaluate cargo bin path (so direnv + nix works nicely)."
-  (setq cargo-process--custom-path-to-bin (executable-find "cargo"))
-)
-(add-hook 'post-command-hook 'my-reset-cargo-custom-path)
-
 #+END_SRC
 
 #+BEGIN_SRC elisp :tangle default.el
 (use-package swift-mode)
 #+END_SRC
 
-Fix executable-find so it uses direnvs environment.
-
-#+BEGIN_SRC elisp :tangle default.el
-(defun my-executable-find (orig-fun &rest args)
-  (direnv-update-environment default-directory)
-  (apply orig-fun args))
-
-(advice-add 'executable-find :around #'my-executable-find)
-#+END_SRC
 
 Language Server Protocol.
 See: https://github.com/emacs-lsp/lsp-mode
@@ -589,14 +578,9 @@ See: https://github.com/emacs-lsp/lsp-mode
 #+BEGIN_SRC elisp :tangle default.el
 (use-package lsp-mode
   :defer 5
- )
-
-(defun my-lsp ()
-  "Ensures environment is updated before enabling lsp mode."
-  (direnv-update-environment default-directory)
-  (lsp))
-
-(add-hook 'prog-mode-hook 'my-lsp)
+)
+(add-hook 'prog-mode-hook #'lsp)
+(add-hook 'prog-mode-hook 'direnv-update-environment)
 
 (use-package lsp-ui
   :after lsp-mode
@@ -609,9 +593,6 @@ See: https://github.com/emacs-lsp/lsp-mode
   :config
   (push 'company-lsp company-backends)
 )
-
-(use-package ra-emacs-lsp
-  :after lsp-mode)
 #+END_SRC
 
 
@@ -746,9 +727,8 @@ This allows me to toggle between snake case, camel case etc.
   (global-flycheck-mode)
   (setq flycheck-idle-change-delay 2.0)
   ;; (setq flycheck-check-syntax-automatically '(mode-enabled save))
-  ;; since we wrapped executable-find this will run direnv-update-environment before finding executable
   (setq flycheck-executable-find
-        (lambda (cmd) (executable-find cmd)))
+        (lambda (cmd) (direnv-update-environment default-directory) (executable-find cmd))))
 )
 #+END_SRC
 
@@ -1020,18 +1000,16 @@ Mu4e alert. For notifications on new mail.
 (use-package mu4e-alert
     :after mu4e
     :init
+    (mu4e-alert-enable-mode-line-display)
+    (mu4e-alert-enable-notifications)
     :config
-    (setq mu4e-alert-icon "mail-generic")
     (mu4e-alert-set-default-style 'libnotify)
-    ;;(alert-add-rule :category "mu4e-alert" :icon "mail-generic" :continue t)
     (setq mu4e-alert-email-notification-types '(subjects))
     (setq mu4e-alert-interesting-mail-query
       (concat
        "date:today..now"
        " AND flag:unread"
        " AND NOT (" uninteresting-mail-query ") "))
-    (mu4e-alert-enable-mode-line-display)
-    (mu4e-alert-enable-notifications)
 )
 #+END_SRC
 

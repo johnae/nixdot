@@ -79,6 +79,22 @@ let
     '';
   };
 
+  ra-emacs-lsp = emacsPackages.melpaBuild {
+    pname = "ra-emacs-lsp";
+    version = "20190720";
+    src = fetchFromGitHub {
+      owner = "rust-analyzer";
+      repo = "rust-analyzer";
+      rev = "dc7cec8cf4badddb54be03cfa187567b436dd82a";
+      sha256 = "086hnxy0yp08q4qmspavjh1v463cqlwj4kkgyscnhsj9vs6jlwz4";
+    };
+
+    recipe = writeText "ra-emacs-lsp-recipe" ''
+      (ra-emacs-lsp :repo "rust-analyzer/rust-analyzer" :fetcher github
+                 :files ("editors/emacs/ra-emacs-lsp.el"))
+    '';
+  };
+
   ## use up-to-date nix-mode
   nix-mode = emacsPackages.melpaBuild {
     pname = "nix-mode";
@@ -305,7 +321,7 @@ in
     poly-org
 
     # Rust
-    rust-mode cargo flycheck-rust racer
+    rust-mode cargo flycheck-rust racer ra-emacs-lsp
 
     # Nix
     # nix-buffer nixos-options company-nixos-options nix-sandbox
