@@ -10,6 +10,11 @@ let
   };
 
   config = writeText "tmux.conf" ''
+    ## 24-bit please
+    set-option -g default-terminal "xterm-256color"
+    set-option -ga terminal-overrides ",*256col*:Tc"
+
+    set-option -sg escape-time 20
     set-option -g prefix C-a
     set-option -g mode-keys vi
     set-option -g mouse on
