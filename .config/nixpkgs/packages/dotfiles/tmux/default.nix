@@ -20,6 +20,7 @@ let
     set-option -g mouse on
     set-option -g set-clipboard on
 
+    unbind C-b
     unbind C-a
     bind C-a send-prefix
 
