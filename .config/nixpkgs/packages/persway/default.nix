@@ -23,7 +23,7 @@ in
       sha256 = metadata.sha256;
     };
 
-    cargoSha256 = "0zr683mqvk70mdgjh5jfvqpi6spf8s3f2w97vx63myhfy0j3slwm";
+    cargoSha256 = "13bc2ir26cgkdw268izzs86g4il91mnhl50angwx978hpq3r7i51";
 
     outputs = [ "out" ];
 
