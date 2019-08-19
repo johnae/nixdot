@@ -5,8 +5,8 @@ let
   nordTheme = fetchFromGitHub {
     owner = "arcticicestudio";
     repo = "nord-tmux";
-    rev = "0f3d20ff54548cea1ce96893a9a3757d48e851ef";
-    sha256 = "0j1ks9kiiby7cpik24dqx1mi5nccad0gj5gfwb5fd7hjfr46ml81";
+    rev = "b0fd5838dbd5f3cf55eefd83ac84f3f9ac076610";
+    sha256 = "14xhh49izvjw4ycwq5gx4if7a0bcnvgsf3irywc3qps6jjcf5ymk";
   };
 
   config = writeText "tmux.conf" ''
