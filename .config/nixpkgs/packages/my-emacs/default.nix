@@ -313,7 +313,6 @@ in
     org-ref
     org-bullets
     org-tree-slide # presentations
-    org-wild-notifier # notifications for TODO:s
 
     # polymode allows more than 1 major mode in a buffer basically
     polymode
