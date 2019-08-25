@@ -45,6 +45,7 @@ let
 in buildRustPackage rec {
   pname = metadata.repo;
   version = metadata.rev;
+  doCheck = false;
 
   src = fetchFromGitHub metadata;
   cargoSha256 = "057id473q7wh7fva84q84a1gd66vvx6mlnn1gjhvx1wxvdjkggsg";
