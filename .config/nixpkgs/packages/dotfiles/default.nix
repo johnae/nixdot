@@ -13,15 +13,18 @@ let
   scripts = (with libdot; pkgs.callPackage ./scripts {
           browser = "${pkgs.latest.firefox-nightly-bin}/bin/firefox";
           evolution = pkgs.gnome3.evolution;
-          inherit settings writeStrictShellScriptBin;
+          inherit libdot settings writeStrictShellScriptBin;
           }).paths;
+
+
+  i3statusconf = pkgs.callPackage ./i3status-rust { inherit libdot settings; };
 
   swaydot = with scripts; with libdot; pkgs.callPackage ./sway {
         inherit libdot browse launch edi edit random-background
                 random-picsum-background emacs-server terminal
                 fzf-window fzf-run fzf-passmenu sk-window sk-run
                 sk-passmenu rofi-passmenu rename-workspace screenshot
-                writeStrictShellScriptBin settings;
+                writeStrictShellScriptBin settings i3statusconf;
   };
 
   termiteDot = pkgs.callPackage ./termite { inherit libdot settings; };
@@ -39,13 +42,14 @@ let
   mbsyncDot = pkgs.callPackage ./mbsync { inherit libdot settings; };
   imapnotifyDot = with scripts; pkgs.callPackage ./imapnotify { inherit libdot settings emacs-run; };
   waybarDot = pkgs.callPackage ./waybar { inherit libdot settings; };
+  spotifydDot = pkgs.callPackage ./spotifyd { inherit libdot settings; };
 
   dotfiles = [ gnupgDot fishDot swaydot
                alacrittyDot sshDot gitDot
                pulseDot gsimplecalDot tmuxDot
                mimeappsDot yubicoDot termiteDot
-               xresourcesDot mbsyncDot
-               imapnotifyDot waybarDot
+               xresourcesDot mbsyncDot imapnotifyDot
+               waybarDot spotifydDot
              ];
 
   home = builtins.getEnv "HOME";

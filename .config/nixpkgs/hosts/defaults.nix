@@ -1,8 +1,69 @@
 {stdenv, lib, pkgs, ...}:
 
+let
+  meta = import /etc/nixos/meta.nix;
+  theme = {
+    base00 = "#2E3440"; # polar night
+    base01 = "#3B4252"; # polar night
+    base02 = "#434C5E"; # polar night
+    base03 = "#4C566A"; # polar night
+    base04 = "#D8DEE9"; # snow storm
+    base05 = "#E5E9F0"; # snow storm
+    base06 = "#ECEFF4"; # snow storm
+    base07 = "#8FBCBB"; # frost
+    base08 = "#88C0D0"; # frost
+    base09 = "#81A1C1"; # frost
+    base0A = "#5E81AC"; # frost
+    base0B = "#BF616A"; # aurora
+    base0C = "#D08770"; # aurora
+    base0D = "#EBCB8B"; # aurora
+    base0E = "#A3BE8C"; # aurora
+    base0F = "#B48EAD"; # aurora
+  };
+  cnotation = hex: builtins.replaceStrings ["#"] ["0x"] hex;
+in
 {
 
+  inherit theme;
   default-slackws = "karmalicious";
+
+  program-symbols = rec {
+    firefox = "";
+    chrome = "";
+    browse = firefox;
+    terminal = "";
+    term = terminal;
+    alacritty = terminal;
+    termite = terminal;
+    music = "";
+    spotify = music;
+    spotifyweb = music;
+    editor = "";
+    edit = editor;
+    edi = editor;
+    slack = "";
+    slacks = slack;
+    inbox = "";
+    mail = inbox;
+    image = "";
+    gimp = image;
+    astronaut = "";
+    nautilus = astronaut;
+    gedit = "";
+  };
+
+  spotifyd = rec {
+    username = "binx";
+    password_cmd = "${pkgs.pass}/bin/pass show web/spotify.com/${username}";
+    backend = "pulseaudio";
+    mixer = "PCM";
+    volume-control = "alsa";
+    device_name = meta.hostName;
+    bitrate = 320;
+    cache_path = "${builtins.getEnv "HOME"}/.cache/spotifyd";
+    volume-normalisation = true;
+    normalisation-pregain = "-10";
+  };
 
   mbsync = {
     accounts = [
@@ -158,6 +219,7 @@
     fontSize = "14.0";
     largeFontSize = "28.0";
     backgroundOpacity = "0.95";
+
     colors = ''
       # Copyright (c) 2017-present Arctic Ice Studio <development@arcticicestudio.com>
       # Copyright (c) 2017-present Sven Greb <code@svengreb.de>
@@ -173,29 +235,29 @@
 
       colors:
         primary:
-          background: '0x00374e'
-          foreground: '0xD8DEE9'
+          background: '0x00374e' ## special - not part of theme
+          foreground: '${cnotation theme.base04}'
         cursor:
-          text: '0x2E3440'
-          cursor: '0xD8DEE9'
+          text: '${cnotation theme.base00}'
+          cursor: '${cnotation theme.base04}'
         normal:
-          black: '0x3B4252'
-          red: '0xBF616A'
-          green: '0xA3BE8C'
-          yellow: '0xEBCB8B'
-          blue: '0x81A1C1'
-          magenta: '0xB48EAD'
-          cyan: '0x88C0D0'
-          white: '0xE5E9F0'
+          black: '${cnotation theme.base01}'
+          red: '${cnotation theme.base0B}'
+          green: '${cnotation theme.base0E}'
+          yellow: '${cnotation theme.base0D}'
+          blue: '${cnotation theme.base09}'
+          magenta: '${cnotation theme.base0F}'
+          cyan: '${cnotation theme.base08}'
+          white: '${cnotation theme.base05}'
         bright:
-          black: '0x4C566A'
-          red: '0xBF616A'
-          green: '0xA3BE8C'
-          yellow: '0xEBCB8B'
-          blue: '0x81A1C1'
-          magenta: '0xB48EAD'
-          cyan: '0x8FBCBB'
-          white: '0xECEFF4'    '';
+          black: '${cnotation theme.base03}'
+          red: '${cnotation theme.base0B}'
+          green: '${cnotation theme.base0E}'
+          yellow: '${cnotation theme.base0D}'
+          blue: '${cnotation theme.base09}'
+          magenta: '${cnotation theme.base0F}'
+          cyan: '${cnotation theme.base07}'
+          white: '${cnotation theme.base06}'    '';
   };
 
   xresources = {
@@ -261,35 +323,77 @@
       };
     };
 
-    bgColor = "#4A90E2FF";
-    inactiveBgColor = "#000000FF";
-    textColor = "#fdf6e3";
-    inactiveTextColor = "#839496";
-    urgentBgColor = "#d24939FF";
-    selectedColor = "#9999FF";
-    indicatorColor = "#00ff00";
+    to_client_config = colors: builtins.concatStringsSep "   " colors;
+
+    client_focused_bg = "${theme.base0A}";
+    client_focused_border = client_focused_bg;
+    client_focused_indicator = client_focused_bg;
+    client_focused_text = theme.base06;
+    client_focused = to_client_config [
+                                        client_focused_border
+                                        client_focused_bg
+                                        client_focused_text
+                                        client_focused_indicator
+                                        client_focused_indicator
+                                      ];
+
+    client_focused_inactive_bg = "${theme.base00}";
+    client_focused_inactive_border = client_focused_inactive_bg;
+    client_focused_inactive_indicator = client_focused_inactive_bg;
+    client_focused_inactive_text = theme.base07;
+    client_focused_inactive = to_client_config [
+                                        client_focused_inactive_border
+                                        client_focused_inactive_bg
+                                        client_focused_inactive_text
+                                        client_focused_inactive_indicator
+                                        client_focused_inactive_indicator
+                                      ];
+
+    client_unfocused_bg = "${theme.base00}";
+    client_unfocused_border = client_unfocused_bg;
+    client_unfocused_indicator = client_unfocused_bg;
+    client_unfocused_text = theme.base07;
+    client_unfocused = to_client_config [
+                                        client_unfocused_border
+                                        client_unfocused_bg
+                                        client_unfocused_text
+                                        client_unfocused_indicator
+                                        client_unfocused_indicator
+                                      ];
+
+    client_urgent_bg = "${theme.base0B}";
+    client_urgent_border = client_urgent_bg;
+    client_urgent_indicator = client_urgent_bg;
+    client_urgent_text = theme.base05;
+    client_urgent = to_client_config [
+                                        client_urgent_border
+                                        client_urgent_bg
+                                        client_urgent_text
+                                        client_urgent_indicator
+                                        client_urgent_indicator
+                                      ];
 
     bar = rec {
       height = "25";
-      bgColor = "#222244CD";
-      statuslineColor = "#ffffff";
-      separatorColor = "#666666";
+      bgColor = "${theme.base00}DD";
+      statuslineColor = theme.base08;
+      separatorColor = theme.base01;
 
-      focusedWorkspaceColorBorder = bgColor;
-      focusedWorkspaceColorBackground = bgColor;
-      focusedWorkspaceColorText = "#fdf6e3";
+      focusedWorkspaceColorBorder = theme.base08;
+      focusedWorkspaceColorBackground = theme.base08;
+      focusedWorkspaceColorText = theme.base00;
 
-      activeWorkspaceColorBorder = bgColor;
-      activeWorkspaceColorBackground = bgColor;
-      activeWorkspaceColorText = "#e8e375";
+      activeWorkspaceColorBorder = "${theme.base03}DD";
+      activeWorkspaceColorBackground = "${theme.base03}DD";
+      activeWorkspaceColorText = theme.base00;
 
-      inactiveWorkspaceColorBorder = bgColor;
-      inactiveWorkspaceColorBackground = bgColor;
-      inactiveWorkspaceColorText = "#aaaaaa";
+      inactiveWorkspaceColorBorder = "${theme.base01}DD";
+      inactiveWorkspaceColorBackground = "${theme.base01}DD";
+      inactiveWorkspaceColorText = theme.base05;
 
-      urgentWorkspaceColorBorder = bgColor;
-      urgentWorkspaceColorBackground = bgColor;
-      urgentWorkspaceColorText = "#e8e375";
+      urgentWorkspaceColorBorder = theme.base0F;
+      urgentWorkspaceColorBackground = theme.base0F;
+      urgentWorkspaceColorText = theme.base00;
     };
 
   };

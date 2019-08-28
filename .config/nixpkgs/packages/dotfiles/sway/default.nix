@@ -5,13 +5,13 @@
   writeStrictShellScriptBin,
   libdot, sway, swayidle, swaylock, udev, gnupg, keybase,
   rofi, xorg, mako, persway, random-background, random-picsum-background,
-  pulseaudioFull, coreutils, playerctl,
-  spook, nix, edi, edit, emacs-server, gnome3,
+  pulseaudioFull, coreutils, playerctl, i3status-rust, i3statusconf,
+  nix, edi, edit, emacs-server, gnome3, spotifyd,
   terminal, termite, alacritty, fzf-window, fzf-run,
   fzf-passmenu, sk-window, sk-run, sk-passmenu,
   launch, rename-workspace, killall, procps,
   screenshot, settings, browse, rofi-passmenu,
-  ...
+ ...
 }:
 
 
@@ -38,7 +38,6 @@ let
   pactlPath = "${pulseaudioFull}/bin/pactl";
   killPath = "${coreutils}/bin/kill";
   catPath = "${coreutils}/bin/cat";
-  spookPath = "${spook}/bin/spook";
   nixShellPath = "${nix}/bin/nix-shell";
   swayMsgPath = "${sway}/bin/swaymsg";
   playerctlPath = "${playerctl}/bin/playerctl";
@@ -85,9 +84,7 @@ let
   '';
 
   swaybar-status = writeStrictShellScriptBin "swaybar-status" ''
-    exec ${nixShellPath} --command "${spookPath} \
-         -p $XDG_RUNTIME_DIR/moonbar.pid -r 0 -w ~/Development/moonbar" \
-         ~/Development/moonbar/shell.nix
+    exec ${i3status-rust}/bin/i3status-rs ${i3statusconf}
   '';
 
   ## because the delay when fetching from internet seems to
@@ -108,11 +105,11 @@ let
     ######## Settings etc
     font ${font}
 
-    for_window [class="fzf-window"] floating enable, resize set width 100ppt height 110ppt
-    for_window [title="fzf-window"] floating enable, resize set width 100ppt height 110ppt
-    for_window [class="sk-window"] floating enable, resize set width 100ppt height 110ppt
-    for_window [title="sk-window"] floating enable, resize set width 100ppt height 110ppt
-    for_window [app_id="sk-window"] floating enable, resize set width 100ppt height 110ppt
+    for_window [class="fzf-window"] floating enable, resize set width 100ppt height 120ppt
+    for_window [title="fzf-window"] floating enable, resize set width 100ppt height 120ppt
+    for_window [class="sk-window"] floating enable, resize set width 100ppt height 120ppt
+    for_window [title="sk-window"] floating enable, resize set width 100ppt height 120ppt
+    for_window [app_id="sk-window"] floating enable, resize set width 100ppt height 120ppt
     for_window [class="input-window"] floating enable
     for_window [class="gcr-prompter"] floating enable
     no_focus [window_role="browser"]
@@ -142,38 +139,30 @@ let
      '')}
 
     # class                   border             background text         indicator          child_border
-    client.focused            ${bgColor} ${bgColor} ${textColor} ${indicatorColor}  ${indicatorColor}
-    client.focused_inactive   ${inactiveBgColor} ${inactiveBgColor} ${inactiveTextColor} ${indicatorColor} ${indicatorColor}
-    client.unfocused          ${inactiveBgColor} ${inactiveBgColor} ${inactiveTextColor} ${indicatorColor} ${indicatorColor}
-    client.urgent             ${urgentBgColor} ${urgentBgColor} ${textColor} ${indicatorColor} ${indicatorColor}
+    client.focused            ${client_focused}
+    client.focused_inactive   ${client_focused_inactive}
+    client.unfocused          ${client_unfocused}
+    client.urgent             ${client_urgent}
 
     ######## Key bindings
 
     # lock the screen
     bindsym Control+${mod}+l exec ${swaylock}/bin/swaylock -f ${swaylockArgs}
 
-    # take a screenshot (stored in ~/Pictures/screenshots as a png)
-    # bindsym ${mod}+x exec ${screenshot}/bin/screenshot
-
     # start a terminal
-    bindsym ${mod}+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal
+    bindsym ${mod}+Return exec _USE_NAME= ${launch}/bin/launch ${terminal}/bin/terminal
 
     # start an emacs shell
     bindsym ${mod}+Shift+Return exec ${alacritty}/bin/alacritty -t eshell -e ${edi}/bin/edi -e '(jae/eshell-new)'
 
-    # start a light + large font terminal
-    # bindsym ${mod}+Control+Return exec _SET_WS_NAME=y _USE_NAME=term ${launch}/bin/launch ${terminal}/bin/terminal-large
-
     # use sk as a program launcher
     bindsym ${mod}+d exec ${sk-window}/bin/sk-window ${sk-run}/bin/sk-run
-    # bindsym ${mod}+d exec _SET_WS_NAME=y ${rofiPath} -show run -run-command "${launch}/bin/launch {cmd}"
 
     # use rofi for switching between windows
     # bindsym ${mod}+Tab exec ${rofiPath} -show window -matching normal
 
     # passmenu
     bindsym ${mod}+minus exec ${sk-window}/bin/sk-window ${sk-passmenu}/bin/sk-passmenu
-    # bindsym ${mod}+minus exec ${rofi-passmenu}/bin/rofi-passmenu
 
     # passmenu pass only
     bindsym ${mod}+Shift+minus exec passonly=y ${sk-window}/bin/sk-window ${sk-passmenu}/bin/sk-passmenu
@@ -188,12 +177,10 @@ let
     bindsym ${mod}+b exec ${sway-background}/bin/sway-background
 
     # (new empty emacs window really - starts server if not running)
-    # unfortuately gui emacs on wayland is blurry if screen is scaled (eg. hidpi)
-    # bindsym ${mod}+Shift+e exec ${edit}/bin/edit -e '(insane-new-empty-buffer)'
-    bindsym ${mod}+Shift+e exec _SET_WS_NAME=y _USE_NAME=edit ${launch}/bin/launch ${alacritty}/bin/alacritty -t edit -e "${edi}/bin/edi"
+    bindsym ${mod}+Shift+e exec _USE_NAME= ${launch}/bin/launch ${alacritty}/bin/alacritty -t edit -e "${edi}/bin/edi"
 
     # new browser
-    bindsym ${mod}+Shift+b exec ${browse}/bin/browse
+    bindsym ${mod}+Shift+b exec _USE_NAME= ${launch}/bin/launch ${browse}/bin/browse
 
     # rename workspace
     bindsym ${mod}+n exec --no-startup-id ${rofiPath} -no-fullscreen -width 50 -lines 1 -padding 10 -show "Rename workspace" -modi "Rename workspace":${rename-workspace}/bin/rename-workspace
@@ -353,6 +340,8 @@ let
     exec ${notification-daemon}/bin/notification-daemon
 
     exec ${persway}/bin/persway
+
+    exec ${spotifyd}/bin/spotifyd --no-daemon
 
     exec --no-startup-id ${gnome3.gnome_settings_daemon}/libexec/gsd-xsettings
 

@@ -1,6 +1,6 @@
 {
-   stdenv, lib
- , writeScriptBin
+   stdenv, lib, libdot
+ , writeScriptBin, writeTextFile
  , writeStrictShellScriptBin
  , my-emacs, termite, wl-clipboard
  , ps, jq, fire, sway, rofi, evolution
@@ -155,28 +155,47 @@ let
     fi
   '';
 
+  symbols = writeTextFile {
+     name = "program-symbols";
+     text = libdot.setToStringSep "\n" settings.program-symbols (name: symbol: "${name} ${symbol}");
+  };
+
   launch = writeStrictShellScriptBin "launch" ''
     cmd=$*
-    _SET_WS_NAME=''${_SET_WS_NAME:-}
     _USE_NAME=''${_USE_NAME:-}
     if [ -z "$cmd" ]; then
       read -r cmd
     fi
     MSG=${sway}/bin/swaymsg
     unset _TERMEMU
-    if [ "$_SET_WS_NAME" = "y" ]; then
-      name=$(${coreutils}/bin/echo "$cmd" | ${gawk}/bin/awk '{print $1}')
-      if [ "$_USE_NAME" ]; then
-          name=$_USE_NAME
-      fi
-      echo "$name"
-      wsname=$($MSG -t get_workspaces | ${jq}/bin/jq -r \
-               '.[] | select(.focused==true).name')
-      if ${coreutils}/bin/echo "$wsname" | \
-         ${gnugrep}/bin/grep -E '^[0-9]:? ?+$' > /dev/null; then
-        $MSG "rename workspace to \"$wsname: $name\"" >/dev/null 2>&1
+    name=$(${coreutils}/bin/echo "$cmd" | ${gawk}/bin/awk '{print $1}')
+    if [ "$_USE_NAME" ]; then
+        name=$_USE_NAME
+        unset _USE_NAME
+    else
+      set +e
+      sym=$(${gnugrep}/bin/grep -E "^$name " ${symbols} | ${gawk}/bin/awk '{print $2}')
+      set -e
+      if [ "$sym" != "" ]; then
+        name="$sym"
       fi
     fi
+    wsname=$($MSG -t get_workspaces | ${jq}/bin/jq -r \
+             '.[] | select(.focused).name')
+    apps=$($MSG -t get_workspaces | ${jq}/bin/jq -r \
+             '.[] | select(.focused).focus | length')
+    floating=$($MSG -t get_workspaces | ${jq}/bin/jq -r \
+             '.[] | select(.focused).floating_nodes | length')
+    apps=$((apps - floating))
+    if [ "$apps" = "0" ]; then
+      wsname=$(${coreutils}/bin/echo "$wsname" | ${gawk}/bin/awk -F':' '{print $1}')
+    fi
+    set +e
+    if ${coreutils}/bin/echo "$wsname" | \
+       ${gnugrep}/bin/grep -E '^[0-9]+:? ?+$' > /dev/null; then
+      $MSG "rename workspace to \"$wsname: $name\"" >/dev/null 2>&1
+    fi
+    set -e
     echo "${fire}/bin/fire $cmd" | ${stdenv.shell}
   '';
 
@@ -195,7 +214,6 @@ let
   fzf-run = writeScriptBin "fzf-run" ''
     #!${bashInteractive}/bin/bash
     export FZF_PROMPT="run >> "
-    export _SET_WS_NAME=y
     export FZF_OPTS="$FZF_OPTS''${FZF_OPTS:+ }--no-bold --no-color --height=40 --no-hscroll --no-mouse --no-extended --print-query --reverse"
 
     compgen -c | \
@@ -210,7 +228,6 @@ let
   sk-run = writeScriptBin "sk-run" ''
     #!${bashInteractive}/bin/bash
     export SK_PROMPT="run >> "
-    export _SET_WS_NAME=y
     export SK_OPTS="$SK_OPTS''${SK_OPTS:+ }--no-bold --color BW --height=40 --no-hscroll --no-mouse --print-query --reverse"
 
     compgen -c | \
