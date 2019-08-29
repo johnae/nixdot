@@ -31,8 +31,19 @@ let
      cpu = "  "
 
      [[block]]
+     block = "toggle"
+     text = "Caffeine"
+     command_on = "touch ~/.inhibit_idle"
+     command_off = "rm -f ~/.inhibit_idle"
+     command_state = "ls ~/.inhibit_idle"
+     interval = 10
+
+     [[block]]
      block = "cpu"
      interval = 1
+
+     [[block]]
+     block = "backlight"
 
      [[block]]
      block = "battery"
@@ -55,6 +66,10 @@ let
 
      [[block]]
      block = "sound"
+
+     [[block]]
+     block = "bluetooth"
+     mac = "D5:17:1A:80:22:AA"
 
      [[block]]
      block = "time"
