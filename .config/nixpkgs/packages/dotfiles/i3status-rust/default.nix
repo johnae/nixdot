@@ -38,6 +38,11 @@ let
      command_state = "ls ~/.inhibit_idle"
      interval = 10
 
+     ## headphones
+     [[block]]
+     block = "bluetooth"
+     mac = "04:52:C7:5F:CC:B6"
+
      [[block]]
      block = "cpu"
      interval = 1
@@ -67,6 +72,7 @@ let
      [[block]]
      block = "sound"
 
+     ## mouse
      [[block]]
      block = "bluetooth"
      mac = "D5:17:1A:80:22:AA"
