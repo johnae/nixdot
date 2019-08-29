@@ -30,6 +30,8 @@ in
   program-symbols = rec {
     firefox = "";
     chrome = "";
+    chromium = chrome;
+    browse-chromium = chrome;
     browse = firefox;
     terminal = "";
     term = terminal;
