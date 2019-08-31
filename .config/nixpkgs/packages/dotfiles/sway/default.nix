@@ -42,26 +42,15 @@ let
   swayMsgPath = "${sway}/bin/swaymsg";
   playerctlPath = "${playerctl}/bin/playerctl";
 
-  should-idle = writeStrictShellScriptBin "should-idle" ''
-    if ${sway}/bin/swaymsg -t get_tree | \
-       grep '"fullscreen_mode": 1' >/dev/null; then
-       exit 1
-    fi
-    if [ -e ~/.inhibit-idle ]; then
-       exit 1
-    fi
-    exit 0
-  '';
-
   swayidle-helper = writeStrictShellScriptBin "swayidle-helper" ''
     ## because I believe swaylock has to be in PATH for it to actually work properly
     ## so then everything might as well go in there
-    export PATH=${swayidle}/bin:${swaylock}/bin:${sway}/bin:${should-idle}/bin''${PATH:+:}$PATH
+    export PATH=${swayidle}/bin:${swaylock}/bin:${sway}/bin''${PATH:+:}$PATH
     exec swayidle -w \
       timeout ${swaylockTimeout} \
-       'should-idle && swaylock -f ${swaylockArgs}' \
+       'swaylock -f ${swaylockArgs}' \
       timeout ${swaylockSleepTimeout} \
-       'should-idle && swaymsg "output * dpms off"' \
+       'swaymsg "output * dpms off"' \
       resume 'swaymsg "output * dpms on"' \
       before-sleep 'swaylock -f ${swaylockArgs}'
   '';
@@ -105,6 +94,7 @@ let
     ######## Settings etc
     font ${font}
 
+    for_window [shell=".*"] inhibit_idle fullscreen
     for_window [class="fzf-window"] floating enable, resize set width 100ppt height 120ppt
     for_window [title="fzf-window"] floating enable, resize set width 100ppt height 120ppt
     for_window [class="sk-window"] floating enable, resize set width 100ppt height 120ppt
@@ -148,6 +138,12 @@ let
 
     # lock the screen
     bindsym Control+${mod}+l exec ${swaylock}/bin/swaylock -f ${swaylockArgs}
+
+    # inhibit idle
+    bindsym ${mod}+i exec ${sway}/bin/swaymsg inhibit_idle open
+
+    # uninhibit idle
+    bindsym ${mod}+Shift+i exec ${sway}/bin/swaymsg inhibit_idle none
 
     # start a terminal
     bindsym ${mod}+Return exec _USE_NAME= ${launch}/bin/launch ${terminal}/bin/terminal

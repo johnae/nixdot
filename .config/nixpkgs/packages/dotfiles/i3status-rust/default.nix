@@ -31,14 +31,6 @@ let
      cpu = "  "
 
      [[block]]
-     block = "toggle"
-     text = "Caffeine"
-     command_on = "touch ~/.inhibit_idle"
-     command_off = "rm -f ~/.inhibit_idle"
-     command_state = "ls ~/.inhibit_idle"
-     interval = 10
-
-     [[block]]
      block = "cpu"
      interval = 1
 
