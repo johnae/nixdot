@@ -79,15 +79,12 @@ let
     '';
   };
 
+
+  ra-emacs-meta = builtins.fromJSON(builtins.readFile ../rust-analyzer/metadata.json);
   ra-emacs-lsp = emacsPackages.melpaBuild {
     pname = "ra-emacs-lsp";
-    version = "20190720";
-    src = fetchFromGitHub {
-      owner = "rust-analyzer";
-      repo = "rust-analyzer";
-      rev = "dc7cec8cf4badddb54be03cfa187567b436dd82a";
-      sha256 = "086hnxy0yp08q4qmspavjh1v463cqlwj4kkgyscnhsj9vs6jlwz4";
-    };
+    version = "20190831";
+    src = fetchFromGitHub ra-emacs-meta;
 
     recipe = writeText "ra-emacs-lsp-recipe" ''
       (ra-emacs-lsp :repo "rust-analyzer/rust-analyzer" :fetcher github
