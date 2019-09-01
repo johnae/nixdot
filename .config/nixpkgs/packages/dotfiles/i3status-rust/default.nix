@@ -3,6 +3,8 @@
   lib,
   libdot,
   writeText,
+  curl,
+  jq,
   settings,
   ...
 }:
@@ -10,6 +12,16 @@
 let
   config = settings.i3status-rust;
   theme = settings.theme;
+  check-nixos-version = libdot.writeStrictShellScriptBin "check-nixos-version" ''
+    LATEST=$(${curl}/bin/curl -sS https://howoldis.herokuapp.com/api/channels | \
+                     ${jq}/bin/jq -r '.[] | select(.name == "nixos-unstable").commit')
+    LOCAL=$(awk -F'.' '{print $2}' < ~/.nix-defexpr/channels_root/nixos/.version-suffix)
+    if [ "$LOCAL" != "$LATEST" ]; then
+      echo " $LATEST"
+    else
+      echo " $LATEST"
+    fi
+  '';
   i3statusconf = writeText "i3status-rust.conf" ''
      [theme]
      name = "modern"
@@ -29,6 +41,11 @@ let
      name = "awesome"
      [icons.overrides]
      cpu = "  "
+
+     [[block]]
+     block = "custom"
+     command = "${check-nixos-version}/bin/check-nixos-version"
+     interval = 600
 
      [[block]]
      block = "cpu"
@@ -68,6 +85,16 @@ let
      [[block]]
      block = "bluetooth"
      mac = "D5:17:1A:80:22:AA"
+
+     ## keyboard at home
+     [[block]]
+     block = "bluetooth"
+     mac = "CA:2A:50:27:92:C6"
+
+     ## keyboard at work
+     [[block]]
+     block = "bluetooth"
+     mac = "F3:BD:17:19:97:05"
 
      [[block]]
      block = "time"
