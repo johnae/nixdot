@@ -1,30 +1,34 @@
 { stdenv,
   lib,
   fetchFromGitHub,
-  rustPlatform
+  pkgs
 }:
-
-with rustPlatform;
 
 let
 
   metadata = builtins.fromJSON(builtins.readFile ./metadata.json);
+  nightlyRustPlatform =
+    let
+      nightly = pkgs.rustChannelOf {
+        date = "2019-08-31";
+        channel = "nightly";
+      };
+    in
+    pkgs.makeRustPlatform {
+      rustc = nightly.rust;
+      cargo = nightly.rust;
+    };
 
 in
 
-  buildRustPackage rec {
+  with nightlyRustPlatform; buildRustPackage rec {
     pname = metadata.repo;
     version = metadata.rev;
     doCheck = false;
 
-    src = fetchFromGitHub {
-      owner = metadata.owner;
-      repo = pname;
-      rev = "${version}";
-      sha256 = metadata.sha256;
-    };
+    src = fetchFromGitHub metadata;
 
-    cargoSha256 = "0lxyfnwijga5hrjwr6n4zs86nw503w01fygjk2pj6x7jmzs07klx";
+    cargoSha256 = "0c6y847fpmd6lzaaay1qnzkv182camsmsxsac710fxwqbzxx1z0b";
 
     outputs = [ "out" ];
 
