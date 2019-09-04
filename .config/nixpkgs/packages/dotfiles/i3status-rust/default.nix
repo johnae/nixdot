@@ -13,13 +13,14 @@ let
   config = settings.i3status-rust;
   theme = settings.theme;
   check-nixos-version = libdot.writeStrictShellScriptBin "check-nixos-version" ''
-    LATEST=$(${curl}/bin/curl -sS https://howoldis.herokuapp.com/api/channels | \
-                     ${jq}/bin/jq -r '.[] | select(.name == "nixos-unstable").commit')
+    CURRENT=$(${curl}/bin/curl -sS https://howoldis.herokuapp.com/api/channels | \
+              ${jq}/bin/jq -r '.[] | select(.name == "nixos-unstable") | "\(.commit) (\(.humantime) ago)"')
+    LATEST=$(echo "$CURRENT" | awk '{print $1}')
     LOCAL=$(awk -F'.' '{print $2}' < ~/.nix-defexpr/channels_root/nixos/.version-suffix)
     if [ "$LOCAL" != "$LATEST" ]; then
-      echo " $LATEST"
+      echo " $CURRENT"
     else
-      echo " $LATEST"
+      echo " $CURRENT"
     fi
   '';
   i3statusconf = writeText "i3status-rust.conf" ''
