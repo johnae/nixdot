@@ -85,9 +85,9 @@ let
      end
 
      ## auto clear after 20 hours
-     if not test -e ~/.direnv_cache_cleared; or test (math (date +%s) " - " (cat ~/.direnv_cache_cleared)) -ge 72000
-        clear_direnv_cache
-     end
+     ## if not test -e ~/.direnv_cache_cleared; or test (math (date +%s) " - " (cat ~/.direnv_cache_cleared)) -ge 72000
+     ##    clear_direnv_cache
+     ## end
 
      function reload_fish_config --on-signal HUP
        eval exec $SHELL
