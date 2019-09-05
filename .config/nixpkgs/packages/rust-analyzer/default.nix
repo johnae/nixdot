@@ -28,7 +28,7 @@ in
 
     src = fetchFromGitHub metadata;
 
-    cargoSha256 = "0c6y847fpmd6lzaaay1qnzkv182camsmsxsac710fxwqbzxx1z0b";
+    cargoSha256 = "1dkwwxr2flmdlcsd2fmkr4z1vk1jikbgwp0bflnwrxpmbj4gkpr9";
 
     outputs = [ "out" ];
 
