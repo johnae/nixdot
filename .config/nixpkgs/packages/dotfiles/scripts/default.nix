@@ -476,7 +476,7 @@ let
        exit
     fi
     ${findutils}/bin/find "$HOME/Pictures/backgrounds" -type f | \
-         ${coreutils}/bin/sort -R | ${coreutils}/bin/head -1
+         ${coreutils}/bin/sort -R | ${coreutils}/bin/tail -1
   '';
 
   random-picsum-background = writeStrictShellScriptBin "random-picsum-background" ''
