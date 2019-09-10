@@ -36,7 +36,7 @@ let
      warning_bg = "${theme.base0D}DD"
      warning_fg = "${theme.base00}"
      critical_bg = "${theme.base0B}DD"
-     critical_fg = "${theme.base00}"
+     critical_fg = "${theme.base04}"
 
      [icons]
      name = "awesome"

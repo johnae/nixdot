@@ -387,7 +387,7 @@ in
 
       activeWorkspaceColorBorder = "${theme.base03}DD";
       activeWorkspaceColorBackground = "${theme.base03}DD";
-      activeWorkspaceColorText = theme.base00;
+      activeWorkspaceColorText = theme.base04;
 
       inactiveWorkspaceColorBorder = "${theme.base01}DD";
       inactiveWorkspaceColorBackground = "${theme.base01}DD";
@@ -395,7 +395,7 @@ in
 
       urgentWorkspaceColorBorder = theme.base0F;
       urgentWorkspaceColorBackground = theme.base0F;
-      urgentWorkspaceColorText = theme.base00;
+      urgentWorkspaceColorText = theme.base06;
     };
 
   };
