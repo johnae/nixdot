@@ -323,6 +323,12 @@ in
         xkb_model = "pc105";
         xkb_options = "ctrl:nocaps,lv3:lalt_switch,compose:ralt,lv3:ralt_alt";
       };
+      "2131:308:LEOPOLD_Mini_Keyboard" = {
+        xkb_layout = "us";
+        xkb_variant = ''""'';
+        xkb_model = "pc105";
+        xkb_options = "ctrl:nocaps,lv3:lalt_switch,compose:ralt,lv3:ralt_alt";
+      };
     };
 
     to_client_config = colors: builtins.concatStringsSep "   " colors;
