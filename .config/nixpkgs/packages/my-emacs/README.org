@@ -594,7 +594,7 @@ See: https://github.com/emacs-lsp/lsp-mode
 (defun my-lsp ()
   "Ensures environment is updated before enabling lsp mode."
   (direnv-update-environment default-directory)
-  (lsp))
+  (lsp-deferred))
 
 (add-hook 'prog-mode-hook 'my-lsp)
 
