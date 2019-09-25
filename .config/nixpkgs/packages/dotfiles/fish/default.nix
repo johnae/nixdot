@@ -130,7 +130,7 @@ let
           set -g prompt_status "<$last_status> "
        end
 
-       printf '%s%s%s%s %s%s%s%s%s> ' (set_color $fish_color_error)$prompt_status (set_color --bold brmagenta)(_in_nix_shell)(set_color $fish_color_cwd)(prompt_pwd) (set_color normal)(__fish_git_prompt)(set_color green)(_kube_context)(set_color normal)
+       printf '%s%s%s%s %s%s%s%s%s \n> ' (set_color $fish_color_error)$prompt_status (set_color --bold brmagenta)(_in_nix_shell)(set_color $fish_color_cwd)(prompt_pwd) (set_color normal)(__fish_git_prompt)(set_color green)(_kube_context)(set_color normal)
        if not test $last_status -eq 0
          set_color $fish_color_error
        end
@@ -153,7 +153,7 @@ let
 
      function _kube_context --description 'Returns the current kube context'
        if command -sq kubectl
-         echo " | "(kubectl config current-context)
+         echo " "(cat ~/.config/gcloud/configurations/config_default | grep 'project =' | awk '{print $NF}')" | "(kubectl config current-context)/(kubectl config view --minify --output 'jsonpath={..context.namespace}')
        else
          echo ""
        end
