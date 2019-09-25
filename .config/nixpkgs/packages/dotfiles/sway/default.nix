@@ -10,7 +10,7 @@
   terminal, termite, alacritty, fzf-window, fzf-run,
   fzf-passmenu, sk-window, sk-run, sk-passmenu,
   launch, rename-workspace, killall, procps,
-  screenshot, settings, browse, rofi-passmenu,
+  screenshot, settings, browse, rofi-passmenu, lorri,
  ...
 }:
 
@@ -336,6 +336,8 @@ let
     exec ${notification-daemon}/bin/notification-daemon
 
     exec ${persway}/bin/persway
+
+    exec ${lorri}/bin/lorri daemon
 
     exec ${spotifyd}/bin/spotifyd --no-daemon
 

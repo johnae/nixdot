@@ -43,13 +43,14 @@ let
   imapnotifyDot = with scripts; pkgs.callPackage ./imapnotify { inherit libdot settings emacs-run; };
   waybarDot = pkgs.callPackage ./waybar { inherit libdot settings; };
   spotifydDot = pkgs.callPackage ./spotifyd { inherit libdot settings; };
+  direnvDot = pkgs.callPackage ./direnv { inherit libdot settings; };
 
   dotfiles = [ gnupgDot fishDot swaydot
                alacrittyDot sshDot gitDot
                pulseDot gsimplecalDot tmuxDot
                mimeappsDot yubicoDot termiteDot
                xresourcesDot mbsyncDot imapnotifyDot
-               waybarDot spotifydDot
+               waybarDot spotifydDot direnvDot
              ];
 
   home = builtins.getEnv "HOME";

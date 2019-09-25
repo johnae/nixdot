@@ -27,6 +27,7 @@ self: super: {
           direnv
           playerctl
           _1password
+          lorri
 
           remmina
           evince
