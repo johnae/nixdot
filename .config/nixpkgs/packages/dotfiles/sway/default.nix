@@ -10,7 +10,7 @@
   terminal, termite, alacritty, fzf-window, fzf-run,
   fzf-passmenu, sk-window, sk-run, sk-passmenu,
   launch, rename-workspace, killall, procps,
-  screenshot, settings, browse, rofi-passmenu, lorri,
+  screenshot, settings, browse, rofi-passmenu, jq,
  ...
 }:
 
@@ -79,7 +79,8 @@ let
   ## because the delay when fetching from internet seems to
   ## stop the update from happening when using command substitution
   sway-background = writeStrictShellScriptBin "sway-background" ''
-    BG=$(${random-picsum-background}/bin/random-picsum-background)
+    # BG=$(${random-picsum-background}/bin/random-picsum-background)
+    BG=$(${random-background}/bin/random-background)
     exec swaymsg "output * bg '$BG' fill"
   '';
 
@@ -88,6 +89,21 @@ let
       ${sway-background}/bin/sway-background
       sleep 600
     done
+  '';
+
+  toggle-keyboard-layouts = writeStrictShellScriptBin "toggle-keyboard-layouts" ''
+    export PATH=${jq}/bin:${sway}/bin''${PATH:+:}$PATH
+    keyboard=''${1:-}
+    if [ -z "$keyboard" ]; then
+      echo No keyboard identifier given
+      exit 1
+    fi
+    current_layout="$(swaymsg -t get_inputs -r | jq -r ".[] | select(.identifier == \"$keyboard\").xkb_active_layout_name")"
+    if [ "$current_layout" = "English (US)" ]; then
+      swaymsg 'input "2131:308:LEOPOLD_Mini_Keyboard" xkb_layout se'
+    else
+      swaymsg 'input "2131:308:LEOPOLD_Mini_Keyboard" xkb_layout us'
+    fi
   '';
 
   config = writeSwayConfig "sway-config" ''
@@ -135,6 +151,9 @@ let
     client.urgent             ${client_urgent}
 
     ######## Key bindings
+
+    # toggle keyboard layout
+    bindsym Control+${mod}+k exec ${toggle-keyboard-layouts}/bin/toggle-keyboard-layouts "2131:308:LEOPOLD_Mini_Keyboard"
 
     # lock the screen
     bindsym Control+${mod}+l exec ${swaylock}/bin/swaylock -f ${swaylockArgs}
@@ -336,8 +355,6 @@ let
     exec ${notification-daemon}/bin/notification-daemon
 
     exec ${persway}/bin/persway
-
-    exec ${lorri}/bin/lorri daemon
 
     exec ${spotifyd}/bin/spotifyd --no-daemon
 
