@@ -17,6 +17,7 @@
 
 with lib;
 with libdot;
+
 with settings.sway;
 
 let
@@ -43,8 +44,6 @@ let
   playerctlPath = "${playerctl}/bin/playerctl";
 
   swayidle-helper = writeStrictShellScriptBin "swayidle-helper" ''
-    ## because I believe swaylock has to be in PATH for it to actually work properly
-    ## so then everything might as well go in there
     export PATH=${swayidle}/bin:${swaylock}/bin:${sway}/bin''${PATH:+:}$PATH
     exec swayidle -w \
       timeout ${swaylockTimeout} \
@@ -55,21 +54,10 @@ let
       before-sleep 'swaylock -f ${swaylockArgs}'
   '';
 
-  notification-daemon = writeStrictShellScriptBin "notification-daemon" ''
-    exec ${mako}/bin/mako --font ${makoConfig.font} \
-                          --background-color "${makoConfig.backgroundColor}" \
-                          --text-color "${makoConfig.textColor}" \
-                          --border-size ${makoConfig.borderSize} \
-                          --border-radius ${makoConfig.borderRadius} \
-                          --icons ${makoConfig.icons} \
-                          --icon-path ${makoConfig.iconPath} \
-                          --markup ${makoConfig.markup} \
-                          --actions ${makoConfig.actions} \
-                          --default-timeout ${makoConfig.defaultTimeout} \
-                          --padding ${makoConfig.padding} \
-                          --height ${makoConfig.height} \
-                          --width ${makoConfig.width} \
-                          --layer ${makoConfig.layer}
+  systemd-dbus-helper = writeStrictShellScriptBin "systemd-dbus-helper" ''
+    ${udev}/bin/systemctl --user stop environment-import.service
+    ${udev}/bin/systemctl --user import-environment
+    ${udev}/bin/systemctl --user start environment-import.service
   '';
 
   swaybar-status = writeStrictShellScriptBin "swaybar-status" ''
@@ -351,12 +339,9 @@ let
     # locks the screen on sleep etc
     exec ${swayidle-helper}/bin/swayidle-helper
 
-    # notifications
-    exec ${notification-daemon}/bin/notification-daemon
+    exec ${systemd-dbus-helper}/bin/systemd-dbus-helper
 
     exec ${persway}/bin/persway
-
-    exec ${spotifyd}/bin/spotifyd --no-daemon
 
     exec --no-startup-id ${gnome3.gnome_settings_daemon}/libexec/gsd-xsettings
 

@@ -1,4 +1,4 @@
-{stdenv, lib, pkgs, ...}:
+{stdenv, lib, libdot, pkgs, ...}:
 
 let
   meta = import /etc/nixos/meta.nix;
@@ -22,7 +22,7 @@ let
   };
   cnotation = hex: builtins.replaceStrings ["#"] ["0x"] hex;
 in
-{
+rec {
 
   inherit theme;
   default-slackws = "karmalicious";
@@ -65,6 +65,35 @@ in
     cache_path = "${builtins.getEnv "HOME"}/.cache/spotifyd";
     volume-normalisation = true;
     normalisation-pregain = "-10";
+  };
+
+  services = {
+    lorri = {
+      Unit = {
+        Description = "Lorri user nix-shell daemon";
+      };
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
+      Service = {
+         ExecStart = "${pkgs.lorri}/bin/lorri daemon";
+         Restart = "always";
+         RestartSec = 3;
+      };
+    };
+    spotifyd = {
+      Unit = {
+        Description = "Spotifyd - background music";
+      };
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
+      Service = {
+         ExecStart = "${pkgs.spotifyd}/bin/spotifyd --no-daemon";
+         Restart = "always";
+         RestartSec = 3;
+      };
+    };
   };
 
   mbsync = {
@@ -280,28 +309,28 @@ in
     };
   };
 
+  mako-config = {
+    font = "Roboto";
+    background-color = "#000021DD";
+    text-color = "#FFFFFFFF";
+    border-size = "0";
+    border-radius = "15";
+    icons = "1";
+    icon-path = "${pkgs.moka-icon-theme}/share/icons/Moka";
+    markup = "1";
+    actions = "1";
+    default-timeout = "3000"; ## ms
+    padding = "20";
+    height = "200";
+    width = "500";
+    layer = "overlay";
+  };
+
   sway = rec {
     mod = "Mod4";
 
     fontSize = "10";
     font = "pango:Roboto, 'Font Awesome 5 Free', 'Font Awesome 5 Brands', Arial, sans-serif, Bold ${fontSize}";
-
-    makoConfig = {
-      font = "Roboto";
-      backgroundColor = "#000021DD";
-      textColor = "#FFFFFFFF";
-      borderSize = "0";
-      borderRadius = "15";
-      icons = "1";
-      iconPath = "${pkgs.moka-icon-theme}/share/icons/Moka";
-      markup = "1";
-      actions = "1";
-      defaultTimeout = "3000"; ## ms
-      padding = "20";
-      height = "200";
-      width = "500";
-      layer = "overlay";
-    };
 
     swaylockBackground = "~/Pictures/lockscreen.jpg";
 

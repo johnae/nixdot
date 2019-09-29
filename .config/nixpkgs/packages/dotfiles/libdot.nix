@@ -6,6 +6,21 @@ with lib;
 
   setToStringSep = sep: x: fun: concatStringsSep sep (mapAttrsToList fun x);
 
+  writeStrictShellScript = name: text:
+    writeTextFile {
+      inherit name;
+      executable = true;
+      text = ''
+        #!${stdenv.shell}
+        set -euo pipefail
+        ${text}
+      '';
+      checkPhase = ''
+        ${stdenv.shell} -n $out
+        ${shellcheck}/bin/shellcheck -s bash -f tty $out
+      '';
+    };
+
   writeStrictShellScriptBin = name: text:
     writeTextFile {
       inherit name;

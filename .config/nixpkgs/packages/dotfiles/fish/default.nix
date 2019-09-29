@@ -196,6 +196,7 @@ let
          printf " "
        end
      end
+
   '';
 
   skimConfig = writeText "fish_user_key_bindings.fish" ''

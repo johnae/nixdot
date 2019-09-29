@@ -4,11 +4,10 @@ with lib;
 
 let
 
-
   libdot = pkgs.callPackage ./libdot.nix { };
   toShell = libdot.setToStringSep "\n";
 
-  settings = import (builtins.getEnv "HOME") { inherit stdenv lib pkgs; };
+  settings = import (builtins.getEnv "HOME") { inherit stdenv lib pkgs libdot; };
 
   scripts = (with libdot; pkgs.callPackage ./scripts {
           browser = "${pkgs.latest.firefox-nightly-bin}/bin/firefox";
@@ -44,13 +43,15 @@ let
   waybarDot = pkgs.callPackage ./waybar { inherit libdot settings; };
   spotifydDot = pkgs.callPackage ./spotifyd { inherit libdot settings; };
   direnvDot = pkgs.callPackage ./direnv { inherit libdot settings; };
+  systemd = pkgs.callPackage ./systemd { inherit libdot settings ; };
+  makoDot = pkgs.callPackage ./mako { inherit libdot settings ; };
 
-  dotfiles = [ gnupgDot fishDot swaydot
+  dotfiles = [ gnupgDot fishDot swaydot makoDot
                alacrittyDot sshDot gitDot
                pulseDot gsimplecalDot tmuxDot
                mimeappsDot yubicoDot termiteDot
                xresourcesDot mbsyncDot imapnotifyDot
-               waybarDot spotifydDot direnvDot
+               waybarDot spotifydDot direnvDot systemd
              ];
 
   home = builtins.getEnv "HOME";
@@ -78,6 +79,10 @@ let
       for file in $(cat $root/.dotfiles_manifest); do
         if [ ! -e ${home}/.nix-profile/dotfiles/$file ]; then
           echo "removing deleted dotfile '$file'"
+          if echo "$file" | grep -q "user\/systemd"; then
+            echo "Stopping service $(basename "$file") as it is being removed"
+            systemctl --user stop "$(basename "$file")" || true
+          fi
           rm -f $root/$file
         fi
       done
@@ -110,6 +115,24 @@ let
     popd
     find ${home}/.nix-profile/dotfiles/ -type f | grep -v "set-permissions.sh" | sed  "s|${home}/.nix-profile/dotfiles/||g" > $root/.dotfiles_manifest
     echo $latestVersion > $root/.dotfiles_version
+    systemctl --user daemon-reload
+    for file in ${home}/.config/systemd/user/*; do
+      if [ ! -d "$file" ]; then
+        if grep -q "\[Install\]" "$file" >/dev/null; then
+          echo "Stopping service $(basename "$file")..."
+          systemctl --user stop "$(basename "$file")" || true
+          echo "Enabling and starting service $(basename "$file")..."
+          systemctl --user enable "$(basename "$file")" || true
+          systemctl --user start "$(basename "$file")"
+        else
+          echo "No install section in \"$file\", not enabling unit"
+          echo "Stopping service $(basename "$file")..."
+          systemctl --user stop "$(basename "$file")" || true
+          echo "Starting service $(basename "$file")..."
+          systemctl --user start "$(basename "$file")"
+        fi
+      fi
+    done
     #swaymsg reload || true
     #${pkgs.killall}/bin/killall -s HUP $(${pkgs.coreutils}/bin/basename $SHELL) 2>/dev/null || true
   '';
