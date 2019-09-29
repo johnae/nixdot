@@ -252,18 +252,6 @@ rec {
     backgroundOpacity = "0.95";
 
     colors = ''
-      # Copyright (c) 2017-present Arctic Ice Studio <development@arcticicestudio.com>
-      # Copyright (c) 2017-present Sven Greb <code@svengreb.de>
-
-      # Project:    Nord Alacritty
-      # Version:    0.1.0
-      # Repository: https://github.com/arcticicestudio/nord-alacritty
-      # License:    MIT
-      # References:
-      #   https://github.com/jwilm/alacritty
-      # background: '0x006e8a'
-      # background: '0x2E3440'
-
       colors:
         primary:
           background: '0x00374e' ## special - not part of theme
