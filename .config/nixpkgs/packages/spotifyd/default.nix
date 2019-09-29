@@ -8,7 +8,7 @@ rustPlatform.buildRustPackage rec {
   version = metadata.rev;
 
   src = fetchFromGitHub metadata;
-  cargoSha256 = "15bs0yk6jcspvwfcpzaqh3jyfk0m4i4c3r1fxcw33ys4waidx3c4";
+  cargoSha256 = "0ar4bfwn3qxa6wsz2hd7nv1wr824h74jy3xqba2qsy0rsfwy1bmm";
 
   nativeBuildInputs = [ pkgconfig ];
 
@@ -20,8 +20,9 @@ rustPlatform.buildRustPackage rec {
      dbus
   ];
 
-  doCheck = false;
-  cargoBuildFlags = [ "--features pulseaudio_backend,dbus_mpris" ];
+    doCheck = false;
+  #cargoBuildFlags = [ "--features pulseaudio_backend,dbus_mpris" ];
+  cargoBuildFlags = [ "--features pulseaudio_backend" ];
 
   meta = with stdenv.lib; {
     description = "Simple spotify device daemon";
