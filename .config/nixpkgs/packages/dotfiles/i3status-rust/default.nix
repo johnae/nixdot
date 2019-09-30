@@ -87,16 +87,6 @@ let
      block = "bluetooth"
      mac = "D5:17:1A:80:22:AA"
 
-     ## keyboard at home
-     [[block]]
-     block = "bluetooth"
-     mac = "CA:2A:50:27:92:C6"
-
-     ## keyboard at work
-     [[block]]
-     block = "bluetooth"
-     mac = "F3:BD:17:19:97:05"
-
      [[block]]
      block = "time"
      interval = 1
