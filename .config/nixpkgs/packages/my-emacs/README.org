@@ -37,6 +37,9 @@ during initialization.
 
 ;; Yeah it's dangerous. I like living on the edge.
 (setq org-confirm-babel-evaluate nil)
+
+;; This makes emacsclient fast when starting up
+(setq-default xterm-query-timeout nil)
 #+END_SRC
 
 
