@@ -60,6 +60,9 @@ let
     #!${stdenv.shell}
     set -e
     export PATH=${makeSearchPath "bin" [ coreutils findutils nix sway gnused ]}:$PATH
+    previous_generation="$(ls $NIX_USER_PROFILE_DIR/ | sort | tail -n2 | head -1)"
+    previous_generation_path="$NIX_USER_PROFILE_DIR/$previous_generation"
+    current_generation_path="$HOME/.nix-profile"
     root=''${1:-${home}}
     latestVersion=$(nix-store --query --hash $(readlink ${home}/.nix-profile/dotfiles))
     currentVersion=""
@@ -75,7 +78,8 @@ let
     shopt -s dotglob
     mkdir -p $root
     chmod u+rwx $root
-    for file in ${home}/.config/systemd/user/*; do
+    echo "Stopping and disabling systemd units from previous generation '$(echo "$previous_generation" | awk -F'-' '{print $2}')'..."
+    for file in "$previous_generation_path"/dotfiles/.config/systemd/user/*; do
       if [ ! -d "$file" ]; then
         if grep -q "\[Install\]" "$file" >/dev/null; then
           echo "Stopping service $(basename "$file")..."
@@ -83,7 +87,7 @@ let
           echo "Disabling service $(basename "$file")..."
           systemctl --user disable "$(basename "$file")" || true
         else
-          echo "No install section in \"$file\", not enabling unit"
+          echo "No install section in \"$file\", not disabling unit"
           echo "Stopping service $(basename "$file")..."
           systemctl --user stop "$(basename "$file")" || true
         fi
