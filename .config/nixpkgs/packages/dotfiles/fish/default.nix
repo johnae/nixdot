@@ -224,6 +224,22 @@ let
          bind -M insert \cg skim-jump-to-project-widget
        end
 
+       function skim-jump-to-file-widget -d "Show list of file to open in editor"
+         set -q SK_TMUX_HEIGHT; or set SK_TMUX_HEIGHT 40%
+         begin
+           set -lx SK_DEFAULT_OPTS "--height $SK_TMUX_HEIGHT $SK_DEFAULT_OPTS --tiebreak=index --bind=ctrl-r:toggle-sort $SK_CTRL_R_OPTS +m"
+           set -lx file (${fd}/bin/fd -H -E "\.git" . | "${skim}"/bin/sk)
+           if [ "$file" != "" ]
+             ${edi}/bin/edi "$file"
+           end
+         end
+         commandline -f repaint
+       end
+       bind \cf skim-jump-to-project-widget
+       if bind -M insert > /dev/null 2>&1
+         bind -M insert \cf skim-jump-to-file-widget
+       end
+
        function kubectx-select -d "Select kubernetes cluster"
          if command -sq kubectx
            kubectx
