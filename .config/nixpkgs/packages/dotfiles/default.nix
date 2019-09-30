@@ -75,14 +75,24 @@ let
     shopt -s dotglob
     mkdir -p $root
     chmod u+rwx $root
+    for file in ${home}/.config/systemd/user/*; do
+      if [ ! -d "$file" ]; then
+        if grep -q "\[Install\]" "$file" >/dev/null; then
+          echo "Stopping service $(basename "$file")..."
+          systemctl --user stop "$(basename "$file")" || true
+          echo "Disabling service $(basename "$file")..."
+          systemctl --user disable "$(basename "$file")" || true
+        else
+          echo "No install section in \"$file\", not enabling unit"
+          echo "Stopping service $(basename "$file")..."
+          systemctl --user stop "$(basename "$file")" || true
+        fi
+      fi
+    done
     if [ -e $root/.dotfiles_manifest ]; then
       for file in $(cat $root/.dotfiles_manifest); do
         if [ ! -e ${home}/.nix-profile/dotfiles/$file ]; then
           echo "removing deleted dotfile '$file'"
-          if echo "$file" | grep -q "user\/systemd"; then
-            echo "Stopping service $(basename "$file") as it is being removed"
-            systemctl --user stop "$(basename "$file")" || true
-          fi
           rm -f $root/$file
         fi
       done
@@ -119,15 +129,11 @@ let
     for file in ${home}/.config/systemd/user/*; do
       if [ ! -d "$file" ]; then
         if grep -q "\[Install\]" "$file" >/dev/null; then
-          echo "Stopping service $(basename "$file")..."
-          systemctl --user stop "$(basename "$file")" || true
           echo "Enabling and starting service $(basename "$file")..."
           systemctl --user enable "$(basename "$file")" || true
           systemctl --user start "$(basename "$file")"
         else
           echo "No install section in \"$file\", not enabling unit"
-          echo "Stopping service $(basename "$file")..."
-          systemctl --user stop "$(basename "$file")" || true
           echo "Starting service $(basename "$file")..."
           systemctl --user start "$(basename "$file")"
         fi

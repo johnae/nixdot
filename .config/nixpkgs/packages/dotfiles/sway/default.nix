@@ -55,9 +55,9 @@ let
   '';
 
   systemd-dbus-helper = writeStrictShellScriptBin "systemd-dbus-helper" ''
-    ${udev}/bin/systemctl --user stop environment-import.service
+    ${udev}/bin/systemctl --user stop environment-import.target
     ${udev}/bin/systemctl --user import-environment
-    ${udev}/bin/systemctl --user start environment-import.service
+    ${udev}/bin/systemctl --user start environment-import.target
   '';
 
   swaybar-status = writeStrictShellScriptBin "swaybar-status" ''

@@ -72,9 +72,6 @@ rec {
       Unit = {
         Description = "Lorri user nix-shell daemon";
       };
-      Install = {
-        WantedBy = [ "default.target" ];
-      };
       Service = {
          ExecStart = "${pkgs.lorri}/bin/lorri daemon";
          Restart = "always";
@@ -84,9 +81,6 @@ rec {
     spotifyd = {
       Unit = {
         Description = "Spotifyd - background music";
-      };
-      Install = {
-        WantedBy = [ "default.target" ];
       };
       Service = {
          ExecStart = "${pkgs.spotifyd}/bin/spotifyd --no-daemon";

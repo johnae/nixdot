@@ -8,25 +8,26 @@ let
   environment-import = {
     Unit = {
       Description = "Environment Import Target";
-    };
-    Service = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs.coreutils}/bin/true";
+      Requires = [ "default.target" ];
+      After = [ "default.target" ];
     };
   };
 
   services = (mapAttrs (name: value:
     let
-      Requires = (value.Unit.Requires or []) ++ [ "environment-import.service" ];
-      After = (value.Unit.After or []) ++ [ "environment-import.service" ];
+      Requires = (value.Unit.Requires or []) ++ [ "environment-import.target" ];
+      After = (value.Unit.After or []) ++ [ "environment-import.target" ];
+      WantedBy = (value.Install.WantedBy or []) ++ [ "environment-import.target" ];
     in
       recursiveUpdate value {
         Unit = {
-          inherit Requires After;
+          inherit After Requires;
+        };
+        Install = {
+          inherit WantedBy;
         };
       }
-  ) settings.services) // { inherit environment-import; };
+  ) settings.services);
 
   toSystemdIni = generators.toINI {
       mkKeyValue = key: value:
@@ -38,19 +39,23 @@ let
           "${key}=${value'}";
     };
 
-  create-service = name: def:
+  create-unit = type: name: def:
   let
-    svc = writeText "${name}.service" (toSystemdIni def);
+    unit = writeText "${name}.${type}" (toSystemdIni def);
   in
     ''
-       ${libdot.copy { path = svc; to = ".config/systemd/user/${name}.service"; }}
+    ${libdot.copy { path = unit; to = ".config/systemd/user/${name}.${type}"; }}
     '';
+
+  create-service = name: def: create-unit "service" name def;
+  create-target = name: def: create-unit "target" name def;
 
 in
   {
     __toString = self: ''
       echo "Ensuring .config/systemd/user directory..."
       ${libdot.mkdir { path = ".config/systemd/user"; }}
+      ${concatStringsSep "\n" (mapAttrsToList create-target { inherit environment-import; } )}
       ${concatStringsSep "\n" (mapAttrsToList create-service services)}
     '';
   }
