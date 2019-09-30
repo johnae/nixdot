@@ -28,7 +28,7 @@ let
 
   termiteDot = pkgs.callPackage ./termite { inherit libdot settings; };
   gnupgDot = pkgs.callPackage ./gnupg { inherit libdot settings; };
-  fishDot = pkgs.callPackage ./fish { inherit libdot settings; };
+  fishDot = with scripts; pkgs.callPackage ./fish { inherit libdot settings edi; };
   alacrittyDot = pkgs.callPackage ./alacritty { inherit libdot settings; };
   sshDot = pkgs.callPackage ./ssh { inherit libdot settings; };
   gitDot = with scripts; pkgs.callPackage ./git { inherit libdot settings edi; };

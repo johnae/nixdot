@@ -1,4 +1,4 @@
-{stdenv, libdot, writeText, skim, lsd, fetchFromGitHub, ...}:
+{stdenv, libdot, writeText, skim, fd, lsd, edi, fetchFromGitHub, ...}:
 
 let
 
@@ -211,6 +211,10 @@ let
            set -lx dir (project-select ~/Development)
            if [ "$dir" != "" ]
              cd $dir
+             set -lx file (${fd}/bin/fd -H -E "\.git" . | "${skim}"/bin/sk)
+             if [ "$file" != "" ]
+               ${edi}/bin/edi "$file"
+             end
            end
          end
          commandline -f repaint
