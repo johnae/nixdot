@@ -100,9 +100,11 @@ let
     fi
     export SK_PROMPT="goto project >"
     export SK_OPTS="--tac --reverse"
-    ${fd}/bin/fd -d 8 -pHI -t f '.*\.git/config$' "$projects" | \
-      ${gnused}/bin/sed 's|/\.git/config||g' | \
-      ${gnused}/bin/sed "s|$HOME/||g" | \
+    # shellcheck disable=SC2086
+    ${fd}/bin/fd -d 8 -pHI -t f '.*\.git/config|.*\.projectile' $projects | \
+      ${gnused}/bin/sed -e 's|/\.git/config||g' \
+                        -e 's|/\.projectile||g' \
+                        -e "s|$HOME/||g" | \
       ${sk-sk}/bin/sk-sk | \
       ${findutils}/bin/xargs -I{} ${coreutils}/bin/echo "$HOME/{}"
   '';

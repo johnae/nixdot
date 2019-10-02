@@ -208,7 +208,7 @@ let
          set -q SK_TMUX_HEIGHT; or set SK_TMUX_HEIGHT 40%
          begin
            set -lx SK_DEFAULT_OPTS "--height $SK_TMUX_HEIGHT $SK_DEFAULT_OPTS --tiebreak=index --bind=ctrl-r:toggle-sort $SK_CTRL_R_OPTS +m"
-           set -lx dir (project-select ~/Development)
+           set -lx dir (project-select ~/Development ~/.config)
            if [ "$dir" != "" ]
              cd $dir
              set -lx file (${fd}/bin/fd -H -E "\.git" . | "${skim}"/bin/sk)
