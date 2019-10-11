@@ -1,4 +1,4 @@
-{stdenv, libdot, writeText, skim, fd, lsd, edi, fetchFromGitHub, ...}:
+{stdenv, libdot, writeText, skim, kubectx, fd, lsd, edi, fetchFromGitHub, ...}:
 
 let
 
@@ -241,15 +241,19 @@ let
        end
 
        function kubectx-select -d "Select kubernetes cluster"
-         if command -sq kubectx
-           kubectx
-         else
-           echo Missing command kubectx
-         end
+         ${kubectx}/bin/kubectx
        end
        bind \ck kubectx-select
        if bind -M insert > /dev/null 2>&1
          bind -M insert \ck kubectx-select
+       end
+
+       function kubens-select -d "Select kubernetes namespace"
+         ${kubectx}/bin/kubens
+       end
+       bind \cn kubectx-select
+       if bind -M insert > /dev/null 2>&1
+         bind -M insert \cn kubens-select
        end
 
        function gcloud-project-select -d "Select gcloud project"
