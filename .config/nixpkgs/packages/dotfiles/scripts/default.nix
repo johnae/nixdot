@@ -81,6 +81,10 @@ let
         --prompt="$FZF_PROMPT"
   '';
 
+  git-credential-pass = writeStrictShellScriptBin "git-credential-pass" ''
+    passfile="$1"
+    echo password="$(${pass}/bin/pass show "$passfile" | head -1)"
+  '';
 
   sk-sk = writeStrictShellScriptBin "sk-sk" ''
     SK_MIN_HEIGHT=''${SK_MIN_HEIGHT:-100}
@@ -625,7 +629,7 @@ in
               fzf-fzf project-select
               terminal launch csp
               fzf-passmenu rofi-passmenu
-              fzf-run fzf-window
+              fzf-run fzf-window git-credential-pass
               sk-sk sk-run sk-window sk-passmenu
               browse slacks spotifyweb browse-chromium signal
               rename-workspace screenshot

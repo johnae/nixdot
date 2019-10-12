@@ -48,6 +48,12 @@ let
       autoStash = true
     [url "git@github.com:"]
       insteadOf = https://github.com/
+    [credential "https://github.com"]
+      username = johnae
+      helper = pass "web/github.com/johnae"
+    [credential "https://repo.insane.se"]
+      username = johnae
+      helper = pass "web/repo.insane.se/johnae"
   '';
 
 in
