@@ -14,13 +14,20 @@ let
   theme = settings.theme;
   check-nixos-version = libdot.writeStrictShellScriptBin "check-nixos-version" ''
     CURRENT=$(${curl}/bin/curl -sS https://howoldis.herokuapp.com/api/channels | \
-              ${jq}/bin/jq -r '.[] | select(.name == "nixos-unstable") | "\(.commit) (\(.humantime) ago)"')
-    LATEST=$(echo "$CURRENT" | awk '{print $1}')
+              ${jq}/bin/jq -r '.[] | select(.name == "nixos-unstable") | "\(.link) \(.time)"')
+    AGE_SECS=$(echo "$CURRENT" | awk '{print $2}')
+    AGE_DAYS="$(echo "$AGE_SECS / 60 / 60 / 24" | bc)"
+    if [ "$AGE_DAYS" = "1" ]; then
+      AGE_DAYS="$AGE_DAYS day ago"
+    else
+      AGE_DAYS="$AGE_DAYS days ago"
+    fi
+    LATEST=$(echo "$CURRENT" | awk '{print $1}' | awk -F'.' '{print $NF}')
     LOCAL=$(awk -F'.' '{print $2}' < ~/.nix-defexpr/channels_root/nixos/.version-suffix)
     if [ "$LOCAL" != "$LATEST" ]; then
-      echo " $CURRENT"
+      echo " $LATEST ($AGE_DAYS)"
     else
-      echo " $CURRENT"
+      echo " $LATEST ($AGE_DAYS)"
     fi
   '';
   i3statusconf = writeText "i3status-rust.conf" ''
