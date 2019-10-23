@@ -16,12 +16,11 @@ in
 
     src = fetchFromGitHub metadata;
 
-    # $out for the library and $bin for rootston
     outputs = [ "out" ];
 
     nativeBuildInputs = [ meson ninja pkgconfig ];
 
-     mesonFlags = [
+    mesonFlags = [
       "-Dlibcap=enabled" "-Dlogind=enabled" "-Dxwayland=enabled" "-Dx11-backend=enabled"
       "-Dxcb-icccm=enabled" "-Dxcb-errors=enabled"
     ];
