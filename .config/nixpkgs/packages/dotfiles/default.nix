@@ -45,11 +45,12 @@ let
   waybarDot = pkgs.callPackage ./waybar { inherit libdot settings; };
   spotifydDot = pkgs.callPackage ./spotifyd { inherit libdot settings; };
   direnvDot = pkgs.callPackage ./direnv { inherit libdot settings; };
-  systemd = pkgs.callPackage ./systemd { inherit libdot settings ; };
-  makoDot = pkgs.callPackage ./mako { inherit libdot settings ; };
+  systemd = pkgs.callPackage ./systemd { inherit libdot settings; };
+  makoDot = pkgs.callPackage ./mako { inherit libdot settings; };
+  starshipDot = pkgs.callPackage ./starship { inherit libdot settings; };
 
   dotfiles = [ gnupgDot fishDot swaydot makoDot
-               alacrittyDot sshDot gitDot
+               alacrittyDot sshDot gitDot starshipDot
                pulseDot gsimplecalDot tmuxDot
                mimeappsDot yubicoDot termiteDot
                xresourcesDot mbsyncDot imapnotifyDot

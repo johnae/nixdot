@@ -54,6 +54,23 @@ rec {
     gedit = "";
   };
 
+  starship = {
+    kubernetes = {
+      style = "dim green";
+      disabled = false;
+    };
+    nix_shell = {
+      disabled = false;
+      use_name = true;
+    };
+    rust = {
+      symbol = " ";
+    };
+    git_branch = {
+      symbol = " ";
+    };
+  };
+
   spotifyd = rec {
     username = "binx";
     password_cmd = "${pkgs.pass}/bin/pass show web/spotify.com/${username}";
