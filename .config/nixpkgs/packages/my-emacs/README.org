@@ -614,7 +614,10 @@ See: https://github.com/emacs-lsp/lsp-mode
 )
 
 (use-package ra-emacs-lsp
-  :after lsp-mode)
+  :after lsp-mode
+  :config
+  (add-hook 'rust-mode-hook 'rust-analyzer-inlay-hints-mode)
+)
 #+END_SRC
 
 
