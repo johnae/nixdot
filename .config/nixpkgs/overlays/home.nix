@@ -33,6 +33,7 @@ self: super: {
           evince
 
           spotify
+          spotnix
           mpv
           vlc
 
