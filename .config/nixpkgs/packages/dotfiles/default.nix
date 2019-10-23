@@ -23,6 +23,8 @@ let
                 random-picsum-background emacs-server terminal
                 fzf-window fzf-run fzf-passmenu sk-window sk-run
                 sk-passmenu rofi-passmenu rename-workspace screenshot
+                spotify-play-album spotify-play-artist spotify-cmd
+                spotify-play-playlist spotify-play-track
                 writeStrictShellScriptBin settings i3statusconf;
   };
 

@@ -81,9 +81,25 @@ rec {
     spotifyd = {
       Unit = {
         Description = "Spotifyd - background music";
+        Wants = [ "network-online.target" ];
+        After = [ "network-online.target" ];
       };
       Service = {
          ExecStart = "${pkgs.spotifyd}/bin/spotifyd --no-daemon";
+         Restart = "always";
+         RestartSec = 3;
+      };
+    };
+    spotnix = {
+      Unit = {
+        Description = "Spotify for UNIX";
+        Wants = [ "spotifyd.service" ];
+        After = [ "spotifyd.service" ];
+      };
+      Service = {
+         ExecStart = ''
+           ${stdenv.shell} -c 'CLIENT_ID="$(${pkgs.pass}/bin/pass web/spotify.com/spotnix | head -1)" CLIENT_SECRET="$(${pkgs.pass}/bin/pass web/spotify.com/spotnix | tail -1)" REDIRECT_URI="http://localhost:8182/spotnix" ${pkgs.spotnix}/bin/spotnix -d ${meta.hostName} -e $XDG_RUNTIME_DIR/spotnix_event -i $XDG_RUNTIME_DIR/spotnix_input -o $XDG_RUNTIME_DIR/spotnix_output'
+         '';
          Restart = "always";
          RestartSec = 3;
       };
@@ -329,8 +345,10 @@ rec {
 
     sway-inputs = {
       "*" = {
-        xkb_layout = "se";
-        xkb_variant = "mac";
+        #xkb_layout = "se";
+        #xkb_variant = "mac";
+        xkb_layout = "us";
+        xkb_variant = ''""'';
         xkb_model = "pc105";
         xkb_options = "ctrl:nocaps,lv3:lalt_switch,compose:ralt,lv3:ralt_alt";
       };

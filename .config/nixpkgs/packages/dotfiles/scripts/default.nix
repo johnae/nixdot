@@ -113,6 +113,37 @@ let
       ${findutils}/bin/xargs -I{} ${coreutils}/bin/echo "$HOME/{}"
   '';
 
+  spotify-cmd = writeStrictShellScriptBin "spotify-cmd" ''
+    CMD="$1"
+    echo "$CMD" "$@" > "$XDG_RUNTIME_DIR"/spotnix_input
+  '';
+
+  spotify-play = writeStrictShellScriptBin "spotify-play" ''
+    TYPE="$1"
+    set +e
+    search="$(SK_OPTS="--print-query" ${sk-sk}/bin/sk-sk < /dev/null)"
+    set -e
+    echo "$TYPE" "$search" > "$XDG_RUNTIME_DIR"/spotnix_input
+    ${sk-sk}/bin/sk-sk < "$XDG_RUNTIME_DIR"/spotnix_output | \
+        awk '{print $NF}' | xargs -r -I{} echo play {} > "$XDG_RUNTIME_DIR"/spotnix_input
+  '';
+
+  spotify-play-track = writeStrictShellScriptBin "spotify-play-track" ''
+    exec ${spotify-play}/bin/spotify-play s
+  '';
+
+  spotify-play-artist = writeStrictShellScriptBin "spotify-play-artist" ''
+    exec ${spotify-play}/bin/spotify-play sar
+  '';
+
+  spotify-play-album = writeStrictShellScriptBin "spotify-play-album" ''
+    exec ${spotify-play}/bin/spotify-play sab
+  '';
+
+  spotify-play-playlist = writeStrictShellScriptBin "spotify-play-playlist" ''
+    exec ${spotify-play}/bin/spotify-play sap
+  '';
+
   screenshot = writeStrictShellScriptBin "screenshot" ''
     name=$(${coreutils}/bin/date +%Y-%m-%d_%H:%M:%S_screen)
     output_dir=$HOME/Pictures/screenshots
@@ -636,6 +667,8 @@ in
               start-sway random-background random-name
               random-picsum-background
               add-wifi-network update-wifi-networks
-              update-user-nixpkg update-user-nixpkgs update-wireguard-keys;
+              update-user-nixpkg update-user-nixpkgs update-wireguard-keys
+              spotify-play-album spotify-play-track spotify-cmd
+              spotify-play-artist spotify-play-playlist;
     };
   }

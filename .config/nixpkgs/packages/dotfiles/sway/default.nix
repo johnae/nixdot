@@ -10,6 +10,8 @@
   terminal, termite, alacritty, fzf-window, fzf-run,
   fzf-passmenu, sk-window, sk-run, sk-passmenu,
   launch, rename-workspace, killall, procps,
+  spotify-play-track, spotify-play-playlist, spotify-play-artist,
+  spotify-play-album, spotify-cmd,
   screenshot, settings, browse, rofi-passmenu, jq,
  ...
 }:
@@ -81,16 +83,11 @@ let
 
   toggle-keyboard-layouts = writeStrictShellScriptBin "toggle-keyboard-layouts" ''
     export PATH=${jq}/bin:${sway}/bin''${PATH:+:}$PATH
-    keyboard=''${1:-}
-    if [ -z "$keyboard" ]; then
-      echo No keyboard identifier given
-      exit 1
-    fi
-    current_layout="$(swaymsg -t get_inputs -r | jq -r ".[] | select(.identifier == \"$keyboard\").xkb_active_layout_name")"
+    current_layout="$(swaymsg -t get_inputs -r | jq -r "[.[] | select(.xkb_active_layout_name != null)][0].xkb_active_layout_name")"
     if [ "$current_layout" = "English (US)" ]; then
-      swaymsg 'input "2131:308:LEOPOLD_Mini_Keyboard" xkb_layout se'
+      swaymsg 'input "*" xkb_layout se'
     else
-      swaymsg 'input "2131:308:LEOPOLD_Mini_Keyboard" xkb_layout us'
+      swaymsg 'input "*" xkb_layout us'
     fi
   '';
 
@@ -140,8 +137,24 @@ let
 
     ######## Key bindings
 
+    # search and play track
+    bindsym ${mod}+t exec ${sk-window}/bin/sk-window ${spotify-play-track}/bin/spotify-play-track
+
+    # search and play playlist
+    bindsym ${mod}+p exec ${sk-window}/bin/sk-window ${spotify-play-playlist}/bin/spotify-play-playlist
+
+
+    # next song
+    bindsym Shift+${mod}+n exec ${spotify-cmd}/bin/spotify-cmd next
+
+    # prev song
+    bindsym Shift+${mod}+p exec ${spotify-cmd}/bin/spotify-cmd prev
+
+    # stop music
+    bindsym Shift+${mod}+m exec ${spotify-cmd}/bin/spotify-cmd pause
+
     # toggle keyboard layout
-    bindsym Control+${mod}+k exec ${toggle-keyboard-layouts}/bin/toggle-keyboard-layouts "2131:308:LEOPOLD_Mini_Keyboard"
+    bindsym Control+${mod}+k exec ${toggle-keyboard-layouts}/bin/toggle-keyboard-layouts
 
     # lock the screen
     bindsym Control+${mod}+l exec ${swaylock}/bin/swaylock -f ${swaylockArgs}
