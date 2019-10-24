@@ -56,7 +56,7 @@ rec {
 
   starship = {
     kubernetes = {
-      style = "dim green";
+      style = "bold blue";
       disabled = false;
     };
     nix_shell = {
@@ -68,6 +68,9 @@ rec {
     };
     git_branch = {
       symbol = " ";
+    };
+    package = {
+      symbol = " ";
     };
   };
 
