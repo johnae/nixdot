@@ -65,7 +65,6 @@ self: super: {
           acpi
           iw
           pass
-          pinentry
           pinentry_gnome
 
           fzf
