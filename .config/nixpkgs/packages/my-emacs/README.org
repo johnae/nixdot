@@ -546,10 +546,6 @@ Some simple modes for a few languages.
 (use-package yaml-mode
   :mode "\\.cf$")
 
-;;(use-package ensime)
-;;(use-package scala-mode)
-;;(use-package sbt-mode)
-
 (use-package js2-mode
   :config
   (setq js2-strict-missing-semi-warning nil)

@@ -293,9 +293,6 @@ in
     web-mode
     pos-tip
     dockerfile-mode
-    ensime
-    scala-mode
-    sbt-mode
     js2-mode
     tide
     prettier-js
