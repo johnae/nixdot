@@ -1,4 +1,4 @@
-{stdenv, libdot, writeText, starship, skim, kubectx, fd, lsd, edi, fetchFromGitHub, ...}:
+{stdenv, libdot, writeText, starship, skim, kubectx, kubectl, fd, lsd, edi, fetchFromGitHub, ...}:
 
 let
 
@@ -14,6 +14,10 @@ let
 
      function s
        nix-env -qaP ".*$argv.*"
+     end
+
+     function k8s-run
+       kubectl run tmp-shell --generator=run-pod/v1 --rm -i --tty --image=nixpkgs/nix-unstable --restart=Never --attach -- nix-shell -p bashInteractive --run bash
      end
 
      complete -c home -w git
