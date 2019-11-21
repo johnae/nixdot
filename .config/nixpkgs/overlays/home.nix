@@ -72,6 +72,7 @@ self: super: {
           stunnel
           ncdu
           zip
+          gitAndTools.hub
 
           gtk2
           gnome3.defaultIconTheme
