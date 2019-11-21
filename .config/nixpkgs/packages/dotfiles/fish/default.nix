@@ -80,6 +80,11 @@ let
      alias untracked="git ls-files --others --exclude-standard"
      alias ls="${lsd}/bin/lsd --group-dirs first"
 
+     function home_commit_packages
+       cd ~
+       for change in (home diff --name-only .config/nixpkgs/packages | xargs -r -I{} dirname {} | sort -u); home add $change; home commit -m "Updated "(echo $change | sed 's|\.config/nixpkgs/packages/||g'); end
+     end
+
      fish_vi_key_bindings ^ /dev/null
 
      function clear_direnv_cache
