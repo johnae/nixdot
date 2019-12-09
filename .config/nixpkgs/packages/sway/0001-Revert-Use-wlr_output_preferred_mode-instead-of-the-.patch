@@ -1,0 +1,51 @@
+From 60ef262eb03c9bc620d969afa01c9f4d118b6616 Mon Sep 17 00:00:00 2001
+From: John Axel Eriksson <john@insane.se>
+Date: Mon, 9 Dec 2019 22:19:58 +0100
+Subject: [PATCH] Revert "Use wlr_output_preferred_mode instead of the last
+ mode"
+
+This reverts commit f576bcdb8cb3ed1506ad03503815ad159c1c0479.
+---
+ sway/config/output.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/sway/config/output.c b/sway/config/output.c
+index 21a12b8f..3f17b7ce 100644
+--- a/sway/config/output.c
++++ b/sway/config/output.c
+@@ -255,8 +255,8 @@ static bool set_mode(struct wlr_output *output, int width, int height,
+ 	}
+ 	if (!best) {
+ 		sway_log(SWAY_ERROR, "Configured mode for %s not available", output->name);
+-		sway_log(SWAY_INFO, "Picking preferred mode instead");
+-		best = wlr_output_preferred_mode(output);
++		sway_log(SWAY_INFO, "Picking default mode instead");
++		best = wl_container_of(output->modes.prev, mode, link);
+ 	} else {
+ 		sway_log(SWAY_DEBUG, "Assigning configured mode to %s", output->name);
+ 	}
+@@ -298,7 +298,8 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
+ 		modeset_success = set_mode(wlr_output, oc->width, oc->height,
+ 			oc->refresh_rate, oc->custom_mode == 1);
+ 	} else if (!wl_list_empty(&wlr_output->modes)) {
+-		struct wlr_output_mode *mode = wlr_output_preferred_mode(wlr_output);
++		struct wlr_output_mode *mode =
++			wl_container_of(wlr_output->modes.prev, mode, link);
+ 		modeset_success = wlr_output_set_mode(wlr_output, mode);
+ 	} else {
+ 		// Output doesn't support modes
+@@ -381,8 +382,9 @@ bool apply_output_config(struct output_config *oc, struct sway_output *output) {
+ static void default_output_config(struct output_config *oc,
+ 		struct wlr_output *wlr_output) {
+ 	oc->enabled = 1;
+-	struct wlr_output_mode *mode = wlr_output_preferred_mode(wlr_output);
+-	if (mode != NULL) {
++	if (!wl_list_empty(&wlr_output->modes)) {
++		struct wlr_output_mode *mode =
++			wl_container_of(wlr_output->modes.prev, mode, link);
+ 		oc->width = mode->width;
+ 		oc->height = mode->height;
+ 		oc->refresh_rate = mode->refresh / 1000.f;
+-- 
+2.24.0
+

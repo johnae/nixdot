@@ -29,6 +29,10 @@ in
       wlroots libevdev scdoc
     ];
 
+    patches = [
+      ./0001-Revert-Use-wlr_output_preferred_mode-instead-of-the-.patch
+    ];
+
     postPatch = ''
       sed -iE "s/version: '1.0',/version: '${version}',/" meson.build
     '';
