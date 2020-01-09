@@ -28,6 +28,7 @@ self: super: {
           playerctl
           _1password
           lorri
+          rust-analyzer
 
           remmina
           evince
@@ -80,10 +81,14 @@ self: super: {
           tango-icon-theme
           shared_mime_info
           arc-icon-theme
+          arc-theme
+          arc-kde-theme
           papirus-icon-theme
           adapta-backgrounds
           adapta-gtk-theme
           adapta-kde-theme
+          nordic
+          nordic-polar
 
           gsimplecal
           gnome3.nautilus

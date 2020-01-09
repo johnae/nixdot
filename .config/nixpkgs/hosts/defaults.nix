@@ -1,7 +1,7 @@
 {stdenv, lib, libdot, pkgs, ...}:
 
 let
-  meta = import /etc/nixos/meta.nix;
+  hostname = lib.removeSuffix "\n" (builtins.readFile /etc/hostname);
   theme = {
     base00 = "#2E3440"; # polar night
     base01 = "#3B4252"; # polar night
@@ -80,7 +80,7 @@ rec {
     backend = "pulseaudio";
     mixer = "PCM";
     volume-control = "alsa";
-    device_name = meta.hostName;
+    device_name = hostname;
     bitrate = 320;
     cache_path = "${builtins.getEnv "HOME"}/.cache/spotifyd";
     volume-normalisation = true;
@@ -118,7 +118,7 @@ rec {
       };
       Service = {
          ExecStart = ''
-           ${stdenv.shell} -c 'CLIENT_ID="$(${pkgs.pass}/bin/pass web/spotify.com/spotnix | head -1)" CLIENT_SECRET="$(${pkgs.pass}/bin/pass web/spotify.com/spotnix | tail -1)" REDIRECT_URI="http://localhost:8182/spotnix" ${pkgs.spotnix}/bin/spotnix -d ${meta.hostName} -e $XDG_RUNTIME_DIR/spotnix_event -i $XDG_RUNTIME_DIR/spotnix_input -o $XDG_RUNTIME_DIR/spotnix_output -r 10'
+           ${stdenv.shell} -c 'CLIENT_ID="$(${pkgs.pass}/bin/pass web/spotify.com/spotnix | head -1)" CLIENT_SECRET="$(${pkgs.pass}/bin/pass web/spotify.com/spotnix | tail -1)" REDIRECT_URI="http://localhost:8182/spotnix" ${pkgs.spotnix}/bin/spotnix -d ${hostname} -e $XDG_RUNTIME_DIR/spotnix_event -i $XDG_RUNTIME_DIR/spotnix_input -o $XDG_RUNTIME_DIR/spotnix_output -r 10'
          '';
          Restart = "always";
          RestartSec = 3;
@@ -218,16 +218,16 @@ rec {
   dconf = {
     "org/gnome/desktop/interface" = {
       font-name = "Roboto Medium 11";
-      icon-theme = "Papirus-Adapta-Nokto";
-      gtk-theme = "Adapta-Nokto-Eta";
+      icon-theme = "Arc";
+      gtk-theme = "Arc-Dark";
     };
     "org/gnome/desktop/wm/preferences" = {
       titlebar-font = "Roboto Medium 11";
-      theme = "Adapta-Nokto-Eta";
+      theme = "Arc-Dark";
     };
   };
 
-  gtk-light-theme = "Adapta-Eta";
+  gtk-light-theme = "Arc";
 
   terminfo = {
     xterm-24bits = ''
