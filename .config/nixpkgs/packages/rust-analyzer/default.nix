@@ -10,7 +10,7 @@ let
   nightlyRustPlatform =
     let
       nightly = pkgs.rustChannelOf {
-        date = "2019-12-07";
+        date = "2019-12-15";
         channel = "nightly";
       };
     in
@@ -28,7 +28,7 @@ in
 
     src = fetchFromGitHub metadata;
 
-    cargoSha256 = "0yx24dmj98wm30dvwgf8fh7spizvsi5l5laqr68jg6fcwf68px2m";
+    cargoSha256 = "1mjh8rlbajqj739fzh2n50jg0pi5zk7a1wyviqb76l6s4v9jwrgf";
 
     outputs = [ "out" ];
 
