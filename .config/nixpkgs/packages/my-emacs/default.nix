@@ -1,4 +1,4 @@
-{ pkgs, fetchFromGitHub, fetchgit, glibc, pandoc, isync, imapnotify, git, wl-clipboard, mu, writeText, ... }:
+{ pkgs, fetchFromGitHub, fetchgit, fetchurl, glibc, pandoc, isync, imapnotify, git, wl-clipboard, mu, writeText, ... }:
 
 let
 
@@ -24,9 +24,25 @@ let
      emacs -batch -f batch-byte-compile **/*.el
   '';
 
+  ## because later versions broke lots of evil packages
+  undo-tree = emacsPackages.elpaBuild {
+    pname = "undo-tree";
+    ename = "undo-tree";
+    version = "0.6.5";
+    src = fetchurl {
+      url = "https://elpa.gnu.org/packages/undo-tree-0.6.5.el";
+      sha256 = "0bs97xyxwfkjvzax9llg0zsng0vyndnrxj5d2n5mmynaqcn89d37";
+    };
+    packageRequires = [];
+    meta = {
+      homepage = "https://elpa.gnu.org/packages/undo-tree.html";
+    };
+  };
+
   emacsPackages =
     pkgs.emacsPackagesNg.overrideScope'
     (self: super: {
+      inherit undo-tree;
       inherit (self.melpaPackages)
         evil flycheck-haskell haskell-mode
         use-package;
@@ -65,16 +81,16 @@ let
   ## use a nord-theme that works with 24-bit terminals
   nord-theme = emacsPackages.melpaBuild {
     pname = "nord-theme";
-    version = "20181017";
+    version = "20200112";
     src = fetchFromGitHub {
-      owner = "visigoth";
+      owner = "arcticicestudio";
       repo = "nord-emacs";
-      rev = "4f1cdf095a0c99c926fcf296dd6b4f8db1e4ee57";
-      sha256 = "1p89n8wrzkwvqhrxpzr2fhy4hnw44mha8ydwjbxr3fpnc120q2qs";
+      rev = "0f5295f99005a200191ce7b660e56cd0510cf710";
+      sha256 = "096f8cik4jz89bvkifwp3gm9iraqrd75ljy2q9js724v7yj88711";
     };
 
     recipe = writeText "nord-theme-recipe" ''
-      (nord-theme :repo "visigoth/nord-theme.el" :fetcher github
+      (nord-theme :repo "nord-theme/nord-theme.el" :fetcher github
                  :files (:defaults))
     '';
   };
@@ -83,7 +99,7 @@ let
   ra-emacs-meta = builtins.fromJSON(builtins.readFile ../rust-analyzer/metadata.json);
   ra-emacs-lsp = emacsPackages.melpaBuild {
     pname = "ra-emacs-lsp";
-    version = "20190831";
+    version = "20200112";
     src = fetchFromGitHub ra-emacs-meta;
 
     recipe = writeText "ra-emacs-lsp-recipe" ''
@@ -151,7 +167,6 @@ let
                          :files ("company-prescient.el"))
     '';
   };
-
 
   lua-mode = emacsPackages.melpaBuild {
     pname = "lua-mode";
