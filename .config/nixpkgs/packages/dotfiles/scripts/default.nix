@@ -233,8 +233,7 @@ let
       $MSG "rename workspace to \"$wsname: $name\"" >/dev/null 2>&1
     fi
     set -e
-    #echo "${fire}/bin/fire $cmd" | ${stdenv.shell}
-    echo "${sway}/bin/swaymsg \"exec $cmd\"" | ${stdenv.shell}
+    echo "${fire}/bin/fire $cmd" | ${stdenv.shell}
   '';
 
   rename-workspace = writeStrictShellScriptBin "rename-workspace" ''
@@ -370,9 +369,9 @@ let
     else
       if [ -z "$passonly" ]; then
         ${coreutils}/bin/echo -n "$login" | ${wl-clipboard}/bin/wl-copy -onf
-        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy -onf
+        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy -on
       else
-        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy -onf
+        ${coreutils}/bin/echo -n "$pass" | ${wl-clipboard}/bin/wl-copy -on
       fi
     fi
 
