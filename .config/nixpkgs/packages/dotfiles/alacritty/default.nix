@@ -44,7 +44,6 @@ let
     scrolling:
       history: 20000
       multiplier: 20
-      auto_scroll: false
 
     # Font configuration (changes require restart)
     font:
