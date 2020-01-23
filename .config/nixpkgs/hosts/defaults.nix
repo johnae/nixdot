@@ -276,7 +276,7 @@ rec {
   };
 
   alacritty = {
-    font = "Office Code Pro D Nerd Font";
+    font = "JetBrains Mono";
     fontSize = "14.0";
     largeFontSize = "28.0";
     backgroundOpacity = "0.95";
