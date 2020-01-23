@@ -233,7 +233,8 @@ let
       $MSG "rename workspace to \"$wsname: $name\"" >/dev/null 2>&1
     fi
     set -e
-    echo "${fire}/bin/fire $cmd" | ${stdenv.shell}
+    #echo "${fire}/bin/fire $cmd" | ${stdenv.shell}
+    echo "${sway}/bin/swaymsg \"exec $cmd\"" | ${stdenv.shell}
   '';
 
   rename-workspace = writeStrictShellScriptBin "rename-workspace" ''
