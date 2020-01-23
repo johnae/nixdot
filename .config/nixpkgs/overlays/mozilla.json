@@ -1,7 +1,6 @@
 {
-  "url": "https://github.com/mozilla/nixpkgs-mozilla",
-  "rev": "200cf0640fd8fdff0e1a342db98c9e31e6f13cd7",
-  "date": "2019-05-10T18:20:30+02:00",
-  "sha256": "18h0nvh55b5an4gmlgfbvwbyqj91bklf1zymis6lbdh75571qaz0",
-  "fetchSubmodules": false
+    "owner": "mozilla",
+    "repo": "nixpkgs-mozilla",
+    "rev": "5300241b41243cb8962fad284f0004afad187dad",
+    "sha256": "1h3g3817anicwa9705npssvkwhi876zijyyvv4c86qiklrkn5j9w"
 }
