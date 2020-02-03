@@ -1,5 +1,7 @@
 # My NixOS / Nix dotfiles
 
+## This is unused - see [nixos-configuration](https://github.com/johnae/nixos-configuration) for all my systems.
+
 These are the dotfiles I use on [NixOS](https://nixos.org). Please also see [nixos-config](https://github.com/johnae/nixos-config). That config is used to bootstrap the whole system while this repo is for my dotfiles and user packages. This includes some custom nix packages and a dotfiles builder based on nix.
 
 Normally the procedure (after cloning and checking out this) is:
